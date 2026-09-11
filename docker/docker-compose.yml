@@ -1,0 +1,30 @@
+# PostgreSQL 16 local para el incremento P02 (laboratorio, datos ficticios).
+#   docker compose -f docker/docker-compose.yml up -d
+# Los scripts de sql/ se ejecutan en orden la PRIMERA vez que se crea el volumen.
+# Las credenciales son de laboratorio; se pueden sobreescribir con docker/.env
+# (ver .env.example) y NUNCA deben ser credenciales reales.
+name: dsw-p02-huerto
+
+services:
+  db:
+    image: postgres:16
+    container_name: dsw-p02-huerto-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-huerto_db}
+      POSTGRES_USER: ${POSTGRES_USER:-huerto_app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-huerto_dev}
+    ports:
+      - "${POSTGRES_PORT:-5436}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ../sql/01_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+      - ../sql/02_seed.sql:/docker-entrypoint-initdb.d/02_seed.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-huerto_app} -d ${POSTGRES_DB:-huerto_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pgdata:

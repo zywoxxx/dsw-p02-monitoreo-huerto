@@ -1,0 +1,22 @@
+# Compilacion
+target/
+*.class
+*.log
+
+# Secretos y configuracion local (nunca versionar)
+.env
+setenv.bat
+setenv.sh
+
+# IDE / SO
+.idea/
+.vscode/
+*.iml
+.settings/
+.project
+.classpath
+Thumbs.db
+.DS_Store
+
+# Datos locales del contenedor PostgreSQL
+docker/pgdata/
