@@ -1,0 +1,46 @@
+Archive:  target/web1.war
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+       81  2026-09-11 17:53   META-INF/MANIFEST.MF
+        0  2026-09-11 17:53   META-INF/
+        0  2026-09-11 17:53   css/
+        0  2026-09-11 17:53   WEB-INF/
+        0  2026-09-11 17:53   WEB-INF/classes/
+        0  2026-09-11 17:53   WEB-INF/classes/mx/
+        0  2026-09-11 17:53   WEB-INF/classes/mx/uv/
+        0  2026-09-11 17:53   WEB-INF/classes/mx/uv/dsw/
+        0  2026-09-11 17:53   WEB-INF/classes/mx/uv/dsw/huerto/
+        0  2026-09-11 17:53   WEB-INF/classes/mx/uv/dsw/huerto/config/
+        0  2026-09-11 17:53   WEB-INF/classes/mx/uv/dsw/huerto/model/
+        0  2026-09-11 17:53   WEB-INF/classes/mx/uv/dsw/huerto/repository/
+        0  2026-09-11 17:53   WEB-INF/classes/mx/uv/dsw/huerto/service/
+        0  2026-09-11 17:53   WEB-INF/classes/mx/uv/dsw/huerto/web/
+        0  2026-09-11 17:53   WEB-INF/lib/
+        0  2026-09-11 17:53   WEB-INF/views/
+     3233  2026-09-11 17:38   css/estilos.css
+      223  2026-09-11 17:37   index.jsp
+     2751  2026-09-11 17:53   WEB-INF/classes/mx/uv/dsw/huerto/config/AppContextListener.class
+     1981  2026-09-11 17:53   WEB-INF/classes/mx/uv/dsw/huerto/config/DbConfig.class
+     2871  2026-09-11 17:53   WEB-INF/classes/mx/uv/dsw/huerto/model/Alerta.class
+     3195  2026-09-11 17:53   WEB-INF/classes/mx/uv/dsw/huerto/model/Lectura.class
+     3517  2026-09-11 17:53   WEB-INF/classes/mx/uv/dsw/huerto/model/Sensor.class
+     7230  2026-09-11 17:53   WEB-INF/classes/mx/uv/dsw/huerto/repository/LecturaRepository.class
+     5124  2026-09-11 17:53   WEB-INF/classes/mx/uv/dsw/huerto/repository/SensorRepository.class
+      781  2026-09-11 17:53   WEB-INF/classes/mx/uv/dsw/huerto/service/LecturaService$Resultado.class
+     4183  2026-09-11 17:53   WEB-INF/classes/mx/uv/dsw/huerto/service/LecturaService.class
+     5122  2026-09-11 17:53   WEB-INF/classes/mx/uv/dsw/huerto/service/LecturaValidator.class
+     1021  2026-09-11 17:53   WEB-INF/classes/mx/uv/dsw/huerto/service/ValidacionException.class
+     2386  2026-09-11 17:53   WEB-INF/classes/mx/uv/dsw/huerto/web/AlertaServlet.class
+     4230  2026-09-11 17:53   WEB-INF/classes/mx/uv/dsw/huerto/web/HealthServlet.class
+     5788  2026-09-11 17:53   WEB-INF/classes/mx/uv/dsw/huerto/web/LecturaServlet.class
+   230830  2026-09-09 10:12   WEB-INF/lib/checker-qual-3.42.0.jar
+   414240  2026-09-11 17:39   WEB-INF/lib/jstl-1.2.jar
+  1089136  2026-09-09 10:12   WEB-INF/lib/postgresql-42.7.2.jar
+     2667  2026-09-11 17:38   WEB-INF/views/alertas.jsp
+     1487  2026-09-11 17:38   WEB-INF/views/error.jsp
+     6331  2026-09-11 17:42   WEB-INF/views/lecturas.jsp
+      897  2026-09-11 17:37   WEB-INF/web.xml
+     2720  2026-09-11 17:32   META-INF/maven/mx.uv.dsw/web1/pom.xml
+       51  2026-09-11 17:53   META-INF/maven/mx.uv.dsw/web1/pom.properties
+---------                     -------
+  1802076                     41 files

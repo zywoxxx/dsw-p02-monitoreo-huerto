@@ -1,0 +1,258 @@
+HTTP/1.1 200 
+Set-Cookie: JSESSIONID=28046F59D46A7B5EC42B6FD964844D12; Path=/web1; HttpOnly
+Content-Type: text/html;charset=UTF-8
+Content-Length: 8144
+Date: Fri, 11 Sep 2026 23:54:21 GMT
+
+
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lecturas | PRxx Monitoreo de huerto</title>
+  <link rel="stylesheet" href="/web1/css/estilos.css">
+</head>
+<body>
+<header class="cabecera">
+  <div class="contenedor">
+    <h1>PRxx &middot; Monitoreo de huerto</h1>
+    <p class="subtitulo">Incremento P02 &middot; JSP / Servlet 4.0 &middot; Tomcat 9 &middot; PostgreSQL 16</p>
+    <nav>
+      <a class="activo" href="/web1/lecturas">Lecturas</a>
+      <a href="/web1/alertas">Alertas</a>
+      <a href="/web1/health">Salud (JSON)</a>
+    </nav>
+  </div>
+</header>
+
+<main class="contenedor">
+
+  
+  
+  
+
+  <section class="tarjeta">
+    <h2>Registrar lectura manual</h2>
+    <p class="ayuda">RF-02 / RF-03: selecciona un sensor y captura el valor medido. El sistema valida el rango
+      fisico del tipo de sensor y genera una alerta si el valor sale del umbral operativo (RF-05).</p>
+    <form method="post" action="/web1/lecturas" class="formulario" id="form-lectura">
+      <div class="campo">
+        <label for="sensorId">Sensor *</label>
+        <select id="sensorId" name="sensorId" required>
+          <option value="">-- Selecciona un sensor --</option>
+          
+            <option value="3" >SEN-A-HSUE-01 - Humedad de suelo (%) - Cama A</option>
+          
+            <option value="2" >SEN-A-TEMP-01 - Temperatura ambiente (C) - Cama A</option>
+          
+            <option value="4" >SEN-I1-HAIR-01 - Humedad relativa (%) - Invernadero 1</option>
+          
+            <option value="5" >SEN-I1-LUZ-01 - Luminosidad (lux) - Invernadero 1</option>
+          
+            <option value="1" >SEN-I1-TEMP-01 - Temperatura ambiente (C) - Invernadero 1</option>
+          
+        </select>
+      </div>
+      <div class="campo">
+        <label for="valor">Valor medido *</label>
+        <input type="text" id="valor" name="valor" inputmode="decimal" placeholder="Ej. 24.5"
+               maxlength="12" value="">
+      </div>
+      <div class="campo campo-ancho">
+        <label for="observacion">Observacion (opcional, max. 200)</label>
+        <input type="text" id="observacion" name="observacion" maxlength="200"
+               value="">
+      </div>
+      <div class="campo acciones">
+        <button type="submit" id="btn-registrar">Registrar lectura</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="tarjeta">
+    <h2>Sensores activos (RF-01)</h2>
+    <div class="tabla-scroll">
+      <table id="tabla-sensores">
+        <thead>
+          <tr><th>Codigo</th><th>Tipo</th><th>Unidad</th><th>Zona</th><th>Huerto</th>
+              <th>Rango fisico</th><th>Umbral operativo</th></tr>
+        </thead>
+        <tbody>
+          
+            <tr>
+              <td><code>SEN-A-HSUE-01</code></td>
+              <td>Humedad de suelo</td>
+              <td>%</td>
+              <td>Cama A</td>
+              <td>Huerto escolar demo</td>
+              <td>[0.00, 100.00]</td>
+              <td>
+                
+                  [40.00, 80.00]
+                  
+                
+              </td>
+            </tr>
+          
+            <tr>
+              <td><code>SEN-A-TEMP-01</code></td>
+              <td>Temperatura ambiente</td>
+              <td>C</td>
+              <td>Cama A</td>
+              <td>Huerto escolar demo</td>
+              <td>[-10.00, 60.00]</td>
+              <td>
+                
+                  [15.00, 32.00]
+                  
+                
+              </td>
+            </tr>
+          
+            <tr>
+              <td><code>SEN-I1-HAIR-01</code></td>
+              <td>Humedad relativa</td>
+              <td>%</td>
+              <td>Invernadero 1</td>
+              <td>Huerto escolar demo</td>
+              <td>[0.00, 100.00]</td>
+              <td>
+                
+                  [50.00, 85.00]
+                  
+                
+              </td>
+            </tr>
+          
+            <tr>
+              <td><code>SEN-I1-LUZ-01</code></td>
+              <td>Luminosidad</td>
+              <td>lux</td>
+              <td>Invernadero 1</td>
+              <td>Huerto escolar demo</td>
+              <td>[0.00, 100000.00]</td>
+              <td>
+                
+                  [2000.00, 60000.00]
+                  
+                
+              </td>
+            </tr>
+          
+            <tr>
+              <td><code>SEN-I1-TEMP-01</code></td>
+              <td>Temperatura ambiente</td>
+              <td>C</td>
+              <td>Invernadero 1</td>
+              <td>Huerto escolar demo</td>
+              <td>[-10.00, 60.00]</td>
+              <td>
+                
+                  [18.00, 30.00]
+                  
+                
+              </td>
+            </tr>
+          
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="tarjeta">
+    <h2>Lecturas recientes (RF-04)</h2>
+    
+      
+      
+        <div class="tabla-scroll">
+          <table id="tabla-lecturas">
+            <thead>
+              <tr><th>#</th><th>Sensor</th><th>Tipo</th><th>Zona</th><th>Valor</th>
+                  <th>Origen</th><th>Observacion</th><th>Registrada</th><th>Alerta</th></tr>
+            </thead>
+            <tbody>
+              
+                <tr class="fila-alerta">
+                  <td>14</td>
+                  <td><code>SEN-A-TEMP-01</code></td>
+                  <td>Temperatura ambiente</td>
+                  <td>Cama A</td>
+                  <td class="num">38.00 C</td>
+                  <td>manual</td>
+                  <td>verify-module alerta</td>
+                  <td>2026-09-11 23:54:21</td>
+                  <td>
+                    
+                      <span class="etiqueta etiqueta-ALTA">ALTA</span>
+                      
+                    
+                  </td>
+                </tr>
+              
+                <tr class="">
+                  <td>13</td>
+                  <td><code>SEN-A-TEMP-01</code></td>
+                  <td>Temperatura ambiente</td>
+                  <td>Cama A</td>
+                  <td class="num">25.50 C</td>
+                  <td>manual</td>
+                  <td>verify-module POST valido</td>
+                  <td>2026-09-11 23:54:20</td>
+                  <td>
+                    
+                      
+                      <span class="etiqueta etiqueta-ok">en rango</span>
+                    
+                  </td>
+                </tr>
+              
+                <tr class="">
+                  <td>2</td>
+                  <td><code>SEN-A-HSUE-01</code></td>
+                  <td>Humedad de suelo</td>
+                  <td>Cama A</td>
+                  <td class="num">55.00 %</td>
+                  <td>simulado</td>
+                  <td>Carga inicial del laboratorio</td>
+                  <td>2026-09-11 23:35:01</td>
+                  <td>
+                    
+                      
+                      <span class="etiqueta etiqueta-ok">en rango</span>
+                    
+                  </td>
+                </tr>
+              
+                <tr class="">
+                  <td>1</td>
+                  <td><code>SEN-A-TEMP-01</code></td>
+                  <td>Temperatura ambiente</td>
+                  <td>Cama A</td>
+                  <td class="num">24.50 C</td>
+                  <td>simulado</td>
+                  <td>Carga inicial del laboratorio</td>
+                  <td>2026-09-11 23:35:01</td>
+                  <td>
+                    
+                      
+                      <span class="etiqueta etiqueta-ok">en rango</span>
+                    
+                  </td>
+                </tr>
+              
+            </tbody>
+          </table>
+        </div>
+      
+    
+  </section>
+</main>
+
+<footer class="pie contenedor">
+  Desarrollo de Sistemas Web &middot; DSW-19559 &middot; Datos ficticios de laboratorio.
+</footer>
+</body>
+</html>

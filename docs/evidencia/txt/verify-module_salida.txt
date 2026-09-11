@@ -1,0 +1,81 @@
+
+== [M02] Versiones del entorno ==
+fecha: 2026-09-11T17:53:51-06:00
+java version "11.0.32.1" 2026-08-18 LTS
+Java(TM) SE Runtime Environment 18.9 (build 11.0.32.1+1-LTS-5)
+Java HotSpot(TM) 64-Bit Server VM 18.9 (build 11.0.32.1+1-LTS-5, mixed mode)
+Apache Maven 3.9.9 (8e8579a9e76f7d015ee5ec7bfcdc97d260186937)
+Maven home: C:\Tools\apache-maven-3.9.9
+Java version: 11.0.32.1, vendor: Oracle Corporation, runtime: C:\Program Files\Java\jdk-11.0.32.1
+   VERIFICADO: Java 11 disponible
+
+== [M02] Compilacion, pruebas unitarias y empaquetado (mvn clean package) ==
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.063 s -- in mx.uv.dsw.huerto.service.LecturaValidatorTest
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+   VERIFICADO: mvn clean package genera target/web1.war con pruebas en verde
+
+== [M02] Inspeccion del WAR ==
+   VERIFICADO: WAR contiene servlets, JSP, web.xml y driver JDBC
+
+== [M02] PostgreSQL: esquema, semilla y consultas de verificacion ==
+                                                       version                                                        
+----------------------------------------------------------------------------------------------------------------------
+ PostgreSQL 16.15 (Debian 16.15-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+(1 row)
+
+   base    |  usuario   
+-----------+------------
+ huerto_db | huerto_app
+(1 row)
+
+ table_name  
+-------------
+   VERIFICADO: PostgreSQL responde y el modelo de 7 tablas existe
+
+== [M02] Despliegue en Tomcat 9 ==
+   Tomcat activo: se retira web1 y se espera a que Tomcat lo repliegue (autoDeploy)
+   web1.war copiado; esperando el nuevo despliegue
+   VERIFICADO: web1 desplegado y respondiendo en http://localhost:8080/web1
+
+== [M02] Ruta de salud GET /health ==
+HTTP/1.1 200 
+{"status":"UP","app":"web1 PRxx monitoreo de huerto","db":"UP","dbUrl":"jdbc:postgresql://localhost:5436/huerto_db","postgres":"PostgreSQL 16.15 (Debian 16.15-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit","lecturas":2}
+   VERIFICADO: /health responde 200 y db=UP
+
+== [M02] Protocolo HTTP del flujo principal ==
+   VERIFICADO: GET /lecturas inicial responde 200 con catalogo y lecturas
+   sensor SEN-A-TEMP-01 -> id 2
+   VERIFICADO: POST valido responde 303 y redirige a la lectura creada
+   VERIFICADO: POST invalido (valor abc) responde 400 con mensaje de validacion
+   VERIFICADO: POST invalido (vacio) responde 400 con dos errores
+   VERIFICADO: POST invalido (150 C) responde 400 por rango fisico
+   VERIFICADO: POST 38 C responde 303 y genera alerta ALTA
+   VERIFICADO: GET posterior muestra las lecturas persistidas (2 -> 4 filas)
+   VERIFICADO: GET /alertas lista la alerta generada
+
+== [M02] PostgreSQL despues del protocolo (persistencia verificable) ==
+   VERIFICADO: Las lecturas del protocolo existen en la tabla lectura
+
+== [M02] Anonimizando rutas locales en la evidencia ==
+[anonimizar] 2 archivo(s) actualizados en docs\evidencia\txt
+
+== [M02] Resumen ==
+verify-module.sh M02 - 2026-09-11T17:54:22-06:00
+VERIFICADO    | Java 11 disponible
+VERIFICADO    | mvn clean package genera target/web1.war con pruebas en verde
+VERIFICADO    | WAR contiene servlets, JSP, web.xml y driver JDBC
+VERIFICADO    | PostgreSQL responde y el modelo de 7 tablas existe
+VERIFICADO    | web1 desplegado y respondiendo en http://localhost:8080/web1
+VERIFICADO    | /health responde 200 y db=UP
+VERIFICADO    | GET /lecturas inicial responde 200 con catalogo y lecturas
+VERIFICADO    | POST valido responde 303 y redirige a la lectura creada
+VERIFICADO    | POST invalido (valor abc) responde 400 con mensaje de validacion
+VERIFICADO    | POST invalido (vacio) responde 400 con dos errores
+VERIFICADO    | POST invalido (150 C) responde 400 por rango fisico
+VERIFICADO    | POST 38 C responde 303 y genera alerta ALTA
+VERIFICADO    | GET posterior muestra las lecturas persistidas (2 -> 4 filas)
+VERIFICADO    | GET /alertas lista la alerta generada
+VERIFICADO    | Las lecturas del protocolo existen en la tabla lectura
+Fallos: 0
+RESULTADO: VERIFICADO

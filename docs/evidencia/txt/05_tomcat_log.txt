@@ -1,0 +1,6 @@
+11-Sep-2026 17:39:43.369 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Despliegue del archivo [<CATALINA_HOME>\webapps\web1.war] de la aplicación web
+11-Sep-2026 17:39:45.107 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in [1785] milliseconds
+11-Sep-2026 17:42:55.008 INFO [Catalina-utility-2] org.apache.catalina.startup.HostConfig.deployWAR Despliegue del archivo [<CATALINA_HOME>\webapps\web1.war] de la aplicación web
+11-Sep-2026 17:44:05.345 INFO [Catalina-utility-1] org.apache.catalina.startup.HostConfig.deployWAR Despliegue del archivo [<CATALINA_HOME>\webapps\web1.war] de la aplicación web
+11-Sep-2026 17:45:15.699 INFO [Catalina-utility-1] org.apache.catalina.startup.HostConfig.deployWAR Despliegue del archivo [<CATALINA_HOME>\webapps\web1.war] de la aplicación web
+11-Sep-2026 17:54:16.551 INFO [Catalina-utility-1] org.apache.catalina.startup.HostConfig.deployWAR Despliegue del archivo [<CATALINA_HOME>\webapps\web1.war] de la aplicación web

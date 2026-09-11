@@ -1,0 +1,45 @@
+                                                       version                                                        
+----------------------------------------------------------------------------------------------------------------------
+ PostgreSQL 16.15 (Debian 16.15-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+(1 row)
+
+   base    |  usuario   
+-----------+------------
+ huerto_db | huerto_app
+(1 row)
+
+ table_name  
+-------------
+ alerta
+ huerto
+ lectura
+ sensor
+ tipo_sensor
+ umbral
+ zona
+(7 rows)
+
+   entidad   | registros 
+-------------+-----------
+ huerto      |         1
+ zona        |         2
+ tipo_sensor |         4
+ sensor      |         5
+ umbral      |         5
+ lectura     |         4
+ alerta      |         1
+(7 rows)
+
+ id |    codigo     |  zona  |       huerto        | valor | unidad |  origen  |          observacion          |         registrado_en         | alerta 
+----+---------------+--------+---------------------+-------+--------+----------+-------------------------------+-------------------------------+--------
+ 14 | SEN-A-TEMP-01 | Cama A | Huerto escolar demo | 38.00 | C      | manual   | verify-module alerta          | 2026-09-11 23:54:21.051311+00 | ALTA
+ 13 | SEN-A-TEMP-01 | Cama A | Huerto escolar demo | 25.50 | C      | manual   | verify-module POST valido     | 2026-09-11 23:54:20.601999+00 | 
+  1 | SEN-A-TEMP-01 | Cama A | Huerto escolar demo | 24.50 | C      | simulado | Carga inicial del laboratorio | 2026-09-11 23:35:01.699295+00 | 
+  2 | SEN-A-HSUE-01 | Cama A | Huerto escolar demo | 55.00 | %      | simulado | Carga inicial del laboratorio | 2026-09-11 23:35:01.699295+00 | 
+(4 rows)
+
+ id |    codigo     | nivel |                               mensaje                               | atendida |           creada_en           
+----+---------------+-------+---------------------------------------------------------------------+----------+-------------------------------
+  7 | SEN-A-TEMP-01 | ALTA  | Temperatura ambiente en Cama A: 38 C por encima del maximo 32.00 C. | f        | 2026-09-11 23:54:21.051311+00
+(1 row)
+

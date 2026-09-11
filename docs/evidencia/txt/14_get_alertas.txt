@@ -1,0 +1,70 @@
+HTTP/1.1 200 
+Set-Cookie: JSESSIONID=C7759DAC0385410F4472AEF9E3B35AB9; Path=/web1; HttpOnly
+Content-Type: text/html;charset=UTF-8
+Content-Length: 1972
+Date: Fri, 11 Sep 2026 23:54:21 GMT
+
+
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Alertas | PRxx Monitoreo de huerto</title>
+  <link rel="stylesheet" href="/web1/css/estilos.css">
+</head>
+<body>
+<header class="cabecera">
+  <div class="contenedor">
+    <h1>PRxx &middot; Monitoreo de huerto</h1>
+    <p class="subtitulo">Incremento P02 &middot; JSP / Servlet 4.0 &middot; Tomcat 9 &middot; PostgreSQL 16</p>
+    <nav>
+      <a href="/web1/lecturas">Lecturas</a>
+      <a class="activo" href="/web1/alertas">Alertas</a>
+      <a href="/web1/health">Salud (JSON)</a>
+    </nav>
+  </div>
+</header>
+
+<main class="contenedor">
+  <section class="tarjeta">
+    <h2>Alertas generadas (RF-06)</h2>
+    <p class="ayuda">Cada alerta nace de una lectura cuyo valor quedo fuera del umbral operativo del sensor (RF-05).</p>
+    
+      
+      
+        <div class="tabla-scroll">
+          <table id="tabla-alertas">
+            <thead>
+              <tr><th>#</th><th>Lectura</th><th>Sensor</th><th>Zona</th><th>Valor</th>
+                  <th>Nivel</th><th>Mensaje</th><th>Atendida</th><th>Creada</th></tr>
+            </thead>
+            <tbody>
+              
+                <tr class="fila-alerta">
+                  <td>7</td>
+                  <td>#14</td>
+                  <td><code>SEN-A-TEMP-01</code></td>
+                  <td>Cama A</td>
+                  <td class="num">38.00 C</td>
+                  <td><span class="etiqueta etiqueta-ALTA">ALTA</span></td>
+                  <td>Temperatura ambiente en Cama A: 38 C por encima del maximo 32.00 C.</td>
+                  <td>No</td>
+                  <td>2026-09-11 23:54:21</td>
+                </tr>
+              
+            </tbody>
+          </table>
+        </div>
+      
+    
+  </section>
+</main>
+
+<footer class="pie contenedor">
+  Desarrollo de Sistemas Web &middot; DSW-19559 &middot; Datos ficticios de laboratorio.
+</footer>
+</body>
+</html>

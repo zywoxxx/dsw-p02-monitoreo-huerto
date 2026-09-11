@@ -1,0 +1,22 @@
+# Prueba negativa de infraestructura: PostgreSQL detenido (2026-09-11T17:47:01-06:00)
+$ docker stop dsw-p02-huerto-db
+dsw-p02-huerto-db
+
+$ curl -s -i http://localhost:8080/web1/health
+HTTP/1.1 503 
+Content-Type: application/json;charset=UTF-8
+Content-Length: 270
+Date: Fri, 11 Sep 2026 23:47:02 GMT
+Connection: close
+
+{"status":"DOWN","app":"web1 PRxx monitoreo de huerto","db":"DOWN","dbUrl":"jdbc:postgresql://localhost:5436/huerto_db","error":"Connection to localhost:5436 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections."}
+
+$ curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/web1/lecturas   (pagina de error controlada)
+500
+Ocurrio un problema (HTTP 500)
+Verifica que PostgreSQL este activo y que las variables
+
+$ docker start dsw-p02-huerto-db
+dsw-p02-huerto-db
+$ curl -s http://localhost:8080/web1/health
+{"status":"UP","app":"web1 PRxx monitoreo de huerto","db":"UP","dbUrl":"jdbc:postgresql://localhost:5436/huerto_db","postgres":"PostgreSQL 16.15 (Debian 16.15-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit","lecturas":4}

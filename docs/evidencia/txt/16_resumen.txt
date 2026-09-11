@@ -1,0 +1,17 @@
+verify-module.sh M02 - 2026-09-11T17:54:22-06:00
+VERIFICADO    | Java 11 disponible
+VERIFICADO    | mvn clean package genera target/web1.war con pruebas en verde
+VERIFICADO    | WAR contiene servlets, JSP, web.xml y driver JDBC
+VERIFICADO    | PostgreSQL responde y el modelo de 7 tablas existe
+VERIFICADO    | web1 desplegado y respondiendo en http://localhost:8080/web1
+VERIFICADO    | /health responde 200 y db=UP
+VERIFICADO    | GET /lecturas inicial responde 200 con catalogo y lecturas
+VERIFICADO    | POST valido responde 303 y redirige a la lectura creada
+VERIFICADO    | POST invalido (valor abc) responde 400 con mensaje de validacion
+VERIFICADO    | POST invalido (vacio) responde 400 con dos errores
+VERIFICADO    | POST invalido (150 C) responde 400 por rango fisico
+VERIFICADO    | POST 38 C responde 303 y genera alerta ALTA
+VERIFICADO    | GET posterior muestra las lecturas persistidas (2 -> 4 filas)
+VERIFICADO    | GET /alertas lista la alerta generada
+VERIFICADO    | Las lecturas del protocolo existen en la tabla lectura
+Fallos: 0
