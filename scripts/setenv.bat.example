@@ -1,0 +1,7 @@
+@echo off
+rem Copiar a %CATALINA_HOME%\bin\setenv.bat (Windows). Tomcat lo carga al arrancar.
+rem Valores de LABORATORIO (coinciden con docker/docker-compose.yml). No usar credenciales reales.
+set "DB_URL=jdbc:postgresql://localhost:5436/huerto_db"
+set "DB_USER=huerto_app"
+set "DB_PASSWORD=huerto_dev"
+set "JAVA_OPTS=%JAVA_OPTS% -Dfile.encoding=UTF-8"
