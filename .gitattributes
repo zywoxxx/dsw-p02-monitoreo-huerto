@@ -1,0 +1,5 @@
+# Normaliza finales de linea para que el repositorio sea identico en Windows y Linux
+* text=auto eol=lf
+*.bat text eol=crlf
+*.png binary
+*.war binary
