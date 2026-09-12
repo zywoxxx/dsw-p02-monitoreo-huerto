@@ -41,6 +41,8 @@ rutas locales se sustituyen por `<REPO>`, `<CATALINA_HOME>` y `<HOME>`.
 | Modelo de datos | 7 entidades (6 de la ficha PR09 + sensor), relaciones, `CHECK` | `docs/modelo-datos.md`, `sql/01_schema.sql` |
 | Semilla | Datos ficticios etiquetados `simulado` | `sql/02_seed.sql` |
 | Conexion y esquema | `version()`, 7 tablas, conteos | `txt/04_postgres_verificacion.txt` |
+| Capturas de psql (PostgreSQL 16, Docker) | Conexion, tablas y conteos; estructura de `lectura` y `anotacion` (FK, CHECK, indices); lecturas con procedencia, alertas y anotaciones | `img/14_psql_docker_tablas.png`, `img/17_psql_docker_estructura.png`, `img/15_psql_docker_lecturas.png` |
+| Captura de psql (PostgreSQL 17 instalado, Opcion B) | Mismas 7 tablas y lectura registrada desde la aplicacion en el puerto 5433 | `img/16_psql_nativo_pg17.png` |
 | Operaciones verificables | Filas insertadas por el protocolo HTTP (lectura, alerta, anotacion) | `txt/15_postgres_despues.txt` |
 | Estado final coherente con capturas | Las dos lecturas de las capturas (27.5 C y 38 C), su alerta ALTA y la anotacion | `txt/17_postgres_estado_final.txt` |
 | Degradacion controlada | 503 con BD detenida y recuperacion | `txt/18_health_sin_bd.txt` |

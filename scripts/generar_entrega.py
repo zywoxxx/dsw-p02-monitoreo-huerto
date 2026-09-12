@@ -480,6 +480,14 @@ p("La ruta de salud nos sirvió durante todo el desarrollo para saber si Tomcat 
 p("Así se ve la respuesta con curl (la captura del navegador está en docs/evidencia/img/09_health_json.png, "
   "pero el JSON se lee mejor en texto):")
 bloque_codigo(leer("06_health.txt"))
+p("Del lado de la base de datos, estas son capturas de sesiones psql contra el PostgreSQL 16 del contenedor "
+  "(puerto 5436) tomadas después de las capturas de la aplicación. En la primera se ve la conexión, las siete tablas "
+  "con su dueño y los conteos; en la segunda, la estructura de lectura y anotación con sus llaves, restricciones "
+  "CHECK e índices; en la tercera, las lecturas con su procedencia, la alerta y las anotaciones, que coinciden con "
+  "las figuras anteriores.")
+figura("14_psql_docker_tablas.png", "psql en PostgreSQL 16 (Docker): conexión, tablas y conteos por entidad.")
+figura("17_psql_docker_estructura.png", "psql: estructura de las tablas lectura y anotación (llaves foráneas, CHECK e índices).")
+figura("15_psql_docker_lecturas.png", "psql: lecturas con procedencia y alerta, alertas y anotaciones registradas.")
 p("Estas son las líneas del log de Tomcat en las que se ve el despliegue del WAR (las rutas locales se sustituyeron "
   "por marcadores para no incluir rutas privadas):")
 bloque_codigo(leer("05_tomcat_log.txt"))
@@ -490,6 +498,7 @@ p("También probamos la Opción B del README con el PostgreSQL 17.11 que uno de 
 bloque_codigo("\n".join(l for l in leer("19_postgres_nativo_opcionB.txt").splitlines()
                           if l.startswith(("#", "$", " PostgreSQL 17", "HTTP/1.1", "Location", "  3 |", "  2 |", "  1 |", " id |", "----+", "(3 filas)"))
                           or "debe ser numerico" in l or l.startswith("{\"status\"")), tam=8)
+figura("16_psql_nativo_pg17.png", "psql en el PostgreSQL 17 instalado en Windows (puerto 5433): las mismas siete tablas y la lectura registrada desde la aplicación.")
 p("Como prueba negativa de infraestructura detuvimos el contenedor de PostgreSQL con la aplicación corriendo: "
   "/health pasó a 503 y /lecturas mostró la página de error controlada, sin trazas ni credenciales. Al volver a "
   "arrancar la base, la aplicación se recuperó sola sin reiniciar Tomcat.")
