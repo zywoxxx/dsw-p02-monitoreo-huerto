@@ -14,6 +14,7 @@ Desarrollo de Sistemas Web, DSW-19559, actividad P02, rubrica R02.
 | Modelo | 7 entidades: zona, variable, sensor, umbral, lectura, alerta, anotacion (`docs/modelo-datos.md`). |
 | Estado | `scripts/verify-module.sh M02` -> **18/18 VERIFICADO** el 2026-09-11 (`docs/verification-report.md`). |
 | Equipo | DSW-E01, 4 integrantes (`docs/acta-proyecto.md`). Entrega en Eminus: `P02_EQUIPO_01`. |
+| Documento de entrega | [`docs/entrega/P02_EQUIPO_01.pdf`](docs/entrega/P02_EQUIPO_01.pdf) (tambien en Word). |
 
 ## 1. Requisitos
 
