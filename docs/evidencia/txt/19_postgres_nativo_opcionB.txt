@@ -1,0 +1,76 @@
+# Opcion B del README: PostgreSQL 17 instalado en Windows (servicio postgresql-x64-17, puerto 5433)
+# Fecha: 2026-09-11T19:33:20-06:00. Comandos ejecutados (sin contrasenas):
+#   psql -U postgres -p 5433 -c "CREATE ROLE huerto_app LOGIN PASSWORD '...'"
+#   psql -U postgres -p 5433 -c "CREATE DATABASE huerto_db OWNER huerto_app"
+#   psql -U huerto_app -p 5433 -d huerto_db -f sql/01_schema.sql
+#   psql -U huerto_app -p 5433 -d huerto_db -f sql/02_seed.sql
+#   psql -U huerto_app -p 5433 -d huerto_db -f sql/03_consultas_verificacion.sql
+
+                                 version                                  
+--------------------------------------------------------------------------
+ PostgreSQL 17.11 on x86_64-windows, compiled by msvc-19.44.35228, 64-bit
+(1 fila)
+
+   base    |  usuario   
+-----------+------------
+ huerto_db | huerto_app
+(1 fila)
+
+ table_name 
+------------
+ alerta
+ anotacion
+ lectura
+ sensor
+ umbral
+ variable
+ zona
+(7 filas)
+
+  entidad  | registros 
+-----------+-----------
+ zona      |         2
+ variable  |         4
+ sensor    |         5
+ umbral    |         5
+ lectura   |         2
+ alerta    |         0
+ anotacion |         1
+(7 filas)
+
+ id |    codigo     |       variable       |  zona  | valor | unidad |  origen  |          observacion          |         registrado_en         | alerta 
+----+---------------+----------------------+--------+-------+--------+----------+-------------------------------+-------------------------------+--------
+  1 | SEN-A-TEMP-01 | Temperatura ambiente | Cama A | 24.50 | C      | simulado | Carga inicial del laboratorio | 2026-09-11 19:33:20.102458-06 | 
+  2 | SEN-A-HSUE-01 | Humedad de suelo     | Cama A | 55.00 | %      | simulado | Carga inicial del laboratorio | 2026-09-11 19:33:20.102458-06 | 
+(2 filas)
+
+ id | codigo | nivel | mensaje | atendida | creada_en 
+----+--------+-------+---------+----------+-----------
+(0 filas)
+
+ id |  zona  |  autor_rol  |                                texto                                 | lectura_id |           creada_en           
+----+--------+-------------+----------------------------------------------------------------------+------------+-------------------------------
+  1 | Cama A | RESPONSABLE | Sensores instalados y calibrados con datos ficticios de laboratorio. |            | 2026-09-11 19:33:20.102458-06
+(1 fila)
+
+# --- La aplicacion web1 conectada al PostgreSQL 17 nativo (DB_URL=jdbc:postgresql://localhost:5433/huerto_db) ---
+$ curl -s http://localhost:8080/web1/health
+{"status":"UP","app":"web1 PR09 monitoreo de huerto","db":"UP","dbUrl":"jdbc:postgresql://localhost:5433/huerto_db","postgres":"PostgreSQL 17.11 on x86_64-windows, compiled by msvc-19.44.35228, 64-bit","lecturas":2}
+
+$ curl -i -X POST -d "sensorId=2&valor=29.5&observacion=Opcion+B+PostgreSQL+17+nativo" http://localhost:8080/web1/lecturas
+HTTP/1.1 303 
+Location: /web1/lecturas?creada=3
+Content-Length: 0
+
+$ curl -i -X POST -d "sensorId=2&valor=abc" http://localhost:8080/web1/lecturas   (negativa)
+HTTP/1.1 400 
+          <li>El valor debe ser numerico (ejemplo: 24.5).</li>
+
+$ psql -U huerto_app -p 5433 -d huerto_db -c "SELECT id, valor, origen, observacion, registrado_en FROM lectura ORDER BY id DESC LIMIT 3"
+ id | valor |  origen  |          observacion          |         registrado_en         
+----+-------+----------+-------------------------------+-------------------------------
+  3 | 29.50 | manual   | Opcion B PostgreSQL 17 nativo | 2026-09-11 19:42:13.42885-06
+  2 | 55.00 | simulado | Carga inicial del laboratorio | 2026-09-11 19:33:20.102458-06
+  1 | 24.50 | simulado | Carga inicial del laboratorio | 2026-09-11 19:33:20.102458-06
+(3 filas)
+

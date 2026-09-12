@@ -44,6 +44,7 @@ rutas locales se sustituyen por `<REPO>`, `<CATALINA_HOME>` y `<HOME>`.
 | Operaciones verificables | Filas insertadas por el protocolo HTTP (lectura, alerta, anotacion) | `txt/15_postgres_despues.txt` |
 | Estado final coherente con capturas | Las dos lecturas de las capturas (27.5 C y 38 C), su alerta ALTA y la anotacion | `txt/17_postgres_estado_final.txt` |
 | Degradacion controlada | 503 con BD detenida y recuperacion | `txt/18_health_sin_bd.txt` |
+| Opcion B del README | La misma aplicacion conectada a PostgreSQL 17.11 instalado en Windows (puerto 5433) solo cambiando `DB_URL`: esquema, semilla, `/health`, POST 303 y 400, consulta psql | `txt/19_postgres_nativo_opcionB.txt` |
 | Repositorios JDBC | SQL parametrizado, transaccion, cierre de recursos | `src/main/java/mx/uv/dsw/huerto/repository/*.java`, `service/LecturaService.java` |
 | Configuracion externa | Sin credenciales en el codigo | `src/main/java/mx/uv/dsw/huerto/config/DbConfig.java`, `.gitignore` |
 

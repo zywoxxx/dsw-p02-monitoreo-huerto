@@ -483,6 +483,13 @@ bloque_codigo(leer("06_health.txt"))
 p("Estas son las líneas del log de Tomcat en las que se ve el despliegue del WAR (las rutas locales se sustituyeron "
   "por marcadores para no incluir rutas privadas):")
 bloque_codigo(leer("05_tomcat_log.txt"))
+p("También probamos la Opción B del README con el PostgreSQL 17.11 que uno de nosotros tiene instalado en Windows "
+  "(puerto 5433): creamos el rol y la base con psql, corrimos los mismos scripts de esquema y semilla, cambiamos solo "
+  "DB_URL en el setenv de Tomcat y la misma aplicación, sin recompilar, quedó conectada. Estas son las líneas "
+  "clave de esa prueba (el archivo completo es docs/evidencia/txt/19_postgres_nativo_opcionB.txt):")
+bloque_codigo("\n".join(l for l in leer("19_postgres_nativo_opcionB.txt").splitlines()
+                          if l.startswith(("#", "$", " PostgreSQL 17", "HTTP/1.1", "Location", "  3 |", "  2 |", "  1 |", " id |", "----+", "(3 filas)"))
+                          or "debe ser numerico" in l or l.startswith("{\"status\"")), tam=8)
 p("Como prueba negativa de infraestructura detuvimos el contenedor de PostgreSQL con la aplicación corriendo: "
   "/health pasó a 503 y /lecturas mostró la página de error controlada, sin trazas ni credenciales. Al volver a "
   "arrancar la base, la aplicación se recuperó sola sin reiniciar Tomcat.")

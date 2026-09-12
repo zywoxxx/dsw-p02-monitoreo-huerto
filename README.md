@@ -111,7 +111,7 @@ psql -U huerto_app -d huerto_db -f sql/01_schema.sql
 psql -U huerto_app -d huerto_db -f sql/02_seed.sql
 ```
 
-Ajusta despues `DB_URL` al puerto de tu servidor (por defecto 5432).
+Ajusta despues `DB_URL` al puerto de tu servidor (por defecto 5432). Esta opcion se verifico con PostgreSQL 17.11 instalado en Windows (puerto 5433): la misma aplicacion, sin recompilar, conecto cambiando solo `DB_URL` (`docs/evidencia/txt/19_postgres_nativo_opcionB.txt`).
 
 ### 3.3 Variables de entorno en Tomcat (sin secretos en el codigo)
 

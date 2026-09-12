@@ -24,6 +24,7 @@ Estados: **VERIFICADO** (ejecutado y comprobado con evidencia), **NO_VERIFICADO*
 | Persistencia tras el protocolo HTTP | `psql -f sql/03_consultas_verificacion.sql` | lecturas con observacion `verify-module ...`, alerta ALTA y anotacion `[prueba] Hojas...` | VERIFICADO | `txt/15_postgres_despues.txt` |
 | Estado final coherente con capturas | idem | las dos lecturas de las capturas (27.5 C en rango y 38 C con alerta ALTA) y la anotacion del OBSERVADOR | VERIFICADO | `txt/17_postgres_estado_final.txt` |
 | Limpieza selectiva | `psql -f sql/99_cleanup.sql` | borra solo `origen='manual'` y anotaciones `[prueba]`; semilla intacta | VERIFICADO | bitacora #15 |
+| Opcion B: PostgreSQL 17.11 instalado en Windows (puerto 5433) | `CREATE ROLE`, `CREATE DATABASE`, `01_schema.sql`, `02_seed.sql`; Tomcat con `DB_URL` a 5433 | 7 tablas y semilla; `/health` reporta PostgreSQL 17.11; POST valido 303 persistido (lectura 3) y POST invalido 400 | VERIFICADO | `txt/19_postgres_nativo_opcionB.txt` |
 | Restricciones de integridad (RNF04) | `CHECK`/`FK` en `01_schema.sql` | rangos, `origen`, `nivel`, `autor_rol` restringidos en BD | VERIFICADO (por definicion del esquema; sin prueba de violacion directa) | `sql/01_schema.sql` |
 
 ## Flujo principal y validaciones (HTTP)
