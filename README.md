@@ -10,7 +10,7 @@ PRxx *Monitoreo de huerto o ambiente* (Desarrollo de Sistemas Web, DSW-19559, ac
 | RF del incremento | RF-01 a RF-07 (ver `docs/acta-proyecto.md` y `docs/requisitos-trazabilidad.md`). |
 | Modelo | 7 entidades: huerto, zona, tipo_sensor, sensor, umbral, lectura, alerta (`docs/modelo-datos.md`). |
 | Estado | `scripts/verify-module.sh M02` -> **15/15 VERIFICADO** el 2026-09-11 (`docs/verification-report.md`). |
-| Equipo | 3 roles (desarrollo web, datos, evidencia); ver `docs/acta-proyecto.md`. |
+| Equipo | 4 integrantes en 3 roles (desarrollo web, datos, evidencia); ver `docs/acta-proyecto.md`. |
 
 ## 1. Requisitos
 
@@ -273,5 +273,13 @@ Indice completo relacionado con R02 en `docs/evidencia/INDICE.md`.
 
 ## 10. Autoria
 
-Producto de equipo del PRxx (3 roles, ver `docs/acta-proyecto.md`). Rol de evidencia y documentacion: Alejandro
-(`zywoxxx`). Cada integrante conserva su explicacion individual en `docs/evidencia/individual/`.
+Producto de equipo del PRxx con tres roles (ver `docs/acta-proyecto.md`):
+
+| Rol | Integrante | GitHub |
+|---|---|---|
+| R1 Desarrollo web (JSP/Servlet) | Juan Pablo Kuri Ricardez | `juankuri` |
+| R2 Datos (PostgreSQL) | Pedro Garcia Padilla | `pedro-gar-pad` |
+| R3 Evidencia y documentacion | Alejandro Pacheco Luna | `zywoxxx` |
+| R3 Evidencia y documentacion | Ariadna Trejo Alvarez | `ariadna-19` |
+
+Cada integrante conserva su explicacion individual en `docs/evidencia/individual/`.

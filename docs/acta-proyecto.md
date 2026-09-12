@@ -7,16 +7,17 @@
 | Actividad | P02 - Aplicacion Web 1.0 con JSP, Tomcat y PostgreSQL (primer incremento) |
 | Instrumento | R02 (10 puntos) |
 | Fecha del acta | 2026-09-11 |
-| Repositorio | `dsw-p02-monitoreo-huerto` (GitHub: usuario `zywoxxx`) |
+| Repositorio | https://github.com/zywoxxx/dsw-p02-monitoreo-huerto |
 
 ## 1. Equipo y roles (maximo tres)
 
-| Rol | Responsabilidad en P02 | Integrante |
-|---|---|---|
-| R1 - Desarrollo web (JSP/Servlet) | Controladores, vistas JSP, servicio de validacion, empaquetado WAR y despliegue en Tomcat 9. | *(nombre por confirmar por el equipo)* |
-| R2 - Datos (PostgreSQL) | Modelo de 7 entidades, scripts SQL de esquema, semilla, verificacion y limpieza; repositorios JDBC parametrizados. | *(nombre por confirmar por el equipo)* |
-| R3 - Evidencia y documentacion | Capturas del flujo principal, validaciones positivas y negativas, protocolo HTTP, README, bitacora e indice de evidencia frente a R02. | Alejandro (GitHub `zywoxxx`) |
+| Rol | Responsabilidad en P02 | Integrante(s) | GitHub |
+|---|---|---|---|
+| R1 - Desarrollo web (JSP/Servlet) | Controladores, vistas JSP, servicio de validacion, empaquetado WAR y despliegue en Tomcat 9. | Juan Pablo Kuri Ricardez | `juankuri` |
+| R2 - Datos (PostgreSQL) | Modelo de 7 entidades, scripts SQL de esquema, semilla, verificacion y limpieza; repositorios JDBC parametrizados. | Pedro Garcia Padilla | `pedro-gar-pad` |
+| R3 - Evidencia y documentacion | Capturas del flujo principal, validaciones positivas y negativas, protocolo HTTP, README, bitacora e indice de evidencia frente a R02. | Alejandro Pacheco Luna, Ariadna Trejo Alvarez | `zywoxxx`, `ariadna-19` |
 
+El equipo tiene cuatro integrantes y tres roles (limite de la actividad): el rol R3 lo comparten dos personas.
 Los tres roles revisan el codigo de los demas; ningun integrante entrega sin evidencia individual atribuible.
 
 ## 2. Problema y objetivo
@@ -89,6 +90,7 @@ automatica* como WAR JSP/Servlet desplegado en Tomcat 9 con persistencia en Post
 
 | Rol | Nombre | Conformidad |
 |---|---|---|
-| R1 | | |
-| R2 | | |
-| R3 | Alejandro (`zywoxxx`) | 2026-09-11 |
+| R1 | Juan Pablo Kuri Ricardez (`juankuri`) | 2026-09-11 |
+| R2 | Pedro Garcia Padilla (`pedro-gar-pad`) | 2026-09-11 |
+| R3 | Alejandro Pacheco Luna (`zywoxxx`) | 2026-09-11 |
+| R3 | Ariadna Trejo Alvarez (`ariadna-19`) | 2026-09-11 |

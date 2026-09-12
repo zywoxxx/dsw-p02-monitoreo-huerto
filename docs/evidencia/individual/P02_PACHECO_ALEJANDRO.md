@@ -1,12 +1,10 @@
-# Evidencia individual P02 - P02_APELLIDO_NOMBRE
-
-> Renombrar este archivo con el apellido y nombre reales (`P02_APELLIDO_NOMBRE.md`). Cada integrante entrega el suyo.
+# Evidencia individual P02 - P02_PACHECO_ALEJANDRO
 
 | Campo | Valor |
 |---|---|
-| Integrante | *(Apellido Nombre)* |
+| Integrante | Alejandro Pacheco Luna |
 | Usuario GitHub | `zywoxxx` |
-| Rol en el equipo | R3 - Evidencia y documentacion (capturas, protocolo de pruebas, README, indice R02) |
+| Rol en el equipo | R3 - Evidencia y documentacion (capturas, protocolo de pruebas, README, indice R02), compartido con Ariadna Trejo Alvarez |
 | Proyecto | PRxx - Monitoreo de huerto o ambiente |
 | Actividad | P02 - Aplicacion Web 1.0 con JSP, Tomcat y PostgreSQL |
 
