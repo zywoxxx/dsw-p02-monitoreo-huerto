@@ -1,0 +1,5 @@
+HTTP/1.1 303 
+Location: /web1/anotaciones?creada=2
+Content-Length: 0
+Date: Sat, 12 Sep 2026 00:31:21 GMT
+

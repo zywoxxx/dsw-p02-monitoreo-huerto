@@ -1,8 +1,8 @@
 HTTP/1.1 200 
-Set-Cookie: JSESSIONID=28046F59D46A7B5EC42B6FD964844D12; Path=/web1; HttpOnly
+Set-Cookie: JSESSIONID=F88072DEE295D4699E0CEAC397352802; Path=/web1; HttpOnly
 Content-Type: text/html;charset=UTF-8
-Content-Length: 8144
-Date: Fri, 11 Sep 2026 23:54:21 GMT
+Transfer-Encoding: chunked
+Date: Sat, 12 Sep 2026 00:31:20 GMT
 
 
 
@@ -12,17 +12,18 @@ Date: Fri, 11 Sep 2026 23:54:21 GMT
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Lecturas | PRxx Monitoreo de huerto</title>
+  <title>Lecturas | PR09 Monitoreo de huerto</title>
   <link rel="stylesheet" href="/web1/css/estilos.css">
 </head>
 <body>
 <header class="cabecera">
   <div class="contenedor">
-    <h1>PRxx &middot; Monitoreo de huerto</h1>
+    <h1>PR09 &middot; Monitoreo de huerto o ambiente</h1>
     <p class="subtitulo">Incremento P02 &middot; JSP / Servlet 4.0 &middot; Tomcat 9 &middot; PostgreSQL 16</p>
     <nav>
       <a class="activo" href="/web1/lecturas">Lecturas</a>
       <a href="/web1/alertas">Alertas</a>
+      <a href="/web1/anotaciones">Zonas y anotaciones</a>
       <a href="/web1/health">Salud (JSON)</a>
     </nav>
   </div>
@@ -36,8 +37,8 @@ Date: Fri, 11 Sep 2026 23:54:21 GMT
 
   <section class="tarjeta">
     <h2>Registrar lectura manual</h2>
-    <p class="ayuda">RF-02 / RF-03: selecciona un sensor y captura el valor medido. El sistema valida el rango
-      fisico del tipo de sensor y genera una alerta si el valor sale del umbral operativo (RF-05).</p>
+    <p class="ayuda">RF03: selecciona un sensor y captura el valor medido. El sistema valida el rango fisico de la
+      variable, etiqueta la lectura como <strong>manual</strong> y genera una alerta si el valor sale del umbral operativo (RF04, RF06).</p>
     <form method="post" action="/web1/lecturas" class="formulario" id="form-lectura">
       <div class="campo">
         <label for="sensorId">Sensor *</label>
@@ -73,11 +74,11 @@ Date: Fri, 11 Sep 2026 23:54:21 GMT
   </section>
 
   <section class="tarjeta">
-    <h2>Sensores activos (RF-01)</h2>
+    <h2>Sensores por zona y variable (RF01, RF02, RF04)</h2>
     <div class="tabla-scroll">
       <table id="tabla-sensores">
         <thead>
-          <tr><th>Codigo</th><th>Tipo</th><th>Unidad</th><th>Zona</th><th>Huerto</th>
+          <tr><th>Codigo</th><th>Variable</th><th>Unidad</th><th>Zona</th>
               <th>Rango fisico</th><th>Umbral operativo</th></tr>
         </thead>
         <tbody>
@@ -87,7 +88,6 @@ Date: Fri, 11 Sep 2026 23:54:21 GMT
               <td>Humedad de suelo</td>
               <td>%</td>
               <td>Cama A</td>
-              <td>Huerto escolar demo</td>
               <td>[0.00, 100.00]</td>
               <td>
                 
@@ -102,7 +102,6 @@ Date: Fri, 11 Sep 2026 23:54:21 GMT
               <td>Temperatura ambiente</td>
               <td>C</td>
               <td>Cama A</td>
-              <td>Huerto escolar demo</td>
               <td>[-10.00, 60.00]</td>
               <td>
                 
@@ -117,7 +116,6 @@ Date: Fri, 11 Sep 2026 23:54:21 GMT
               <td>Humedad relativa</td>
               <td>%</td>
               <td>Invernadero 1</td>
-              <td>Huerto escolar demo</td>
               <td>[0.00, 100.00]</td>
               <td>
                 
@@ -132,7 +130,6 @@ Date: Fri, 11 Sep 2026 23:54:21 GMT
               <td>Luminosidad</td>
               <td>lux</td>
               <td>Invernadero 1</td>
-              <td>Huerto escolar demo</td>
               <td>[0.00, 100000.00]</td>
               <td>
                 
@@ -147,7 +144,6 @@ Date: Fri, 11 Sep 2026 23:54:21 GMT
               <td>Temperatura ambiente</td>
               <td>C</td>
               <td>Invernadero 1</td>
-              <td>Huerto escolar demo</td>
               <td>[-10.00, 60.00]</td>
               <td>
                 
@@ -163,27 +159,27 @@ Date: Fri, 11 Sep 2026 23:54:21 GMT
   </section>
 
   <section class="tarjeta">
-    <h2>Lecturas recientes (RF-04)</h2>
+    <h2>Historial de lecturas (RF05)</h2>
     
       
       
         <div class="tabla-scroll">
           <table id="tabla-lecturas">
             <thead>
-              <tr><th>#</th><th>Sensor</th><th>Tipo</th><th>Zona</th><th>Valor</th>
-                  <th>Origen</th><th>Observacion</th><th>Registrada</th><th>Alerta</th></tr>
+              <tr><th>#</th><th>Sensor</th><th>Variable</th><th>Zona</th><th>Valor</th>
+                  <th>Procedencia</th><th>Observacion</th><th>Registrada</th><th>Alerta</th></tr>
             </thead>
             <tbody>
               
                 <tr class="fila-alerta">
-                  <td>14</td>
+                  <td>4</td>
                   <td><code>SEN-A-TEMP-01</code></td>
                   <td>Temperatura ambiente</td>
                   <td>Cama A</td>
                   <td class="num">38.00 C</td>
-                  <td>manual</td>
+                  <td><span class="etiqueta etiqueta-manual">manual</span></td>
                   <td>verify-module alerta</td>
-                  <td>2026-09-11 23:54:21</td>
+                  <td>2026-09-12 00:31:20</td>
                   <td>
                     
                       <span class="etiqueta etiqueta-ALTA">ALTA</span>
@@ -193,14 +189,14 @@ Date: Fri, 11 Sep 2026 23:54:21 GMT
                 </tr>
               
                 <tr class="">
-                  <td>13</td>
+                  <td>3</td>
                   <td><code>SEN-A-TEMP-01</code></td>
                   <td>Temperatura ambiente</td>
                   <td>Cama A</td>
                   <td class="num">25.50 C</td>
-                  <td>manual</td>
+                  <td><span class="etiqueta etiqueta-manual">manual</span></td>
                   <td>verify-module POST valido</td>
-                  <td>2026-09-11 23:54:20</td>
+                  <td>2026-09-12 00:31:20</td>
                   <td>
                     
                       
@@ -215,9 +211,9 @@ Date: Fri, 11 Sep 2026 23:54:21 GMT
                   <td>Humedad de suelo</td>
                   <td>Cama A</td>
                   <td class="num">55.00 %</td>
-                  <td>simulado</td>
+                  <td><span class="etiqueta etiqueta-simulado">simulado</span></td>
                   <td>Carga inicial del laboratorio</td>
-                  <td>2026-09-11 23:35:01</td>
+                  <td>2026-09-12 00:24:51</td>
                   <td>
                     
                       
@@ -232,9 +228,9 @@ Date: Fri, 11 Sep 2026 23:54:21 GMT
                   <td>Temperatura ambiente</td>
                   <td>Cama A</td>
                   <td class="num">24.50 C</td>
-                  <td>simulado</td>
+                  <td><span class="etiqueta etiqueta-simulado">simulado</span></td>
                   <td>Carga inicial del laboratorio</td>
-                  <td>2026-09-11 23:35:01</td>
+                  <td>2026-09-12 00:24:51</td>
                   <td>
                     
                       

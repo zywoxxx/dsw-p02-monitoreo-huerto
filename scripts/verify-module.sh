@@ -48,7 +48,7 @@ if mvn -B clean package > "$EVID/01_build.txt" 2>&1; then
 else
   tail -30 "$EVID/01_build.txt"; falla "mvn clean package (ver docs/evidencia/txt/01_build.txt)"
 fi
-cp target/surefire-reports/*.txt "$EVID/02_pruebas_unitarias.txt" 2>/dev/null || true
+cat target/surefire-reports/*.txt > "$EVID/02_pruebas_unitarias.txt" 2>/dev/null || true
 
 paso "Inspeccion del WAR"
 unzip -l target/web1.war > "$EVID/03_war_contenido.txt" 2>&1
@@ -144,10 +144,27 @@ curl -s -i "$BASE_URL/alertas" > "$EVID/14_get_alertas.txt"
 grep -q "^HTTP/1.1 200" "$EVID/14_get_alertas.txt" && grep -q "etiqueta-ALTA" "$EVID/14_get_alertas.txt" \
   && ok "GET /alertas lista la alerta generada" || falla "GET alertas"
 
+# 9) GET zonas y anotaciones (RF01, RF06)
+curl -s -i "$BASE_URL/anotaciones" > "$EVID/14a_get_anotaciones.txt"
+grep -q "^HTTP/1.1 200" "$EVID/14a_get_anotaciones.txt" && grep -q 'id="tabla-zonas"' "$EVID/14a_get_anotaciones.txt" \
+  && ok "GET /anotaciones responde 200 con zonas y anotaciones" || falla "GET anotaciones"
+ZONA_ID=$(grep -o '<option value="[0-9]*"[^>]*>Cama A' "$EVID/14a_get_anotaciones.txt" | grep -o '[0-9][0-9]*' | head -1)
+[ -n "$ZONA_ID" ] || { ZONA_ID=0; falla "No se encontro la zona Cama A en el formulario"; }
+
+# 10) POST anotacion valida (rol OBSERVADOR) -> 303
+curl -s -i -X POST -d "zonaId=$ZONA_ID&autorRol=OBSERVADOR&texto=%5Bprueba%5D+Hojas+con+manchas+en+la+cama+A" "$BASE_URL/anotaciones" > "$EVID/14b_post_anotacion_valida.txt"
+grep -q "^HTTP/1.1 303" "$EVID/14b_post_anotacion_valida.txt" && grep -q "Location: .*anotaciones?creada=" "$EVID/14b_post_anotacion_valida.txt" \
+  && ok "POST anotacion valida responde 303" || falla "POST anotacion valida"
+
+# 11) POST anotacion invalida (rol fuera de los tres roles y texto corto) -> 400
+curl -s -i -X POST -d "zonaId=$ZONA_ID&autorRol=ADMIN&texto=ok" "$BASE_URL/anotaciones" > "$EVID/14c_post_anotacion_invalida.txt"
+grep -q "^HTTP/1.1 400" "$EVID/14c_post_anotacion_invalida.txt" && grep -q "no es valido" "$EVID/14c_post_anotacion_invalida.txt" \
+  && ok "POST anotacion invalida (rol ADMIN, texto corto) responde 400" || falla "POST anotacion invalida"
+
 paso "PostgreSQL despues del protocolo (persistencia verificable)"
 $PSQL_CMD < sql/03_consultas_verificacion.sql > "$EVID/15_postgres_despues.txt" 2>&1 \
-  && grep -q "verify-module" "$EVID/15_postgres_despues.txt" \
-  && ok "Las lecturas del protocolo existen en la tabla lectura" || falla "Persistencia en PostgreSQL"
+  && grep -q "verify-module" "$EVID/15_postgres_despues.txt" && grep -q "\[prueba\] Hojas" "$EVID/15_postgres_despues.txt" \
+  && ok "Las lecturas y la anotacion del protocolo existen en PostgreSQL" || falla "Persistencia en PostgreSQL"
 
 paso "Anonimizando rutas locales en la evidencia"
 # La guia P02 prohibe rutas privadas: se sustituyen repositorio, Tomcat y HOME por marcadores.

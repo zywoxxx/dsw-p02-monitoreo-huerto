@@ -1,7 +1,7 @@
 [INFO] Scanning for projects...
 [INFO] 
 [INFO] ---------------------------< mx.uv.dsw:web1 >---------------------------
-[INFO] Building PRxx Monitoreo de huerto - Incremento P02 (web1-jsp) 0.2.0
+[INFO] Building PR09 Monitoreo de huerto o ambiente - Incremento P02 (web1-jsp) 0.2.0
 [INFO]   from pom.xml
 [INFO] --------------------------------[ war ]---------------------------------
 [INFO] 
@@ -13,14 +13,14 @@
 [INFO] 
 [INFO] --- compiler:3.13.0:compile (default-compile) @ web1 ---
 [INFO] Recompiling the module because of changed source code.
-[INFO] Compiling 13 source files with javac [debug release 11] to target\classes
+[INFO] Compiling 18 source files with javac [debug release 11] to target\classes
 [INFO] 
 [INFO] --- resources:3.3.1:testResources (default-testResources) @ web1 ---
 [INFO] skip non existing resourceDirectory <REPO>\src\test\resources
 [INFO] 
 [INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ web1 ---
 [INFO] Recompiling the module because of changed dependency.
-[INFO] Compiling 1 source file with javac [debug release 11] to target\test-classes
+[INFO] Compiling 2 source files with javac [debug release 11] to target\test-classes
 [INFO] 
 [INFO] --- surefire:3.2.5:test (default-test) @ web1 ---
 [INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
@@ -28,12 +28,14 @@
 [INFO] -------------------------------------------------------
 [INFO]  T E S T S
 [INFO] -------------------------------------------------------
+[INFO] Running mx.uv.dsw.huerto.service.AnotacionValidatorTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.053 s -- in mx.uv.dsw.huerto.service.AnotacionValidatorTest
 [INFO] Running mx.uv.dsw.huerto.service.LecturaValidatorTest
-[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.063 s -- in mx.uv.dsw.huerto.service.LecturaValidatorTest
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in mx.uv.dsw.huerto.service.LecturaValidatorTest
 [INFO] 
 [INFO] Results:
 [INFO] 
-[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0
 [INFO] 
 [INFO] 
 [INFO] --- war:3.3.2:war (default-war) @ web1 ---
@@ -45,6 +47,6 @@
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  3.138 s
-[INFO] Finished at: 2026-09-11T17:53:56-06:00
+[INFO] Total time:  3.178 s
+[INFO] Finished at: 2026-09-11T18:27:02-06:00
 [INFO] ------------------------------------------------------------------------

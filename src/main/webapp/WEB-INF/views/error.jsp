@@ -5,13 +5,13 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Error | PRxx Monitoreo de huerto</title>
+  <title>Error | PR09 Monitoreo de huerto</title>
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css">
 </head>
 <body>
 <header class="cabecera">
   <div class="contenedor">
-    <h1>PRxx &middot; Monitoreo de huerto</h1>
+    <h1>PR09 &middot; Monitoreo de huerto o ambiente</h1>
     <nav><a href="${pageContext.request.contextPath}/lecturas">Volver a lecturas</a></nav>
   </div>
 </header>

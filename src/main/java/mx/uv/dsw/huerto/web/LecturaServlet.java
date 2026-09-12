@@ -22,9 +22,9 @@ import mx.uv.dsw.huerto.service.ValidacionException;
  * Controlador del flujo principal (equivale al CatalogServlet del starter).
  *
  * <ul>
- *   <li>GET  /lecturas : catalogo de sensores + lecturas recientes (RF-01, RF-04).</li>
- *   <li>POST /lecturas : registra una lectura; 303 + redirect si es valida (RF-02, RF-05),
- *       400 con la lista de errores si no lo es (RF-03).</li>
+ *   <li>GET  /lecturas : catalogo de sensores + historial de lecturas (RF01, RF02, RF04, RF05).</li>
+ *   <li>POST /lecturas : registra una lectura; 303 + redirect si es valida (RF03, RF06),
+ *       400 con la lista de errores si no lo es (RF03, CA02).</li>
  * </ul>
  * La JSP solo presenta; las reglas viven en LecturaValidator/LecturaService y el SQL en los repositorios.
  */

@@ -12,22 +12,21 @@ import mx.uv.dsw.huerto.config.DbConfig;
 import mx.uv.dsw.huerto.model.Sensor;
 
 /**
- * Acceso JDBC a la tabla sensor y sus catalogos relacionados (zona, huerto, tipo_sensor, umbral).
+ * Acceso JDBC a la tabla sensor y sus catalogos relacionados (zona, variable, umbral).
  * Todas las consultas son parametrizadas y cierran recursos con try-with-resources.
  */
 public class SensorRepository {
 
     private static final String BASE_SELECT =
-        "SELECT s.id, s.codigo, s.activo, z.nombre AS zona, h.nombre AS huerto, "
-        + "       t.clave AS tipo_clave, t.nombre AS tipo_nombre, t.unidad, "
-        + "       t.valor_minimo, t.valor_maximo, u.minimo AS umbral_min, u.maximo AS umbral_max "
+        "SELECT s.id, s.codigo, s.activo, s.zona_id, z.nombre AS zona, "
+        + "       v.clave AS variable_clave, v.nombre AS variable_nombre, v.unidad, "
+        + "       v.valor_minimo, v.valor_maximo, u.minimo AS umbral_min, u.maximo AS umbral_max "
         + "FROM sensor s "
         + "JOIN zona z        ON z.id = s.zona_id "
-        + "JOIN huerto h      ON h.id = z.huerto_id "
-        + "JOIN tipo_sensor t ON t.id = s.tipo_sensor_id "
+        + "JOIN variable v    ON v.id = s.variable_id "
         + "LEFT JOIN umbral u ON u.sensor_id = s.id ";
 
-    /** RF-01: catalogo de sensores activos ordenado por zona y codigo. */
+    /** RF01/RF02/RF04: sensores activos con zona, variable y umbral, ordenados por zona y codigo. */
     public List<Sensor> findActivos() throws SQLException {
         String sql = BASE_SELECT + "WHERE s.activo = TRUE ORDER BY z.nombre, s.codigo";
         List<Sensor> lista = new ArrayList<>();
@@ -57,10 +56,10 @@ public class SensorRepository {
         s.setId(rs.getLong("id"));
         s.setCodigo(rs.getString("codigo"));
         s.setActivo(rs.getBoolean("activo"));
+        s.setZonaId(rs.getLong("zona_id"));
         s.setZona(rs.getString("zona"));
-        s.setHuerto(rs.getString("huerto"));
-        s.setTipoClave(rs.getString("tipo_clave"));
-        s.setTipoNombre(rs.getString("tipo_nombre"));
+        s.setVariableClave(rs.getString("variable_clave"));
+        s.setVariableNombre(rs.getString("variable_nombre"));
         s.setUnidad(rs.getString("unidad"));
         s.setValorMinimo(rs.getBigDecimal("valor_minimo"));
         s.setValorMaximo(rs.getBigDecimal("valor_maximo"));

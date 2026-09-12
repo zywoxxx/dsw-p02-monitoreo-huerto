@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 
-/** Alerta generada automaticamente por una lectura fuera del umbral (RF-05, RF-06). */
+/** Alerta generada automaticamente por una lectura fuera del umbral (RF06). */
 public class Alerta {
 
     private long id;

@@ -1,55 +1,48 @@
 -- ============================================================
---  PRxx Monitoreo de huerto - Incremento P02
+--  PR09 Monitoreo de huerto o ambiente - Incremento P02
 --  01_schema.sql : modelo de datos (7 entidades), PostgreSQL 16
+--  Entidades de la ficha C11/PR09: zona, variable, lectura, umbral,
+--  alerta, anotacion. Extension justificada: sensor (dispositivo que
+--  mide una variable en una zona; sera la fuente IoT simulada en Web 4.0).
 --  Ejecutar: psql -U huerto_app -d huerto_db -f sql/01_schema.sql
 -- ============================================================
 
 BEGIN;
 
--- 1. HUERTO: sitio fisico que se monitorea
-CREATE TABLE IF NOT EXISTS huerto (
-    id          BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    nombre      VARCHAR(80)  NOT NULL UNIQUE,
-    ubicacion   VARCHAR(120) NOT NULL,
-    descripcion TEXT,
-    creado_en   TIMESTAMPTZ  NOT NULL DEFAULT now()
-);
-COMMENT ON TABLE huerto IS 'Huerto o ambiente controlado que se monitorea';
-
--- 2. ZONA: subdivision del huerto (cama, invernadero, parcela)
+-- 1. ZONA (RF01): cama, invernadero o parcela del huerto que se monitorea
 CREATE TABLE IF NOT EXISTS zona (
     id        BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    huerto_id BIGINT      NOT NULL REFERENCES huerto(id) ON DELETE CASCADE,
-    nombre    VARCHAR(80) NOT NULL,
+    nombre    VARCHAR(80)  NOT NULL UNIQUE,
     cultivo   VARCHAR(80),
-    UNIQUE (huerto_id, nombre)
+    ubicacion VARCHAR(120) NOT NULL,
+    creada_en TIMESTAMPTZ  NOT NULL DEFAULT now()
 );
-COMMENT ON TABLE zona IS 'Zona o cama de cultivo dentro de un huerto';
+COMMENT ON TABLE zona IS 'Zona o cama de cultivo del huerto (datos ficticios)';
 
--- 3. TIPO_SENSOR: catalogo de magnitudes medibles y su rango fisico valido
-CREATE TABLE IF NOT EXISTS tipo_sensor (
+-- 2. VARIABLE (RF02): magnitud ambiental medible y su rango fisico valido
+CREATE TABLE IF NOT EXISTS variable (
     id            BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     clave         VARCHAR(30) NOT NULL UNIQUE,
     nombre        VARCHAR(60) NOT NULL,
     unidad        VARCHAR(10) NOT NULL,
     valor_minimo  NUMERIC(10,2) NOT NULL,
     valor_maximo  NUMERIC(10,2) NOT NULL,
-    CONSTRAINT ck_tipo_sensor_rango CHECK (valor_minimo < valor_maximo)
+    CONSTRAINT ck_variable_rango CHECK (valor_minimo < valor_maximo)
 );
-COMMENT ON TABLE tipo_sensor IS 'Magnitud que mide un sensor y el rango fisico aceptable de una lectura';
+COMMENT ON TABLE variable IS 'Variable ambiental (temperatura, humedad, luz) con unidad y rango fisico aceptable';
 
--- 4. SENSOR: dispositivo instalado en una zona
+-- 3. SENSOR (extension): dispositivo, fisico o simulado, que mide una variable en una zona
 CREATE TABLE IF NOT EXISTS sensor (
-    id             BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    zona_id        BIGINT      NOT NULL REFERENCES zona(id) ON DELETE CASCADE,
-    tipo_sensor_id BIGINT      NOT NULL REFERENCES tipo_sensor(id),
-    codigo         VARCHAR(20) NOT NULL UNIQUE,
-    activo         BOOLEAN     NOT NULL DEFAULT TRUE,
-    instalado_en   DATE        NOT NULL DEFAULT CURRENT_DATE
+    id           BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    zona_id      BIGINT      NOT NULL REFERENCES zona(id) ON DELETE CASCADE,
+    variable_id  BIGINT      NOT NULL REFERENCES variable(id),
+    codigo       VARCHAR(20) NOT NULL UNIQUE,
+    activo       BOOLEAN     NOT NULL DEFAULT TRUE,
+    instalado_en DATE        NOT NULL DEFAULT CURRENT_DATE
 );
-COMMENT ON TABLE sensor IS 'Sensor fisico o simulado instalado en una zona';
+COMMENT ON TABLE sensor IS 'Dispositivo que mide una variable en una zona; en Web 4.0 sera la fuente simulada';
 
--- 5. UMBRAL: rango operativo deseado para un sensor; fuera de el se genera alerta
+-- 4. UMBRAL (RF04): rango operativo deseado por sensor; fuera de el se genera alerta
 CREATE TABLE IF NOT EXISTS umbral (
     id        BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     sensor_id BIGINT        NOT NULL UNIQUE REFERENCES sensor(id) ON DELETE CASCADE,
@@ -59,7 +52,7 @@ CREATE TABLE IF NOT EXISTS umbral (
 );
 COMMENT ON TABLE umbral IS 'Rango operativo del sensor; una lectura fuera del rango genera alerta';
 
--- 6. LECTURA: medicion registrada (flujo principal del incremento)
+-- 5. LECTURA (RF03, RF05): medicion con instante, valor y procedencia (manual o simulado)
 CREATE TABLE IF NOT EXISTS lectura (
     id            BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     sensor_id     BIGINT        NOT NULL REFERENCES sensor(id) ON DELETE CASCADE,
@@ -69,10 +62,10 @@ CREATE TABLE IF NOT EXISTS lectura (
     registrado_en TIMESTAMPTZ   NOT NULL DEFAULT now(),
     CONSTRAINT ck_lectura_origen CHECK (origen IN ('manual', 'simulado'))
 );
-COMMENT ON TABLE lectura IS 'Medicion de un sensor registrada por el operador o por un simulador';
+COMMENT ON TABLE lectura IS 'Medicion registrada; origen etiqueta si es captura manual o simulacion (riesgo PR09)';
 CREATE INDEX IF NOT EXISTS idx_lectura_sensor_fecha ON lectura (sensor_id, registrado_en DESC);
 
--- 7. ALERTA: aviso generado cuando una lectura sale del umbral
+-- 6. ALERTA (RF06): aviso generado cuando una lectura sale del umbral
 CREATE TABLE IF NOT EXISTS alerta (
     id         BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     lectura_id BIGINT       NOT NULL UNIQUE REFERENCES lectura(id) ON DELETE CASCADE,
@@ -83,5 +76,19 @@ CREATE TABLE IF NOT EXISTS alerta (
     CONSTRAINT ck_alerta_nivel CHECK (nivel IN ('BAJA', 'ALTA'))
 );
 COMMENT ON TABLE alerta IS 'Alerta generada automaticamente por una lectura fuera del umbral';
+
+-- 7. ANOTACION (RF06): nota de un rol funcional sobre una zona (y opcionalmente sobre una lectura)
+CREATE TABLE IF NOT EXISTS anotacion (
+    id         BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    zona_id    BIGINT       NOT NULL REFERENCES zona(id) ON DELETE CASCADE,
+    lectura_id BIGINT       REFERENCES lectura(id) ON DELETE SET NULL,
+    autor_rol  VARCHAR(15)  NOT NULL,
+    texto      VARCHAR(300) NOT NULL,
+    creada_en  TIMESTAMPTZ  NOT NULL DEFAULT now(),
+    CONSTRAINT ck_anotacion_rol CHECK (autor_rol IN ('RESPONSABLE', 'OBSERVADOR', 'COORDINACION')),
+    CONSTRAINT ck_anotacion_texto CHECK (length(trim(texto)) >= 3)
+);
+COMMENT ON TABLE anotacion IS 'Anotacion de un rol funcional (responsable, observador, coordinacion) sobre una zona';
+CREATE INDEX IF NOT EXISTS idx_anotacion_zona_fecha ON anotacion (zona_id, creada_en DESC);
 
 COMMIT;

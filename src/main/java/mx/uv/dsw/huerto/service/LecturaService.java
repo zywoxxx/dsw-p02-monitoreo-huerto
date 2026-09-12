@@ -12,8 +12,8 @@ import mx.uv.dsw.huerto.repository.LecturaRepository;
 import mx.uv.dsw.huerto.repository.SensorRepository;
 
 /**
- * Caso de uso "Registrar lectura" (flujo principal del PRxx en P02).
- * Coordina validacion (RF-03), persistencia (RF-02) y generacion de alerta (RF-05)
+ * Caso de uso "Registrar lectura" (flujo principal del PR09 en P02).
+ * Coordina validacion (RF03), persistencia (RF03) y generacion de alerta (RF06)
  * en una sola transaccion JDBC: si falla la alerta, tampoco queda la lectura.
  */
 public class LecturaService {

@@ -3,7 +3,7 @@ package mx.uv.dsw.huerto.service;
 import java.util.Collections;
 import java.util.List;
 
-/** Se lanza cuando la entrada del usuario no cumple las reglas de RF-03; contiene todos los errores. */
+/** Se lanza cuando la entrada del usuario no cumple las reglas de RF03; contiene todos los errores. */
 public class ValidacionException extends Exception {
 
     private static final long serialVersionUID = 1L;

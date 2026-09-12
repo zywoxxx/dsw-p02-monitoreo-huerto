@@ -8,35 +8,40 @@
  huerto_db | huerto_app
 (1 row)
 
- table_name  
--------------
+ table_name 
+------------
  alerta
- huerto
+ anotacion
  lectura
  sensor
- tipo_sensor
  umbral
+ variable
  zona
 (7 rows)
 
-   entidad   | registros 
--------------+-----------
- huerto      |         1
- zona        |         2
- tipo_sensor |         4
- sensor      |         5
- umbral      |         5
- lectura     |         2
- alerta      |         0
+  entidad  | registros 
+-----------+-----------
+ zona      |         2
+ variable  |         4
+ sensor    |         5
+ umbral    |         5
+ lectura   |         2
+ alerta    |         0
+ anotacion |         1
 (7 rows)
 
- id |    codigo     |  zona  |       huerto        | valor | unidad |  origen  |          observacion          |         registrado_en         | alerta 
-----+---------------+--------+---------------------+-------+--------+----------+-------------------------------+-------------------------------+--------
-  1 | SEN-A-TEMP-01 | Cama A | Huerto escolar demo | 24.50 | C      | simulado | Carga inicial del laboratorio | 2026-09-11 23:35:01.699295+00 | 
-  2 | SEN-A-HSUE-01 | Cama A | Huerto escolar demo | 55.00 | %      | simulado | Carga inicial del laboratorio | 2026-09-11 23:35:01.699295+00 | 
+ id |    codigo     |       variable       |  zona  | valor | unidad |  origen  |          observacion          |         registrado_en         | alerta 
+----+---------------+----------------------+--------+-------+--------+----------+-------------------------------+-------------------------------+--------
+  1 | SEN-A-TEMP-01 | Temperatura ambiente | Cama A | 24.50 | C      | simulado | Carga inicial del laboratorio | 2026-09-12 00:24:51.395115+00 | 
+  2 | SEN-A-HSUE-01 | Humedad de suelo     | Cama A | 55.00 | %      | simulado | Carga inicial del laboratorio | 2026-09-12 00:24:51.395115+00 | 
 (2 rows)
 
  id | codigo | nivel | mensaje | atendida | creada_en 
 ----+--------+-------+---------+----------+-----------
 (0 rows)
+
+ id |  zona  |  autor_rol  |                                texto                                 | lectura_id |           creada_en           
+----+--------+-------------+----------------------------------------------------------------------+------------+-------------------------------
+  1 | Cama A | RESPONSABLE | Sensores instalados y calibrados con datos ficticios de laboratorio. |            | 2026-09-12 00:24:51.395115+00
+(1 row)
 

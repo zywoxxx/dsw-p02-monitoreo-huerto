@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          version="4.0">
 
-  <display-name>PRxx Monitoreo de huerto - web1 (P02)</display-name>
+  <display-name>PR09 Monitoreo de huerto o ambiente - web1 (P02)</display-name>
 
   <!-- Los servlets se registran con @WebServlet; aqui solo la pagina de bienvenida y errores -->
   <welcome-file-list>

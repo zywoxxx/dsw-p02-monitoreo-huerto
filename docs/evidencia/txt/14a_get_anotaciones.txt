@@ -1,0 +1,138 @@
+HTTP/1.1 200 
+Set-Cookie: JSESSIONID=9BF22BA303F929A4A0C14974568363B3; Path=/web1; HttpOnly
+Content-Type: text/html;charset=UTF-8
+Content-Length: 4128
+Date: Sat, 12 Sep 2026 00:31:21 GMT
+
+
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Anotaciones | PR09 Monitoreo de huerto</title>
+  <link rel="stylesheet" href="/web1/css/estilos.css">
+</head>
+<body>
+<header class="cabecera">
+  <div class="contenedor">
+    <h1>PR09 &middot; Monitoreo de huerto o ambiente</h1>
+    <p class="subtitulo">Incremento P02 &middot; JSP / Servlet 4.0 &middot; Tomcat 9 &middot; PostgreSQL 16</p>
+    <nav>
+      <a href="/web1/lecturas">Lecturas</a>
+      <a href="/web1/alertas">Alertas</a>
+      <a class="activo" href="/web1/anotaciones">Zonas y anotaciones</a>
+      <a href="/web1/health">Salud (JSON)</a>
+    </nav>
+  </div>
+</header>
+
+<main class="contenedor">
+
+  
+  
+
+  <section class="tarjeta">
+    <h2>Zonas del huerto (RF01)</h2>
+    <div class="tabla-scroll">
+      <table id="tabla-zonas">
+        <thead><tr><th>#</th><th>Zona</th><th>Cultivo</th><th>Ubicacion</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td>1</td>
+              <td>Cama A</td>
+              <td>Jitomate</td>
+              <td>Huerto escolar demo - patio norte (ficticio)</td>
+            </tr>
+          
+            <tr>
+              <td>2</td>
+              <td>Invernadero 1</td>
+              <td>Lechuga</td>
+              <td>Huerto escolar demo - invernadero (ficticio)</td>
+            </tr>
+          
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="tarjeta">
+    <h2>Registrar anotacion (RF06)</h2>
+    <p class="ayuda">Los tres roles funcionales del PR09 pueden anotar observaciones sobre una zona y, si aplica,
+      asociarlas al numero de una lectura.</p>
+    <form method="post" action="/web1/anotaciones" class="formulario" id="form-anotacion">
+      <div class="campo">
+        <label for="zonaId">Zona *</label>
+        <select id="zonaId" name="zonaId" required>
+          <option value="">-- Selecciona una zona --</option>
+          
+            <option value="1" >Cama A - Jitomate</option>
+          
+            <option value="2" >Invernadero 1 - Lechuga</option>
+          
+        </select>
+      </div>
+      <div class="campo">
+        <label for="autorRol">Rol que anota *</label>
+        <select id="autorRol" name="autorRol" required>
+          <option value="">-- Selecciona un rol --</option>
+          
+            <option value="RESPONSABLE" >RESPONSABLE</option>
+          
+            <option value="OBSERVADOR" >OBSERVADOR</option>
+          
+            <option value="COORDINACION" >COORDINACION</option>
+          
+        </select>
+      </div>
+      <div class="campo">
+        <label for="lecturaId">Lectura relacionada (opcional, numero)</label>
+        <input type="text" id="lecturaId" name="lecturaId" inputmode="numeric" maxlength="18"
+               value="">
+      </div>
+      <div class="campo campo-ancho">
+        <label for="texto">Anotacion * (3 a 300 caracteres)</label>
+        <input type="text" id="texto" name="texto" maxlength="300" value="">
+      </div>
+      <div class="campo acciones">
+        <button type="submit" id="btn-anotar">Registrar anotacion</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="tarjeta">
+    <h2>Anotaciones recientes</h2>
+    
+      
+      
+        <div class="tabla-scroll">
+          <table id="tabla-anotaciones">
+            <thead><tr><th>#</th><th>Zona</th><th>Rol</th><th>Anotacion</th><th>Lectura</th><th>Creada</th></tr></thead>
+            <tbody>
+              
+                <tr>
+                  <td>1</td>
+                  <td>Cama A</td>
+                  <td><span class="etiqueta etiqueta-rol">RESPONSABLE</span></td>
+                  <td>Sensores instalados y calibrados con datos ficticios de laboratorio.</td>
+                  <td></td>
+                  <td>2026-09-12 00:24:51</td>
+                </tr>
+              
+            </tbody>
+          </table>
+        </div>
+      
+    
+  </section>
+</main>
+
+<footer class="pie contenedor">
+  Desarrollo de Sistemas Web &middot; DSW-19559 &middot; Datos ficticios de laboratorio.
+</footer>
+</body>
+</html>

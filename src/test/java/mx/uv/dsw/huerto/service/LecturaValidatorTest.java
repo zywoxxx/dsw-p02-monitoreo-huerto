@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import mx.uv.dsw.huerto.model.Sensor;
 
 /**
- * Pruebas unitarias de RF-03 (validacion) y RF-05 (clasificacion de alerta).
+ * Pruebas unitarias de RF03 (validacion de lecturas) y RF06 (clasificacion de alerta).
  * No requieren Tomcat ni PostgreSQL: demuestran las reglas, no la persistencia.
  */
 class LecturaValidatorTest {
@@ -24,7 +24,7 @@ class LecturaValidatorTest {
         s.setCodigo("SEN-A-TEMP-01");
         s.setActivo(true);
         s.setZona("Cama A");
-        s.setTipoNombre("Temperatura ambiente");
+        s.setVariableNombre("Temperatura ambiente");
         s.setUnidad("C");
         s.setValorMinimo(new BigDecimal("-10.00"));
         s.setValorMaximo(new BigDecimal("60.00"));

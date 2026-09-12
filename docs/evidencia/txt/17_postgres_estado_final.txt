@@ -8,38 +8,44 @@
  huerto_db | huerto_app
 (1 row)
 
- table_name  
--------------
+ table_name 
+------------
  alerta
- huerto
+ anotacion
  lectura
  sensor
- tipo_sensor
  umbral
+ variable
  zona
 (7 rows)
 
-   entidad   | registros 
--------------+-----------
- huerto      |         1
- zona        |         2
- tipo_sensor |         4
- sensor      |         5
- umbral      |         5
- lectura     |         4
- alerta      |         1
+  entidad  | registros 
+-----------+-----------
+ zona      |         2
+ variable  |         4
+ sensor    |         5
+ umbral    |         5
+ lectura   |         4
+ alerta    |         1
+ anotacion |         2
 (7 rows)
 
- id |    codigo     |  zona  |       huerto        | valor | unidad |  origen  |            observacion             |         registrado_en         | alerta 
-----+---------------+--------+---------------------+-------+--------+----------+------------------------------------+-------------------------------+--------
- 16 | SEN-A-TEMP-01 | Cama A | Huerto escolar demo | 38.00 | C      | manual   | Tarde calurosa (captura)           | 2026-09-11 23:54:27.526395+00 | ALTA
- 15 | SEN-A-TEMP-01 | Cama A | Huerto escolar demo | 27.50 | C      | manual   | Lectura manual de prueba (captura) | 2026-09-11 23:54:26.686887+00 | 
-  1 | SEN-A-TEMP-01 | Cama A | Huerto escolar demo | 24.50 | C      | simulado | Carga inicial del laboratorio      | 2026-09-11 23:35:01.699295+00 | 
-  2 | SEN-A-HSUE-01 | Cama A | Huerto escolar demo | 55.00 | %      | simulado | Carga inicial del laboratorio      | 2026-09-11 23:35:01.699295+00 | 
+ id |    codigo     |       variable       |  zona  | valor | unidad |  origen  |            observacion             |         registrado_en         | alerta 
+----+---------------+----------------------+--------+-------+--------+----------+------------------------------------+-------------------------------+--------
+  6 | SEN-A-TEMP-01 | Temperatura ambiente | Cama A | 38.00 | C      | manual   | Tarde calurosa (captura)           | 2026-09-12 00:31:25.370416+00 | ALTA
+  5 | SEN-A-TEMP-01 | Temperatura ambiente | Cama A | 27.50 | C      | manual   | Lectura manual de prueba (captura) | 2026-09-12 00:31:24.491533+00 | 
+  1 | SEN-A-TEMP-01 | Temperatura ambiente | Cama A | 24.50 | C      | simulado | Carga inicial del laboratorio      | 2026-09-12 00:24:51.395115+00 | 
+  2 | SEN-A-HSUE-01 | Humedad de suelo     | Cama A | 55.00 | %      | simulado | Carga inicial del laboratorio      | 2026-09-12 00:24:51.395115+00 | 
 (4 rows)
 
  id |    codigo     | nivel |                               mensaje                               | atendida |           creada_en           
 ----+---------------+-------+---------------------------------------------------------------------+----------+-------------------------------
-  8 | SEN-A-TEMP-01 | ALTA  | Temperatura ambiente en Cama A: 38 C por encima del maximo 32.00 C. | f        | 2026-09-11 23:54:27.526395+00
+  2 | SEN-A-TEMP-01 | ALTA  | Temperatura ambiente en Cama A: 38 C por encima del maximo 32.00 C. | f        | 2026-09-12 00:31:25.370416+00
 (1 row)
+
+ id |  zona  |  autor_rol  |                                texto                                 | lectura_id |           creada_en           
+----+--------+-------------+----------------------------------------------------------------------+------------+-------------------------------
+  3 | Cama A | OBSERVADOR  | [prueba] Hojas con manchas en la cama A (captura)                    |            | 2026-09-12 00:31:25.979371+00
+  1 | Cama A | RESPONSABLE | Sensores instalados y calibrados con datos ficticios de laboratorio. |            | 2026-09-12 00:24:51.395115+00
+(2 rows)
 

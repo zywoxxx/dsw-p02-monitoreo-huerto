@@ -1,5 +1,5 @@
 HTTP/1.1 303 
-Location: /web1/lecturas?creada=14&alerta=ALTA
+Location: /web1/lecturas?creada=4&alerta=ALTA
 Content-Length: 0
-Date: Fri, 11 Sep 2026 23:54:21 GMT
+Date: Sat, 12 Sep 2026 00:31:20 GMT
 

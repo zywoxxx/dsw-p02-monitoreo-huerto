@@ -1,5 +1,5 @@
 HTTP/1.1 303 
-Location: /web1/lecturas?creada=13
+Location: /web1/lecturas?creada=3
 Content-Length: 0
-Date: Fri, 11 Sep 2026 23:54:20 GMT
+Date: Sat, 12 Sep 2026 00:31:20 GMT
 

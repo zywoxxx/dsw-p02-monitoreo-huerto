@@ -3,20 +3,20 @@ package mx.uv.dsw.huerto.model;
 import java.math.BigDecimal;
 
 /**
- * Sensor instalado en una zona del huerto, con los datos de su tipo y umbral
- * necesarios para validar y clasificar una lectura (RF-01, RF-03, RF-05).
+ * Sensor instalado en una zona, con los datos de su variable (RF02) y umbral (RF04)
+ * necesarios para validar y clasificar una lectura (RF03, RF06).
  */
 public class Sensor {
 
     private long id;
     private String codigo;
     private boolean activo;
+    private long zonaId;
     private String zona;
-    private String huerto;
-    private String tipoClave;
-    private String tipoNombre;
+    private String variableClave;
+    private String variableNombre;
     private String unidad;
-    /** Rango fisico valido de la magnitud (tabla tipo_sensor). */
+    /** Rango fisico valido de la variable (tabla variable). */
     private BigDecimal valorMinimo;
     private BigDecimal valorMaximo;
     /** Rango operativo deseado (tabla umbral); puede ser nulo si no hay umbral. */
@@ -47,6 +47,14 @@ public class Sensor {
         this.activo = activo;
     }
 
+    public long getZonaId() {
+        return zonaId;
+    }
+
+    public void setZonaId(long zonaId) {
+        this.zonaId = zonaId;
+    }
+
     public String getZona() {
         return zona;
     }
@@ -55,28 +63,20 @@ public class Sensor {
         this.zona = zona;
     }
 
-    public String getHuerto() {
-        return huerto;
+    public String getVariableClave() {
+        return variableClave;
     }
 
-    public void setHuerto(String huerto) {
-        this.huerto = huerto;
+    public void setVariableClave(String variableClave) {
+        this.variableClave = variableClave;
     }
 
-    public String getTipoClave() {
-        return tipoClave;
+    public String getVariableNombre() {
+        return variableNombre;
     }
 
-    public void setTipoClave(String tipoClave) {
-        this.tipoClave = tipoClave;
-    }
-
-    public String getTipoNombre() {
-        return tipoNombre;
-    }
-
-    public void setTipoNombre(String tipoNombre) {
-        this.tipoNombre = tipoNombre;
+    public void setVariableNombre(String variableNombre) {
+        this.variableNombre = variableNombre;
     }
 
     public String getUnidad() {
@@ -125,6 +125,6 @@ public class Sensor {
 
     /** Etiqueta legible para el selector del formulario. */
     public String getEtiqueta() {
-        return codigo + " - " + tipoNombre + " (" + unidad + ") - " + zona;
+        return codigo + " - " + variableNombre + " (" + unidad + ") - " + zona;
     }
 }

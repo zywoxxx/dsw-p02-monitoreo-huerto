@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import mx.uv.dsw.huerto.config.DbConfig;
 
 /**
- * GET /health : ruta de salud (RF-07). Responde JSON con 200 si la aplicacion conecta a PostgreSQL
+ * GET /health : ruta de salud (RNF01 reproducibilidad). Responde JSON con 200 si la aplicacion conecta a PostgreSQL
  * y 503 si faltan variables de entorno o la base no responde. No expone credenciales.
  */
 @WebServlet(name = "HealthServlet", urlPatterns = {"/health"})
@@ -50,7 +50,7 @@ public class HealthServlet extends HttpServlet {
         try (PrintWriter out = resp.getWriter()) {
             out.print("{");
             out.print("\"status\":\"" + (up ? "UP" : "DOWN") + "\",");
-            out.print("\"app\":\"web1 PRxx monitoreo de huerto\",");
+            out.print("\"app\":\"web1 PR09 monitoreo de huerto\",");
             out.print("\"db\":\"" + (up ? "UP" : "DOWN") + "\",");
             out.print("\"dbUrl\":\"" + escape(DbConfig.urlForDisplay()) + "\",");
             if (up) {

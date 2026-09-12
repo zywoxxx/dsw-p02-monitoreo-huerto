@@ -6,17 +6,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Alertas | PRxx Monitoreo de huerto</title>
+  <title>Alertas | PR09 Monitoreo de huerto</title>
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css">
 </head>
 <body>
 <header class="cabecera">
   <div class="contenedor">
-    <h1>PRxx &middot; Monitoreo de huerto</h1>
+    <h1>PR09 &middot; Monitoreo de huerto o ambiente</h1>
     <p class="subtitulo">Incremento P02 &middot; JSP / Servlet 4.0 &middot; Tomcat 9 &middot; PostgreSQL 16</p>
     <nav>
       <a href="${pageContext.request.contextPath}/lecturas">Lecturas</a>
       <a class="activo" href="${pageContext.request.contextPath}/alertas">Alertas</a>
+      <a href="${pageContext.request.contextPath}/anotaciones">Zonas y anotaciones</a>
       <a href="${pageContext.request.contextPath}/health">Salud (JSON)</a>
     </nav>
   </div>
@@ -24,8 +25,8 @@
 
 <main class="contenedor">
   <section class="tarjeta">
-    <h2>Alertas generadas (RF-06)</h2>
-    <p class="ayuda">Cada alerta nace de una lectura cuyo valor quedo fuera del umbral operativo del sensor (RF-05).</p>
+    <h2>Alertas generadas (RF06)</h2>
+    <p class="ayuda">Cada alerta nace de una lectura cuyo valor quedo fuera del umbral operativo del sensor (RF04).</p>
     <c:choose>
       <c:when test="${empty alertas}">
         <p class="vacio" id="sin-alertas">No hay alertas registradas.</p>

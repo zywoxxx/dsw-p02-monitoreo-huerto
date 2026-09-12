@@ -1,5 +1,5 @@
 """
-capturas.py - Genera las capturas de pantalla del flujo principal (rol: evidencia/capturas).
+capturas.py - Genera las capturas de pantalla del flujo principal (PR09) (rol: evidencia/capturas).
 
 Recorre la aplicacion desplegada con un navegador real (Chromium via Playwright) y guarda
 las imagenes en docs/evidencia/img/. Cada captura corresponde a un paso del protocolo
@@ -101,6 +101,27 @@ def main():
         # 10 Pagina de error controlada (404)
         page.goto(f"{BASE}/ruta-inexistente")
         guardar(page, "10_error_404")
+
+        # 11 Zonas y anotaciones (RF01, RF06): GET inicial
+        page.goto(f"{BASE}/anotaciones")
+        page.wait_for_selector("#tabla-zonas")
+        guardar(page, "11_get_zonas_anotaciones")
+
+        # 12 POST anotacion valida por el rol OBSERVADOR
+        page.select_option("#zonaId", index=1)
+        page.select_option("#autorRol", value="OBSERVADOR")
+        page.fill("#texto", "[prueba] Hojas con manchas en la cama A (captura)")
+        page.click("#btn-anotar")
+        page.wait_for_selector("#aviso-ok")
+        guardar(page, "12_post_anotacion_valida")
+
+        # 13 POST anotacion invalida: texto demasiado corto
+        page.select_option("#zonaId", index=1)
+        page.select_option("#autorRol", value="COORDINACION")
+        page.fill("#texto", "ok")
+        page.click("#btn-anotar")
+        page.wait_for_selector("#aviso-error")
+        guardar(page, "13_post_anotacion_invalida")
 
         browser.close()
     print("Capturas generadas en", OUT)

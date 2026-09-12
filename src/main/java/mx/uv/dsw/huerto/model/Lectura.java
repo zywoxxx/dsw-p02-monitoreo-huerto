@@ -5,7 +5,7 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
- * Lectura registrada de un sensor (entidad principal del flujo P02, RF-02 y RF-04).
+ * Lectura registrada de un sensor (entidad principal del flujo P02: RF03 lecturas, RF05 historial).
  * Incluye datos desnormalizados del sensor y de la alerta para presentarla en la JSP.
  */
 public class Lectura {
@@ -13,7 +13,7 @@ public class Lectura {
     private long id;
     private long sensorId;
     private String sensorCodigo;
-    private String tipoNombre;
+    private String variableNombre;
     private String unidad;
     private String zona;
     private BigDecimal valor;
@@ -47,12 +47,12 @@ public class Lectura {
         this.sensorCodigo = sensorCodigo;
     }
 
-    public String getTipoNombre() {
-        return tipoNombre;
+    public String getVariableNombre() {
+        return variableNombre;
     }
 
-    public void setTipoNombre(String tipoNombre) {
-        this.tipoNombre = tipoNombre;
+    public void setVariableNombre(String variableNombre) {
+        this.variableNombre = variableNombre;
     }
 
     public String getUnidad() {

@@ -7,17 +7,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Lecturas | PRxx Monitoreo de huerto</title>
+  <title>Lecturas | PR09 Monitoreo de huerto</title>
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css">
 </head>
 <body>
 <header class="cabecera">
   <div class="contenedor">
-    <h1>PRxx &middot; Monitoreo de huerto</h1>
+    <h1>PR09 &middot; Monitoreo de huerto o ambiente</h1>
     <p class="subtitulo">Incremento P02 &middot; JSP / Servlet 4.0 &middot; Tomcat 9 &middot; PostgreSQL 16</p>
     <nav>
       <a class="activo" href="${pageContext.request.contextPath}/lecturas">Lecturas</a>
       <a href="${pageContext.request.contextPath}/alertas">Alertas</a>
+      <a href="${pageContext.request.contextPath}/anotaciones">Zonas y anotaciones</a>
       <a href="${pageContext.request.contextPath}/health">Salud (JSON)</a>
     </nav>
   </div>
@@ -44,8 +45,8 @@
 
   <section class="tarjeta">
     <h2>Registrar lectura manual</h2>
-    <p class="ayuda">RF-02 / RF-03: selecciona un sensor y captura el valor medido. El sistema valida el rango
-      fisico del tipo de sensor y genera una alerta si el valor sale del umbral operativo (RF-05).</p>
+    <p class="ayuda">RF03: selecciona un sensor y captura el valor medido. El sistema valida el rango fisico de la
+      variable, etiqueta la lectura como <strong>manual</strong> y genera una alerta si el valor sale del umbral operativo (RF04, RF06).</p>
     <form method="post" action="${pageContext.request.contextPath}/lecturas" class="formulario" id="form-lectura">
       <div class="campo">
         <label for="sensorId">Sensor *</label>
@@ -73,21 +74,20 @@
   </section>
 
   <section class="tarjeta">
-    <h2>Sensores activos (RF-01)</h2>
+    <h2>Sensores por zona y variable (RF01, RF02, RF04)</h2>
     <div class="tabla-scroll">
       <table id="tabla-sensores">
         <thead>
-          <tr><th>Codigo</th><th>Tipo</th><th>Unidad</th><th>Zona</th><th>Huerto</th>
+          <tr><th>Codigo</th><th>Variable</th><th>Unidad</th><th>Zona</th>
               <th>Rango fisico</th><th>Umbral operativo</th></tr>
         </thead>
         <tbody>
           <c:forEach var="s" items="${sensores}">
             <tr>
               <td><code><c:out value="${s.codigo}"/></code></td>
-              <td><c:out value="${s.tipoNombre}"/></td>
+              <td><c:out value="${s.variableNombre}"/></td>
               <td><c:out value="${s.unidad}"/></td>
               <td><c:out value="${s.zona}"/></td>
-              <td><c:out value="${s.huerto}"/></td>
               <td>[<c:out value="${s.valorMinimo}"/>, <c:out value="${s.valorMaximo}"/>]</td>
               <td>
                 <c:choose>
@@ -103,7 +103,7 @@
   </section>
 
   <section class="tarjeta">
-    <h2>Lecturas recientes (RF-04)</h2>
+    <h2>Historial de lecturas (RF05)</h2>
     <c:choose>
       <c:when test="${empty lecturas}">
         <p class="vacio">Aun no hay lecturas registradas.</p>
@@ -112,18 +112,18 @@
         <div class="tabla-scroll">
           <table id="tabla-lecturas">
             <thead>
-              <tr><th>#</th><th>Sensor</th><th>Tipo</th><th>Zona</th><th>Valor</th>
-                  <th>Origen</th><th>Observacion</th><th>Registrada</th><th>Alerta</th></tr>
+              <tr><th>#</th><th>Sensor</th><th>Variable</th><th>Zona</th><th>Valor</th>
+                  <th>Procedencia</th><th>Observacion</th><th>Registrada</th><th>Alerta</th></tr>
             </thead>
             <tbody>
               <c:forEach var="l" items="${lecturas}">
                 <tr class="${l.conAlerta ? 'fila-alerta' : ''}">
                   <td>${l.id}</td>
                   <td><code><c:out value="${l.sensorCodigo}"/></code></td>
-                  <td><c:out value="${l.tipoNombre}"/></td>
+                  <td><c:out value="${l.variableNombre}"/></td>
                   <td><c:out value="${l.zona}"/></td>
                   <td class="num"><c:out value="${l.valor}"/> <c:out value="${l.unidad}"/></td>
-                  <td><c:out value="${l.origen}"/></td>
+                  <td><span class="etiqueta etiqueta-${l.origen}"><c:out value="${l.origen}"/></span></td>
                   <td><c:out value="${l.observacion}"/></td>
                   <td><c:out value="${l.registradoEnTexto}"/></td>
                   <td>

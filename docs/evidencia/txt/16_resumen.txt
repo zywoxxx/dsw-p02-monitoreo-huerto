@@ -1,4 +1,4 @@
-verify-module.sh M02 - 2026-09-11T17:54:22-06:00
+verify-module.sh M02 - 2026-09-11T18:31:22-06:00
 VERIFICADO    | Java 11 disponible
 VERIFICADO    | mvn clean package genera target/web1.war con pruebas en verde
 VERIFICADO    | WAR contiene servlets, JSP, web.xml y driver JDBC
@@ -13,5 +13,8 @@ VERIFICADO    | POST invalido (150 C) responde 400 por rango fisico
 VERIFICADO    | POST 38 C responde 303 y genera alerta ALTA
 VERIFICADO    | GET posterior muestra las lecturas persistidas (2 -> 4 filas)
 VERIFICADO    | GET /alertas lista la alerta generada
-VERIFICADO    | Las lecturas del protocolo existen en la tabla lectura
+VERIFICADO    | GET /anotaciones responde 200 con zonas y anotaciones
+VERIFICADO    | POST anotacion valida responde 303
+VERIFICADO    | POST anotacion invalida (rol ADMIN, texto corto) responde 400
+VERIFICADO    | Las lecturas y la anotacion del protocolo existen en PostgreSQL
 Fallos: 0

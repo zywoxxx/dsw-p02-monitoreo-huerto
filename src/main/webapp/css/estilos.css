@@ -65,6 +65,9 @@ code { background: #f0f0ec; padding: 1px 5px; border-radius: 3px; font-size: .9e
 .etiqueta-ok { background: var(--verde-claro); color: var(--verde); }
 .etiqueta-ALTA { background: var(--rojo-claro); color: var(--rojo); }
 .etiqueta-BAJA { background: #e8f0fb; color: var(--azul); }
+.etiqueta-manual { background: #eef; color: var(--azul); }
+.etiqueta-simulado { background: #f3e8fb; color: #6a1b9a; }
+.etiqueta-rol { background: #f0f0ec; color: var(--tierra); }
 .vacio { color: #777; font-style: italic; }
 .pie { font-size: .8rem; color: #777; padding: 8px 16px 24px; }
 @media (max-width: 640px) {

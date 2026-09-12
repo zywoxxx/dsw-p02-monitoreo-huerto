@@ -7,7 +7,7 @@ import java.util.List;
 import mx.uv.dsw.huerto.model.Sensor;
 
 /**
- * Reglas de validacion de una lectura (RF-03). Es una clase pura, sin JDBC ni HTTP,
+ * Reglas de validacion de una lectura (RF03). Es una clase pura, sin JDBC ni HTTP,
  * para que pueda probarse con JUnit sin levantar Tomcat ni PostgreSQL.
  *
  * <p>Entrada esperada: parametros crudos del formulario. Salida: valor numerico validado
@@ -81,14 +81,14 @@ public final class LecturaValidator {
         }
         if (valor.compareTo(sensor.getValorMinimo()) < 0 || valor.compareTo(sensor.getValorMaximo()) > 0) {
             errores.add("El valor " + valor.toPlainString() + " " + sensor.getUnidad()
-                + " esta fuera del rango fisico permitido para " + sensor.getTipoNombre()
+                + " esta fuera del rango fisico permitido para " + sensor.getVariableNombre()
                 + " [" + sensor.getValorMinimo().toPlainString() + ", "
                 + sensor.getValorMaximo().toPlainString() + "].");
         }
     }
 
     /**
-     * RF-05: determina el nivel de alerta segun el umbral operativo del sensor.
+     * RF06: determina el nivel de alerta segun el umbral operativo del sensor.
      *
      * @return "BAJA" si el valor es menor al minimo, "ALTA" si es mayor al maximo, null si esta en rango
      *         o el sensor no tiene umbral.
@@ -111,7 +111,7 @@ public final class LecturaValidator {
         String limite = "BAJA".equals(nivel)
             ? "por debajo del minimo " + sensor.getUmbralMinimo().toPlainString()
             : "por encima del maximo " + sensor.getUmbralMaximo().toPlainString();
-        return sensor.getTipoNombre() + " en " + sensor.getZona() + ": " + valor.toPlainString() + " "
+        return sensor.getVariableNombre() + " en " + sensor.getZona() + ": " + valor.toPlainString() + " "
             + sensor.getUnidad() + " " + limite + " " + sensor.getUnidad() + ".";
     }
 

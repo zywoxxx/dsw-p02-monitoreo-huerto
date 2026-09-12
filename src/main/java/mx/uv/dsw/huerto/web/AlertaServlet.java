@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import mx.uv.dsw.huerto.repository.LecturaRepository;
 
-/** GET /alertas : lista las alertas generadas por lecturas fuera de umbral (RF-06). */
+/** GET /alertas : lista las alertas generadas por lecturas fuera de umbral (RF06). */
 @WebServlet(name = "AlertaServlet", urlPatterns = {"/alertas"})
 public class AlertaServlet extends HttpServlet {
 
