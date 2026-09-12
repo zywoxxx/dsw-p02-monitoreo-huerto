@@ -23,7 +23,7 @@ recomendaciones agronomicas. Si PR09 no se confirma, tomamos PR03, que comparte 
 ## Plantilla de publicacion
 
 ```
-Equipo: EQUIPO_NN (sustituir por el numero asignado)
+Equipo: DSW-E01
 Integrantes: Alejandro Pacheco Luna (zywoxxx), Juan Pablo Kuri Ricardez (juankuri),
              Ariadna Trejo Alvarez (ariadna-19), Pedro Garcia Padilla (pedro-gar-pad)
 Proyecto solicitado: PR09 - Monitoreo de huerto o ambiente

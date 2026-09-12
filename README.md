@@ -13,7 +13,7 @@ Desarrollo de Sistemas Web, DSW-19559, actividad P02, rubrica R02.
 | RF del PR09 en P02 | RF01 zonas, RF02 variables, RF03 lecturas, RF04 umbrales, RF05 historial, RF06 alertas y anotaciones, RF07 modelo relacionado. RF08 (API) y RF09 (IoT) en incrementos posteriores. |
 | Modelo | 7 entidades: zona, variable, sensor, umbral, lectura, alerta, anotacion (`docs/modelo-datos.md`). |
 | Estado | `scripts/verify-module.sh M02` -> **18/18 VERIFICADO** el 2026-09-11 (`docs/verification-report.md`). |
-| Equipo | 4 integrantes (`docs/acta-proyecto.md`). |
+| Equipo | DSW-E01, 4 integrantes (`docs/acta-proyecto.md`). Entrega en Eminus: `P02_EQUIPO_01`. |
 
 ## 1. Requisitos
 

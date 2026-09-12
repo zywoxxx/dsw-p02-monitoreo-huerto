@@ -5,7 +5,8 @@
 | Experiencia educativa | Desarrollo de Sistemas Web (DSW-19559 / NRC 19559) |
 | Proyecto del banco (C11) | **PR09 - Monitoreo de huerto o ambiente** (complejidad orientativa: media) |
 | Seleccion | Publicada en F02 (ver `docs/F02-seleccion-proyecto.md`); segunda opcion PR03 |
-| Actividad | P02 - Aplicacion Web 1.0 con JSP, Tomcat y PostgreSQL (primer incremento) |
+| Actividad | P02 - Aplicacion Web 1.0 con JSP, Tomcat y PostgreSQL (primer incremento); 31/ago/2026 00:00 a 11/sep/2026 23:45 |
+| Equipo | DSW-E01 |
 | Instrumento | R02 (10 puntos) |
 | Fecha del acta | 2026-09-11 |
 | Repositorio | https://github.com/zywoxxx/dsw-p02-monitoreo-huerto |
