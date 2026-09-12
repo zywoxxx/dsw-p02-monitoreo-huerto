@@ -20,3 +20,6 @@ Thumbs.db
 
 # Datos locales del contenedor PostgreSQL
 docker/pgdata/
+
+# archivos de bloqueo de Word
+~$*.docx
