@@ -23,7 +23,7 @@
 | CA01 | Desde una base inicial con datos sinteticos se completa el flujo principal y se observa el cambio persistido. | Semilla -> POST 25.5 y 38 -> historial y `psql` muestran las filas y la alerta. | VERIFICADO |
 | CA02 | El caso invalido se rechaza con mensaje comprensible y sin alterar datos. | POST `abc`, vacio, `150`, sensor `999`, rol `ADMIN`, texto `ok` -> 400 con mensaje; conteos sin cambio. | VERIFICADO |
 | CA05 | Otra persona puede preparar, ejecutar, probar y limpiar con el README. | README + `docker compose` + `verify-module.sh` + `cleanup.sh`. | VERIFICADO en la maquina de desarrollo; PENDIENTE por otro integrante |
-| CA06 | Autoria, contribucion individual, limitaciones y cambios de alcance. | Commits por autor, `docs/evidencia/individual/`, `verification-report.md`, acta y F02. | VERIFICADO |
+| CA06 | Autoria, contribucion individual, limitaciones y cambios de alcance. | Commits por autor, documento de entrega (seccion 10), `verification-report.md`, acta y F02. | VERIFICADO |
 | CA03 / CA04 | API 2xx/4xx; evento IoT simulado. | Web 3.0 / 4.0. | NO APLICA en P02 |
 
 ## Errores esperados (entrada -> salida)

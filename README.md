@@ -62,7 +62,7 @@ dsw-p02-monitoreo-huerto/
 │       ├── INDICE.md             # cada evidencia relacionada con un criterio de R02
 │       ├── img/                  # 13 capturas del flujo, validaciones, anotaciones y despliegue
 │       ├── txt/                  # salidas de build, WAR, Tomcat, psql y curl (rutas anonimizadas)
-│       └── individual/           # P02_APELLIDO_NOMBRE.md por integrante
+│   └── entrega/                  # P02_EQUIPO_01.docx y .pdf: documento de entrega del equipo
 └── src/
     ├── main/java/mx/uv/dsw/huerto/
     │   ├── config/      DbConfig (variables de entorno), AppContextListener
@@ -304,4 +304,4 @@ Producto de equipo del PR09 (ver `docs/acta-proyecto.md`):
 | Evidencia y documentacion | Alejandro Pacheco Luna | `zywoxxx` |
 | Evidencia y documentacion | Ariadna Trejo Alvarez | `ariadna-19` |
 
-Cada integrante conserva su explicacion individual en `docs/evidencia/individual/`.
+Las contribuciones de cada integrante se describen en la seccion 10 del documento de entrega (`docs/entrega/P02_EQUIPO_01.docx`).

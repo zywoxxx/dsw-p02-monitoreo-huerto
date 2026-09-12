@@ -57,7 +57,7 @@ Estados: **VERIFICADO** (ejecutado y comprobado con evidencia), **NO_VERIFICADO*
 | CA01 flujo principal completo con cambio persistido | VERIFICADO | `img/03_*`, `img/07_*`, `txt/15_*`, `txt/17_*` |
 | CA02 caso invalido rechazado con mensaje y sin alterar datos | VERIFICADO | `txt/09_*` a `txt/11_*`, `txt/14c_*`, conteos sin cambio en `txt/15_*` |
 | CA05 otra persona reproduce con el README | VERIFICADO en la maquina de desarrollo / PENDIENTE por otro integrante | `txt/16_resumen.txt` |
-| CA06 autoria, contribucion individual, limitaciones, cambios de alcance | VERIFICADO | commits, `docs/evidencia/individual/`, este reporte, `docs/F02-seleccion-proyecto.md` |
+| CA06 autoria, contribucion individual, limitaciones, cambios de alcance | VERIFICADO | commits, `docs/entrega/P02_EQUIPO_01.docx` (seccion 10), este reporte, `docs/F02-seleccion-proyecto.md` |
 | CA03 API 2xx/4xx, CA04 evento IoT | NO APLICA en P02 (Web 3.0 / 4.0) | - |
 
 ## Reproducibilidad

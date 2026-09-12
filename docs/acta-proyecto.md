@@ -19,7 +19,7 @@
 | Datos (modelo PostgreSQL, scripts SQL, repositorios JDBC) | Pedro Garcia Padilla | `pedro-gar-pad` |
 | Evidencia y documentacion (capturas, protocolo HTTP, README, bitacora, indice R02) | Alejandro Pacheco Luna, Ariadna Trejo Alvarez | `zywoxxx`, `ariadna-19` |
 
-Todos revisan el codigo de los demas; cada integrante entrega evidencia individual atribuible (`docs/evidencia/individual/`).
+Todos revisan el codigo de los demas; la contribucion de cada integrante se describe en el documento de entrega del equipo (`docs/entrega/P02_EQUIPO_01.docx`, seccion 10).
 
 ## 2. Roles funcionales del sistema (limite C11: hasta tres)
 

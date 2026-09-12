@@ -1,7 +1,7 @@
 # Indice de evidencia P02 (PR09) - relacion con la rubrica R02
 
 Producto de equipo DSW-E01: nombrar la entrega en Eminus como `P02_EQUIPO_01`.
-Evidencia individual: `individual/P02_APELLIDO_NOMBRE.md` (una por integrante; incluida `P02_PACHECO_ALEJANDRO.md`).
+Documento de entrega del equipo: `docs/entrega/P02_EQUIPO_01.docx` (y su PDF). Las contribuciones de cada integrante estan en su seccion 10.
 Toda la evidencia se genera con `scripts/verify-module.sh M02` (texto) y `scripts/capturas.py` (imagenes); las
 rutas locales se sustituyen por `<REPO>`, `<CATALINA_HOME>` y `<HOME>`.
 
