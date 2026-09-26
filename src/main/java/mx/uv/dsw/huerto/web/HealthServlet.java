@@ -50,7 +50,7 @@ public class HealthServlet extends HttpServlet {
         try (PrintWriter out = resp.getWriter()) {
             out.print("{");
             out.print("\"status\":\"" + (up ? "UP" : "DOWN") + "\",");
-            out.print("\"app\":\"web1 PR09 monitoreo de huerto\",");
+            out.print("\"app\":\"web2 PR09 monitoreo de huerto (P03 JSF)\",");
             out.print("\"db\":\"" + (up ? "UP" : "DOWN") + "\",");
             out.print("\"dbUrl\":\"" + escape(DbConfig.urlForDisplay()) + "\",");
             if (up) {

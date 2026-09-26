@@ -1,0 +1,57 @@
+[22:30:24] Inicio de pruebas P03 contra http://localhost:8080/web2
+[22:30:24] Version de PostgreSQL: PostgreSQL 16.15 (Debian 16.15-1.pgdg13+
+[22:30:25] Conteos iniciales lectura/alerta/anotacion: (2, 0, 1)
+[22:30:28] captura 01_acceso.png
+[22:30:28] VERIFICADO: 1 Arranque JSF: index -> login.xhtml con recursos PrimeFaces
+[22:30:28] captura 02_acceso_directo_sin_sesion.png
+[22:30:28] VERIFICADO: 11a Acceso directo a /app sin sesion redirige al acceso -> http://localhost:8080/web2/login.xhtml?expirada=1
+[22:30:28] captura 03_acceso_credenciales_incorrectas.png
+[22:30:28] VERIFICADO: 11b Credenciales incorrectas se rechazan con mensaje
+[22:30:29] captura 04_lecturas_inicial_observador.png
+[22:30:29] VERIFICADO: 11c Sesion valida: cabecera con usuario y rol; catalogo e historial cargados -> sensores=5 lecturas=2
+[22:30:29] captura 05_ajax_info_sensor.png
+[22:30:29] VERIFICADO: 1b AJAX parcial: info del sensor (unidad, rango fisico, umbral) sin recargar ->  Temperatura ambiente en Cama A · unidad C · rango fisico [-10.00, 60.00] · umbr
+[22:30:30] captura 06_lectura_valida_25_5.png
+[22:30:30] VERIFICADO: 2 Lectura valida 25.5: mensaje, fila nueva con procedencia manual, formulario limpio, +1 en lectura -> conteos (2, 0, 1)->(3, 0, 1)
+[22:30:31] VERIFICADO: 15 Recargar la pagina despues de guardar no reenvia el formulario -> conteos (3, 0, 1)
+[22:30:32] captura 07_lectura_38_alerta_alta.png
+[22:30:32] VERIFICADO: 3a Lectura 38: valida, genera alerta ALTA (+1 lectura, +1 alerta) -> (3, 0, 1)->(4, 1, 1)
+[22:30:34] captura 08_lectura_10_alerta_baja.png
+[22:30:34] VERIFICADO: 3b Lectura 10: valida, genera alerta BAJA -> (4, 1, 1)->(5, 2, 1)
+[22:30:36] captura 09_limites_15_y_32_sin_alerta.png
+[22:30:36] VERIFICADO: 4 Valores exactamente en el umbral (15 y 32): validos y sin alerta -> (5, 2, 1)->(7, 2, 1)
+[22:30:38] captura 10_valor_vacio.png
+[22:30:38] VERIFICADO: 5a Valor vacio: rechazado con mensaje y sin cambios en la base
+[22:30:39] captura 11_valor_no_numerico_conserva_entrada.png
+[22:30:39] VERIFICADO: 5b Entrada no numerica: rechazada, sin cambios y se conserva lo capturado -> conserva=True
+[22:30:40] captura 12_valor_150_rango_fisico.png
+[22:30:40] VERIFICADO: 6 Valor fisicamente imposible (150 C): rechazado sin tocar PostgreSQL
+[22:30:41] captura 13_valor_24_555_decimales.png
+[22:30:41] VERIFICADO: 7 Tres decimales (24.555): rechazado, no se redondea a 24.56
+[22:30:42] captura 14_sin_sensor.png
+[22:30:42] VERIFICADO: 8 Sin sensor seleccionado: rechazado (sensor inexistente/inactivo solo por prueba unitaria)
+[22:30:43] captura 15_filtro_zona_invernadero.png
+[22:30:43] VERIFICADO: 10 Filtro por zona reduce el historial y el paginador esta presente -> total=7 filtradas=0
+[22:30:45] captura 16_orden_por_valor.png
+[22:30:45] captura 17_alertas.png
+[22:30:45] VERIFICADO: 3c Vista de alertas muestra ALTA y BAJA generadas
+[22:30:46] captura 18_anotacion_valida_observador.png
+[22:30:46] VERIFICADO: 9a Anotacion valida firmada con el rol de la sesion (OBSERVADOR)
+[22:30:47] captura 19_anotacion_corta.png
+[22:30:47] VERIFICADO: 9b Anotacion demasiado corta rechazada
+[22:30:48] VERIFICADO: 9c Texto de 301: PrimeFaces lo recorta a 300 en el cliente (persistido=300); la regla >300 del servidor se prueba con JUnit -> longitud persistida=300
+[22:30:48] captura 20_anotacion_lectura_inexistente.png
+[22:30:48] VERIFICADO: 9d Anotacion ligada a lectura inexistente rechazada
+[22:30:48] captura 21_sesion_cerrada.png
+[22:30:48] VERIFICADO: 11d Cerrar sesion invalida la sesion; /app vuelve a pedir acceso
+[22:30:50] captura 22_sesion_expirada_en_ajax.png
+[22:30:50] VERIFICADO: 11e Sesion expirada durante un POST AJAX: redirige al acceso y no guarda -> http://localhost:8080/web2/login.xhtml?expirada=1
+[22:30:50] captura 23_coordinacion_sin_formulario.png
+[22:30:50] captura 24_coordinacion_anota.png
+[22:30:50] VERIFICADO: 12 Rol COORDINACION: sin formulario de lecturas (aviso) pero anota con su rol
+[22:30:52] captura 25_transaccion_revertida.png
+[22:30:52] VERIFICADO: 14 Fallo al insertar la alerta revierte la lectura (sin inserciones parciales) -> (7, 2, 4)->(7, 2, 4)
+[22:30:53] captura 26_base_no_disponible.png
+[22:30:53] VERIFICADO: 13 Base de datos no disponible: mensaje claro y formulario oculto; se recupera al volver
+[22:30:56] Conteos finales lectura/alerta/anotacion: (7, 2, 4)
+[22:30:56] Fallos: 0

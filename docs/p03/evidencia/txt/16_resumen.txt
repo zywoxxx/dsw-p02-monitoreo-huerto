@@ -1,0 +1,12 @@
+verify-module.sh M03 - 2026-09-25T22:30:57-06:00 - commit 832f377
+VERIFICADO    | Java 11 disponible
+VERIFICADO    | mvn clean package genera target/web2.war con pruebas en verde
+VERIFICADO    | WAR contiene Mojarra, PrimeFaces, Weld, beans.xml y vistas XHTML; sin JSP
+VERIFICADO    | PostgreSQL responde y el modelo de 7 tablas existe
+VERIFICADO    | web2 desplegado y respondiendo en http://localhost:8080/web2
+VERIFICADO    | /health responde 200 y db=UP
+VERIFICADO    | login.xhtml responde 200 con recursos PrimeFaces
+VERIFICADO    | /app/lecturas.xhtml sin sesion redirige (302) al acceso
+VERIFICADO    | pruebas_jsf.py termino sin casos NO_VERIFICADO
+VERIFICADO    | Las lecturas y anotaciones del recorrido existen en PostgreSQL
+Fallos: 0

@@ -1,0 +1,83 @@
+/* Estilos del incremento P03 sobre el tema "saga" de PrimeFaces. Paleta discreta del huerto. */
+:root {
+  --verde: #2f6b3a;
+  --verde-oscuro: #255a2f;
+  --verde-claro: #e6f2e8;
+  --tierra: #6b4f2f;
+  --gris: #3f3f3f;
+  --gris-claro: #f4f4f2;
+  --borde: #d9d9d4;
+  --rojo: #b3261e;
+  --ambar: #b26a00;
+  --azul: #1d4e89;
+}
+* { box-sizing: border-box; }
+body, .ui-widget, .ui-widget .ui-widget, .ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {
+  font-family: "Segoe UI", Arial, sans-serif;
+  font-size: 15px;
+}
+body { margin: 0; color: var(--gris); background: var(--gris-claro); }
+.contenedor { max-width: 1180px; margin: 0 auto; padding: 0 16px; }
+
+/* cabecera y navegacion */
+.cabecera { background: var(--verde); color: #fff; padding: 14px 0 0; }
+.barra { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+.cabecera h1 { margin: 0; font-size: 1.35rem; }
+.subtitulo { margin: 4px 0 8px; opacity: .9; font-size: .88rem; }
+.sesion { display: flex; align-items: center; gap: 12px; }
+.usuario { font-size: .9rem; }
+.boton-salir.ui-button { color: #fff !important; border-color: rgba(255,255,255,.6) !important; }
+.navegacion { display: flex; gap: 6px; flex-wrap: wrap; padding-bottom: 10px; }
+.navegacion a {
+  color: #fff; text-decoration: none; padding: 6px 12px; border-radius: 4px; background: rgba(255,255,255,.12);
+}
+.navegacion a.activo, .navegacion a:hover, .navegacion a:focus { background: rgba(255,255,255,.28); outline: 2px solid rgba(255,255,255,.5); }
+main.contenedor { padding-top: 18px; padding-bottom: 8px; }
+
+/* tarjetas, formularios, tablas */
+.tarjeta { margin-bottom: 18px; }
+.ui-panel.tarjeta .ui-panel-titlebar { background: #fff; color: var(--verde); font-size: 1.05rem; border-bottom: 1px solid var(--borde); }
+.ui-panel.tarjeta { border: 1px solid var(--borde); border-radius: 8px; background: #fff; }
+.ayuda { margin: 4px 0 12px; font-size: .9rem; color: #666; }
+.nota { font-size: .82rem; color: #777; }
+.rejilla { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.campo { display: flex; flex-direction: column; gap: 4px; }
+.campo-ancho { grid-column: 1 / -1; }
+.campo label { font-weight: 600; font-size: .9rem; }
+.ancho { width: 100%; }
+.ui-selectonemenu.ancho { width: 100% !important; }
+.acciones { margin-top: 14px; display: flex; gap: 10px; align-items: center; }
+.info-sensor { margin-top: 12px; padding: 10px 12px; background: var(--verde-claro); border-radius: 6px; font-size: .9rem; color: var(--verde); }
+.encabezado-tabla { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.ui-datatable.tabla .ui-datatable-header { background: #fff; color: var(--verde); text-align: left; font-size: 1.05rem; border-bottom: 1px solid var(--borde); }
+.ui-datatable.tabla thead th { background: var(--gris-claro); text-align: left; }
+.ui-datatable.tabla td, .ui-datatable.tabla th { padding: 8px 10px; }
+.ui-datatable.tabla td.num { white-space: nowrap; }
+.ui-datatable.tabla code { background: #f0f0ec; padding: 1px 5px; border-radius: 3px; font-size: .9em; }
+.ui-datatable.tabla .ui-datatable-empty-message td { padding: 18px; color: #777; font-style: italic; }
+.filtro { width: 100%; }
+.en-rango { color: var(--verde); font-size: .85rem; }
+.ui-button.ui-widget:not(.ui-button-flat):not(.ui-button-outlined) { background: var(--verde); border-color: var(--verde); }
+.ui-button.ui-widget:not(.ui-button-flat):not(.ui-button-outlined):enabled:hover { background: var(--verde-oscuro); border-color: var(--verde-oscuro); }
+.ui-state-focus, .ui-inputfield:focus, .ui-button:focus { box-shadow: 0 0 0 2px rgba(47,107,58,.35) !important; }
+
+/* avisos propios (fuera de p:messages) */
+.aviso { padding: 12px 16px; border-radius: 6px; margin-bottom: 16px; border: 1px solid; }
+.aviso-ok { background: var(--verde-claro); border-color: var(--verde); color: var(--verde); }
+.aviso-info { background: #e8f0fb; border-color: var(--azul); color: var(--azul); }
+
+/* acceso */
+.fondo-acceso { background: var(--gris-claro); }
+.acceso { max-width: 460px; margin: 48px auto; padding: 0 16px; }
+.acceso-titulo { text-align: center; color: var(--verde); margin-bottom: 18px; }
+.acceso-titulo h1 { font-size: 1.3rem; margin: 0; }
+.acceso .tarjeta { background: #fff; border: 1px solid var(--borde); border-radius: 8px; padding: 22px 24px; }
+.acceso .tarjeta h2 { margin: 0 0 14px; font-size: 1.15rem; color: var(--verde); }
+.acceso .campo { margin-bottom: 12px; }
+.enlace-boton { display: inline-block; background: var(--verde); color: #fff; padding: 8px 14px; border-radius: 4px; text-decoration: none; margin-right: 10px; }
+.pie { font-size: .8rem; color: #777; padding: 8px 16px 24px; }
+
+@media (max-width: 640px) {
+  .rejilla { grid-template-columns: 1fr; }
+  .cabecera h1 { font-size: 1.1rem; }
+}

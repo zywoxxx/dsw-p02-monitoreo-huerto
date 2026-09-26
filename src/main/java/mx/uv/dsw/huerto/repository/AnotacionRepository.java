@@ -14,7 +14,9 @@ import mx.uv.dsw.huerto.model.Anotacion;
 import mx.uv.dsw.huerto.model.Zona;
 
 /** Acceso JDBC parametrizado a las tablas zona y anotacion (RF01, RF06). */
-public class AnotacionRepository {
+public class AnotacionRepository implements java.io.Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     /** RF01: zonas del huerto ordenadas por nombre. */
     public List<Zona> findZonas() throws SQLException {

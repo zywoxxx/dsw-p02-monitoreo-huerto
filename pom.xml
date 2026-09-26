@@ -5,12 +5,12 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>mx.uv.dsw</groupId>
-  <artifactId>web1</artifactId>
-  <version>0.2.0</version>
+  <artifactId>web2</artifactId>
+  <version>0.3.0</version>
   <packaging>war</packaging>
 
-  <name>PR09 Monitoreo de huerto o ambiente - Incremento P02 (web1-jsp)</name>
-  <description>Aplicacion Web 1.0 con JSP, Servlet 4.0, Tomcat 9 y PostgreSQL 16 (JDBC parametrizado).</description>
+  <name>PR09 Monitoreo de huerto o ambiente - Incremento P03 (web2-jsf)</name>
+  <description>Aplicacion Web 2.0 con JSF 2.3 (Mojarra), PrimeFaces 12, CDI (Weld) sobre Tomcat 9 y PostgreSQL 16 con JDBC parametrizado.</description>
 
   <properties>
     <maven.compiler.source>11</maven.compiler.source>
@@ -18,25 +18,53 @@
     <maven.compiler.release>11</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <!-- Familia javax: Tomcat 9 implementa Servlet 4.0 / EL 3.0 / JSP 2.3 -->
     <servlet.version>4.0.1</servlet.version>
-    <jstl.version>1.2</jstl.version>
+    <mojarra.version>2.3.9</mojarra.version>
+    <primefaces.version>12.0.0</primefaces.version>
+    <weld.version>3.1.9.Final</weld.version>
+    <annotation.version>1.3.2</annotation.version>
     <postgresql.version>42.7.2</postgresql.version>
     <junit.version>5.10.2</junit.version>
   </properties>
 
   <dependencies>
-    <!-- Servlet 4.0 / JSP 2.3: lo provee Tomcat 9 (espacio de nombres javax) -->
+    <!-- Servlet 4.0: lo provee Tomcat 9 -->
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
       <version>${servlet.version}</version>
       <scope>provided</scope>
     </dependency>
-    <!-- JSTL 1.2 para presentar listas y escapar HTML en las JSP -->
+    <!-- JSF 2.3: API + implementacion Mojarra en un solo jar (Tomcat no trae Faces) -->
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>jstl</artifactId>
-      <version>${jstl.version}</version>
+      <groupId>org.glassfish</groupId>
+      <artifactId>javax.faces</artifactId>
+      <version>${mojarra.version}</version>
+    </dependency>
+    <!-- PrimeFaces 12 para javax (el artefacto sin classifier es la variante javax) -->
+    <dependency>
+      <groupId>org.primefaces</groupId>
+      <artifactId>primefaces</artifactId>
+      <version>${primefaces.version}</version>
+    </dependency>
+    <!-- CDI 2.0 para Tomcat: Weld Servlet incluye API e implementacion y se registra solo -->
+    <dependency>
+      <groupId>org.jboss.weld.servlet</groupId>
+      <artifactId>weld-servlet-shaded</artifactId>
+      <version>${weld.version}</version>
+    </dependency>
+    <!-- @PostConstruct / @Resource ya no vienen en el JDK 11 -->
+    <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>javax.annotation-api</artifactId>
+      <version>${annotation.version}</version>
+    </dependency>
+    <!-- JAXB tampoco viene en el JDK 11: Mojarra lo usa (DatatypeConverter) al cifrar el flash en redirecciones -->
+    <dependency>
+      <groupId>javax.xml.bind</groupId>
+      <artifactId>jaxb-api</artifactId>
+      <version>2.3.1</version>
     </dependency>
     <!-- Driver JDBC de PostgreSQL -->
     <dependency>
@@ -44,7 +72,7 @@
       <artifactId>postgresql</artifactId>
       <version>${postgresql.version}</version>
     </dependency>
-    <!-- Pruebas unitarias de las reglas de validacion -->
+    <!-- Pruebas unitarias de las reglas de validacion y autenticacion -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
@@ -54,7 +82,7 @@
   </dependencies>
 
   <build>
-    <finalName>web1</finalName>
+    <finalName>web2</finalName>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

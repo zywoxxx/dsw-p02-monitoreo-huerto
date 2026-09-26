@@ -4,23 +4,68 @@
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          version="4.0">
 
-  <display-name>PR09 Monitoreo de huerto o ambiente - web1 (P02)</display-name>
+  <display-name>PR09 Monitoreo de huerto o ambiente - web2 (P03, JSF + PrimeFaces)</display-name>
 
-  <!-- Los servlets se registran con @WebServlet; aqui solo la pagina de bienvenida y errores -->
+  <!-- JSF -->
+  <context-param>
+    <param-name>javax.faces.PROJECT_STAGE</param-name>
+    <param-value>Production</param-value>
+  </context-param>
+  <context-param>
+    <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
+    <param-value>server</param-value>
+  </context-param>
+  <context-param>
+    <param-name>javax.faces.FACELETS_SKIP_COMMENTS</param-name>
+    <param-value>true</param-value>
+  </context-param>
+  <context-param>
+    <param-name>javax.faces.INTERPRET_EMPTY_STRING_SUBMITTED_VALUES_AS_NULL</param-name>
+    <param-value>true</param-value>
+  </context-param>
+  <!-- PrimeFaces -->
+  <context-param>
+    <param-name>primefaces.THEME</param-name>
+    <param-value>saga</param-value>
+  </context-param>
+  <context-param>
+    <param-name>primefaces.FONT_AWESOME</param-name>
+    <param-value>false</param-value>
+  </context-param>
+
+  <servlet>
+    <servlet-name>Faces Servlet</servlet-name>
+    <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Faces Servlet</servlet-name>
+    <url-pattern>*.xhtml</url-pattern>
+  </servlet-mapping>
+
   <welcome-file-list>
-    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>index.xhtml</welcome-file>
   </welcome-file-list>
 
+  <!-- Vista expirada (sesion caducada o ViewState perdido) y errores generales -->
+  <error-page>
+    <exception-type>javax.faces.application.ViewExpiredException</exception-type>
+    <location>/expirada.xhtml</location>
+  </error-page>
   <error-page>
     <exception-type>java.lang.Throwable</exception-type>
-    <location>/WEB-INF/views/error.jsp</location>
+    <location>/error.xhtml</location>
   </error-page>
   <error-page>
     <error-code>404</error-code>
-    <location>/WEB-INF/views/error.jsp</location>
+    <location>/error.xhtml</location>
   </error-page>
 
   <session-config>
-    <session-timeout>30</session-timeout>
+    <session-timeout>20</session-timeout>
+    <cookie-config>
+      <http-only>true</http-only>
+    </cookie-config>
+    <tracking-mode>COOKIE</tracking-mode>
   </session-config>
 </web-app>

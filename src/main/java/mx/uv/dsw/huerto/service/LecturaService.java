@@ -16,7 +16,9 @@ import mx.uv.dsw.huerto.repository.SensorRepository;
  * Coordina validacion (RF03), persistencia (RF03) y generacion de alerta (RF06)
  * en una sola transaccion JDBC: si falla la alerta, tampoco queda la lectura.
  */
-public class LecturaService {
+public class LecturaService implements java.io.Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     /** Resultado del registro: id de la lectura creada y nivel de alerta (o null). */
     public static final class Resultado {

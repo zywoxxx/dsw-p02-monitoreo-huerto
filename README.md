@@ -1,308 +1,203 @@
-# PR09 - Monitoreo de huerto o ambiente - Incremento P02 (web1-jsp)
+# PR09 - Monitoreo de huerto o ambiente
 
-Aplicacion Web 1.0 con **JSP 2.3 + Servlet 4.0 (javax)**, desplegada como `web1.war` en **Tomcat 9.0.115**, con
-persistencia en **PostgreSQL 16** mediante **JDBC parametrizado**. Primer incremento del proyecto integrador
-**PR09 Monitoreo de huerto o ambiente** (banco C11), seleccionado en F02 (`docs/F02-seleccion-proyecto.md`).
-Desarrollo de Sistemas Web, DSW-19559, actividad P02, rubrica R02.
+Proyecto integrador del equipo **DSW-E01** (Desarrollo de Sistemas Web, DSW-19559). Un huerto escolar registra
+lecturas de sensores (temperatura, humedad, luz) con su instante y procedencia, avisa cuando una lectura sale del
+umbral operativo y permite anotaciones por rol. Todos los datos son ficticios.
 
-| | |
-|---|---|
-| Problema (ficha PR09) | Las observaciones ambientales no se conservan con contexto ni permiten reconocer tendencias y alertas basicas. |
-| Roles funcionales (max. 3) | Responsable de huerto, observador, coordinacion. |
-| Flujo principal | Registrar una lectura de sensor, validarla, persistirla con instante y procedencia, y generar alerta si sale del umbral. |
-| RF del PR09 en P02 | RF01 zonas, RF02 variables, RF03 lecturas, RF04 umbrales, RF05 historial, RF06 alertas y anotaciones, RF07 modelo relacionado. RF08 (API) y RF09 (IoT) en incrementos posteriores. |
-| Modelo | 7 entidades: zona, variable, sensor, umbral, lectura, alerta, anotacion (`docs/modelo-datos.md`). |
-| Estado | `scripts/verify-module.sh M02` -> **18/18 VERIFICADO** el 2026-09-11 (`docs/verification-report.md`). |
-| Equipo | DSW-E01, 4 integrantes (`docs/acta-proyecto.md`). Entrega en Eminus: `P02_EQUIPO_01`. |
-| Documento de entrega | [`docs/entrega/P02_EQUIPO_01.pdf`](docs/entrega/P02_EQUIPO_01.pdf) (tambien en Word). |
+| Incremento | Estado | Tecnologia | WAR / contexto |
+|---|---|---|---|
+| **P03 (actual)** - Web 2.0 | `verify-module.sh M03` -> VERIFICADO el 2026-09-25 (26 casos en navegador, 21 pruebas unitarias) | JSF 2.3 (Mojarra 2.3.9) + PrimeFaces 12 + CDI (Weld 3.1.9) sobre Tomcat 9.0.115; JDBC a PostgreSQL 16 | `web2.war` -> `http://localhost:8080/web2/` |
+| P02 - Web 1.0 | VERIFICADO el 2026-09-11; evidencia conservada en `docs/evidencia/` y `docs/entrega/` | JSP/Servlet 4.0 sobre Tomcat 9; mismo modelo y misma base | `web1.war` (historial de git hasta `832f377`) |
+
+Modelo de datos (sin cambios desde P02): `zona, variable, sensor, umbral, lectura, alerta, anotacion` (`docs/modelo-datos.md`).
+Roles funcionales del PR09: **observador** (captura lecturas y anota), **responsable** y **coordinacion** (consultan y anotan).
 
 ## 1. Requisitos
 
-| Componente | Version confirmada en M02 | Uso |
+| Componente | Version | Para que |
 |---|---|---|
-| Java JDK | 11 | compilar y ejecutar Tomcat |
-| Apache Maven | 3.9.9 | construir `web1.war` y correr pruebas unitarias |
-| Apache Tomcat | 9.0.115 (Servlet 4.0.1, JSP 2.3, `javax.*`) | contenedor web |
+| JDK | 11 | compilar y ejecutar Tomcat |
+| Maven | 3.9.9 | construir `web2.war` y correr las pruebas |
+| Tomcat | 9.0.115 (Servlet 4.0, `javax`) | contenedor web; Faces y CDI van dentro del WAR |
 | PostgreSQL | 16 (Docker `postgres:16`) o instalacion local 11+ | base de datos |
-| Docker Desktop / Docker Engine | cualquiera reciente | levantar PostgreSQL con `docker compose` (opcional si ya tienes PostgreSQL) |
-| Git Bash (Windows) o bash (Linux/macOS), `curl`, `unzip` | - | ejecutar `scripts/*.sh` |
-| Python 3.11 + Playwright | opcional | regenerar capturas (`scripts/capturas.py`) y anonimizar evidencia |
+| Docker | cualquiera reciente | levantar PostgreSQL con `docker compose` (opcional si ya tienes PostgreSQL) |
+| Git Bash o bash, `curl`, `unzip` | - | scripts de verificacion |
+| Python 3.11 + Playwright | para `verify-module.sh M03` y `pruebas_jsf.py` | recorrido de aceptacion en navegador real |
 
-No se usan frameworks ni servicios externos. Unica biblioteca de vista: JSTL 1.2. Driver: `org.postgresql:postgresql:42.7.2`.
-
-## 2. Estructura del repositorio
+## 2. Estructura
 
 ```
 dsw-p02-monitoreo-huerto/
-├── README.md                     # esta guia
-├── pom.xml                       # WAR web1, Java 11, JSTL, driver PostgreSQL, JUnit 5
-├── .gitignore / .gitattributes   # excluye target/, setenv.*, .env; normaliza finales de linea
-├── docker/
-│   ├── docker-compose.yml        # PostgreSQL 16 local (puerto 5436) que ejecuta sql/01 y 02 al crearse
-│   └── .env.example              # variables opcionales del contenedor
-├── sql/
-│   ├── 01_schema.sql             # 7 tablas con FK, UNIQUE, CHECK e indices
-│   ├── 02_seed.sql               # datos ficticios: 2 zonas, 4 variables, 5 sensores, 5 umbrales, 2 lecturas, 1 anotacion
-│   ├── 03_consultas_verificacion.sql  # evidencia: version, tablas, conteos, lecturas, alertas, anotaciones
-│   └── 99_cleanup.sql            # borra solo datos de pruebas (lecturas manuales, anotaciones [prueba])
+├── pom.xml                        # WAR web2: Mojarra 2.3.9, PrimeFaces 12, Weld 3.1.9, jaxb-api, driver PostgreSQL, JUnit 5
+├── docker/docker-compose.yml      # PostgreSQL 16 en localhost:5436; ejecuta sql/01 y 02 al crear el volumen
+├── sql/                           # 01_schema, 02_seed, 03_consultas_verificacion, 99_cleanup
 ├── scripts/
-│   ├── verify-module.sh          # verificacion reproducible completa (build, WAR, BD, Tomcat, HTTP)
-│   ├── cleanup.sh                # limpieza local (--all detiene Tomcat y elimina el contenedor)
-│   ├── capturas.py               # capturas del flujo con navegador real (Playwright)
-│   ├── anonimizar_evidencia.py   # sustituye rutas locales en docs/evidencia/txt
-│   ├── setenv.bat.example        # variables DB_* para Tomcat en Windows
-│   └── setenv.sh.example         # variables DB_* para Tomcat en Linux/macOS
+│   ├── verify-module.sh           # M02 o M03: build, WAR, PostgreSQL, despliegue, salud y pruebas
+│   ├── redeploy-tomcat.sh         # reinicio limpio de Tomcat (Windows bloquea los jars desplegados)
+│   ├── pruebas_jsf.py             # recorrido de aceptacion P03 con Playwright (capturas + conteos en psql)
+│   ├── cleanup.sh                 # borra datos de prueba; --all detiene Tomcat y elimina el contenedor
+│   ├── setenv.bat.example / setenv.sh.example   # variables DB_* para Tomcat
+│   └── capturas.py, capturas_psql.ps1, generar_entrega.py, diagrama_er.py, anonimizar_evidencia.py  # evidencia P02
 ├── docs/
-│   ├── F02-seleccion-proyecto.md # comparacion de 3 opciones y plantilla F02 (PR09, segunda opcion PR03)
-│   ├── acta-proyecto.md          # acta breve: equipo, roles funcionales, alcance, flujo, RF y CA de la ficha
-│   ├── modelo-datos.md           # diagrama ER (mermaid) y diccionario
-│   ├── requisitos-trazabilidad.md# RF (C11) -> codigo -> SQL -> prueba -> evidencia -> R02
-│   ├── bitacora.md               # fecha, comando, resultado, interpretacion, siguiente accion
-│   ├── verification-report.md    # VERIFICADO / NO_VERIFICADO / PENDIENTE por prueba
-│   └── evidencia/
-│       ├── INDICE.md             # cada evidencia relacionada con un criterio de R02
-│       ├── img/                  # 13 capturas del flujo, validaciones, anotaciones y despliegue
-│       ├── txt/                  # salidas de build, WAR, Tomcat, psql y curl (rutas anonimizadas)
-│   └── entrega/                  # P02_EQUIPO_01.docx y .pdf: documento de entrega del equipo
+│   ├── p03/                       # arquitectura, trazabilidad-r03, pruebas-aceptacion, verificacion, evidencia/ (INDICE, img, txt)
+│   ├── evidencia/, entrega/       # P02 (intactos)
+│   ├── acta-proyecto.md, F02-seleccion-proyecto.md, modelo-datos.md, requisitos-trazabilidad.md
+│   └── bitacora.md, verification-report.md
 └── src/
     ├── main/java/mx/uv/dsw/huerto/
-    │   ├── config/      DbConfig (variables de entorno), AppContextListener
-    │   ├── model/       Zona, Sensor, Lectura, Alerta, Anotacion
+    │   ├── config/      DbConfig (DB_URL/DB_USER/DB_PASSWORD desde el entorno), AppContextListener
+    │   ├── model/       Zona, Sensor, Lectura, Alerta, Anotacion, Usuario
     │   ├── repository/  SensorRepository, LecturaRepository, AnotacionRepository (JDBC parametrizado)
-    │   ├── service/     LecturaValidator, AnotacionValidator, LecturaService (transaccion), ValidacionException
-    │   └── web/         LecturaServlet (/lecturas), AlertaServlet (/alertas), AnotacionServlet (/anotaciones), HealthServlet (/health)
+    │   ├── service/     LecturaValidator, LecturaService (transaccion), AnotacionValidator, AnotacionService, AuthService, Permisos
+    │   └── web/         SesionBean, LecturaBean, AlertaBean, AnotacionBean, AutenticacionFilter, HealthServlet, Mensajes
+    ├── main/resources/usuarios.properties        # usuarios ficticios con hash PBKDF2 (no hay contrasenas en claro)
     ├── main/webapp/
-    │   ├── index.jsp                 # redirige a /lecturas
-    │   ├── css/estilos.css
-    │   └── WEB-INF/web.xml, WEB-INF/views/{lecturas,alertas,anotaciones,error}.jsp
-    └── test/java/mx/uv/dsw/huerto/service/   # LecturaValidatorTest (10) + AnotacionValidatorTest (4)
+    │   ├── login.xhtml, index.xhtml, expirada.xhtml, error.xhtml
+    │   ├── app/lecturas.xhtml, app/alertas.xhtml, app/anotaciones.xhtml
+    │   ├── WEB-INF/templates/plantilla.xhtml, web.xml, faces-config.xml, beans.xml
+    │   └── resources/css/huerto.css
+    └── test/java/mx/uv/dsw/huerto/service/       # 21 pruebas JUnit
 ```
 
-Capas (M02): **la JSP presenta**, **el Servlet coordina**, **el Service valida y abre la transaccion**, **el Repository
-concentra el SQL parametrizado**. Ninguna vista contiene SQL ni credenciales.
+Capas: Facelets y PrimeFaces presentan; los beans coordinan; los servicios validan y abren la transaccion; los
+repositorios concentran el SQL. Ninguna vista tiene SQL ni reglas (`docs/p03/arquitectura.md`).
 
-## 3. Instalacion y despliegue
+## 3. Configuracion y despliegue (P03)
 
-### 3.1 Clonar
+Los comandos estan probados en Windows 11 con Git Bash. Donde PowerShell difiere, se indica.
 
-```bash
-git clone https://github.com/zywoxxx/dsw-p02-monitoreo-huerto.git
-cd dsw-p02-monitoreo-huerto
-```
-
-### 3.2 Base de datos PostgreSQL 16
-
-**Opcion A - Docker (recomendada, reproducible):**
+### 3.1 Base de datos
 
 ```bash
-docker compose -f docker/docker-compose.yml up -d
+docker compose -f docker/docker-compose.yml up -d        # PostgreSQL 16 en localhost:5436
 docker exec -i dsw-p02-huerto-db psql -U huerto_app -d huerto_db < sql/03_consultas_verificacion.sql
 ```
 
-La primera vez el contenedor ejecuta `sql/01_schema.sql` y `sql/02_seed.sql`. Queda escuchando en `localhost:5436`,
-base `huerto_db`, usuario `huerto_app`, contrasena `huerto_dev` (**valores ficticios de laboratorio**; cambialos con
-`docker/.env`, ver `.env.example`). Si ya existia un volumen con el esquema anterior: `docker compose -f docker/docker-compose.yml down -v` y vuelve a levantar.
+Credenciales de laboratorio: base `huerto_db`, usuario `huerto_app`, contrasena `huerto_dev` (cambiables con
+`docker/.env`, ver `.env.example`). Si ya tienes PostgreSQL instalado, crea el rol y la base y ejecuta `sql/01_schema.sql`
+y `sql/02_seed.sql` con `psql`; ajusta el puerto en `DB_URL`. El esquema no cambio entre P02 y P03: una base de P02 sirve
+tal cual. No borres el volumen para resolver problemas de configuracion; el script de limpieza solo toca datos de prueba.
 
-**Opcion B - PostgreSQL ya instalado (11 o superior):**
+### 3.2 Variables de entorno de Tomcat
 
-```bash
-psql -U postgres -c "CREATE USER huerto_app WITH PASSWORD 'huerto_dev';"
-psql -U postgres -c "CREATE DATABASE huerto_db OWNER huerto_app;"
-psql -U huerto_app -d huerto_db -f sql/01_schema.sql
-psql -U huerto_app -d huerto_db -f sql/02_seed.sql
-```
-
-Ajusta despues `DB_URL` al puerto de tu servidor (por defecto 5432). Esta opcion se verifico con PostgreSQL 17.11 instalado en Windows (puerto 5433): la misma aplicacion, sin recompilar, conecto cambiando solo `DB_URL` (`docs/evidencia/txt/19_postgres_nativo_opcionB.txt`).
-
-### 3.3 Variables de entorno en Tomcat (sin secretos en el codigo)
-
-La aplicacion lee `DB_URL`, `DB_USER` y `DB_PASSWORD` desde propiedades de la JVM (`-DDB_URL=...`) o variables de
-entorno. En Tomcat se definen en `bin/setenv.bat` (Windows) o `bin/setenv.sh` (Linux/macOS), que **no se versionan**:
+La aplicacion lee `DB_URL`, `DB_USER` y `DB_PASSWORD` de propiedades de la JVM o del entorno. Tomcat las toma de
+`bin/setenv.bat` (Windows) o `bin/setenv.sh` (Linux/macOS), que no se versionan:
 
 ```bash
-# Windows (Git Bash)
-cp scripts/setenv.bat.example "$CATALINA_HOME/bin/setenv.bat"
-# Linux/macOS
-cp scripts/setenv.sh.example "$CATALINA_HOME/bin/setenv.sh" && chmod +x "$CATALINA_HOME/bin/setenv.sh"
+cp scripts/setenv.bat.example "$CATALINA_HOME/bin/setenv.bat"      # Windows
+cp scripts/setenv.sh.example  "$CATALINA_HOME/bin/setenv.sh" && chmod +x "$CATALINA_HOME/bin/setenv.sh"   # Linux/macOS
 ```
 
-Contenido de ejemplo:
+Contenido: `DB_URL=jdbc:postgresql://localhost:5436/huerto_db`, `DB_USER=huerto_app`, `DB_PASSWORD=huerto_dev`.
+Un archivo `.env` no lo lee Java; solo lo usa `docker compose`.
 
-```
-DB_URL=jdbc:postgresql://localhost:5436/huerto_db
-DB_USER=huerto_app
-DB_PASSWORD=huerto_dev
-```
-
-### 3.4 Compilar y empaquetar
+### 3.3 Compilar
 
 ```bash
-mvn clean package
+mvn clean package            # 21 pruebas unitarias; genera target/web2.war
 ```
 
-Salida esperada: `Tests run: 14, Failures: 0`, `BUILD SUCCESS` y `target/web1.war`.
-Inspeccion del WAR: `unzip -l target/web1.war` (debe listar `WEB-INF/classes/mx/uv/dsw/huerto/...`, `WEB-INF/lib/postgresql-42.7.2.jar`, `WEB-INF/lib/jstl-1.2.jar`, `WEB-INF/web.xml`, `WEB-INF/views/*.jsp`).
+### 3.4 Desplegar
 
-### 3.5 Desplegar en Tomcat 9
+Primera vez (Tomcat detenido o sin `web2` desplegado):
 
 ```bash
-cp target/web1.war "$CATALINA_HOME/webapps/"
-"$CATALINA_HOME/bin/startup.sh"        # Windows: %CATALINA_HOME%\bin\startup.bat
+cp target/web2.war "$CATALINA_HOME/webapps/"
+"$CATALINA_HOME/bin/startup.sh"          # Windows: %CATALINA_HOME%\bin\startup.bat
 ```
 
-Comprobar salud y navegar:
+Redespliegue: en Windows Tomcat bloquea los jars de `WEB-INF/lib` y el autodespliegue puede conservar clases viejas.
+Usa el script, que detiene Tomcat, borra el despliegue anterior y vuelve a arrancar:
 
-| URL | Que es | RF |
-|---|---|---|
-| `http://localhost:8080/web1/health` | JSON: `{"status":"UP","db":"UP","postgres":"PostgreSQL 16...","lecturas":N}`; 503 si la BD no responde | RNF01 |
-| `http://localhost:8080/web1/lecturas` | Flujo principal: sensores por zona y variable con umbral, formulario de lectura, historial | RF01-RF05 |
-| `http://localhost:8080/web1/alertas` | Alertas generadas por lecturas fuera de umbral | RF06 |
-| `http://localhost:8080/web1/anotaciones` | Zonas del huerto y anotaciones por rol funcional | RF01, RF06 |
-| `http://localhost:8080/web1/` | Redirige a `/lecturas` | - |
+```bash
+export CATALINA_HOME=/c/Tools/apache-tomcat-9.0.115       # tu ruta
+./scripts/redeploy-tomcat.sh target/web2.war web2
+```
 
-Si el puerto 8080 esta ocupado por otro servicio que no te pertenece, cambia el puerto en `conf/server.xml` y
-usa `BASE_URL=http://localhost:PUERTO/web1` en los scripts.
+### 3.5 Entrar
 
-## 4. Datos de prueba
+| URL | Que es |
+|---|---|
+| `http://localhost:8080/web2/` | Redirige al acceso o al flujo principal segun haya sesion |
+| `http://localhost:8080/web2/login.xhtml` | Inicio de sesion |
+| `http://localhost:8080/web2/app/lecturas.xhtml` | Flujo principal: sensores, captura de lectura, historial con filtros y paginacion |
+| `http://localhost:8080/web2/app/alertas.xhtml` | Alertas generadas |
+| `http://localhost:8080/web2/app/anotaciones.xhtml` | Zonas y anotaciones (firmadas con el rol de la sesion) |
+| `http://localhost:8080/web2/health` | JSON de salud; 503 si PostgreSQL no responde |
 
-Sensores de la semilla (`sql/02_seed.sql`). El **rango fisico** de la variable rechaza la lectura (400); el **umbral**
-del sensor la acepta pero genera alerta:
+Usuarios de prueba (ficticios; el archivo `usuarios.properties` solo guarda hashes con sal):
 
-| Sensor | Variable (unidad) | Zona | Rango fisico | Umbral operativo |
-|---|---|---|---|---|
-| `SEN-A-TEMP-01` | Temperatura ambiente (C) | Cama A (jitomate) | [-10, 60] | [15, 32] |
-| `SEN-A-HSUE-01` | Humedad de suelo (%) | Cama A | [0, 100] | [40, 80] |
-| `SEN-I1-TEMP-01` | Temperatura ambiente (C) | Invernadero 1 (lechuga) | [-10, 60] | [18, 30] |
-| `SEN-I1-HAIR-01` | Humedad relativa (%) | Invernadero 1 | [0, 100] | [50, 85] |
-| `SEN-I1-LUZ-01` | Luminosidad (lux) | Invernadero 1 | [0, 100000] | [2000, 60000] |
+| Usuario | Contrasena | Rol | Puede |
+|---|---|---|---|
+| `observador` | `Observador#2026` | OBSERVADOR | registrar lecturas, anotar, consultar |
+| `responsable` | `Responsable#2026` | RESPONSABLE | anotar, consultar |
+| `coordinacion` | `Coordinacion#2026` | COORDINACION | anotar, consultar |
 
-Valores sugeridos con `SEN-A-TEMP-01` en `/lecturas`:
+La sesion caduca a los 20 minutos de inactividad. "Salir" la invalida. Las vistas de `/app` sin sesion redirigen al acceso,
+tambien en peticiones AJAX.
+
+### 3.6 Detener sin perder datos
+
+`"$CATALINA_HOME/bin/shutdown.sh"` (o `shutdown.bat`) y `docker compose -f docker/docker-compose.yml stop`. El volumen de
+PostgreSQL conserva los datos. `./scripts/cleanup.sh` borra solo lecturas `manual` y anotaciones que empiezan con
+`[prueba]`; `./scripts/cleanup.sh --all` ademas retira `web1`/`web2` de Tomcat y elimina el contenedor **y su volumen**
+(revisa el script antes de usar esa opcion).
+
+## 4. Datos de prueba y casos
+
+Sensor `SEN-A-TEMP-01` (Cama A): rango fisico [-10, 60] C, umbral operativo [15, 32] C.
 
 | Entrada | Resultado |
 |---|---|
-| `25.5` | Positiva: 303, lectura guardada con procedencia `manual`, "en rango" |
-| `38` | Positiva con alerta: 303, lectura guardada + alerta **ALTA** |
-| `10` | Positiva con alerta: 303, lectura guardada + alerta **BAJA** |
-| `abc` | Negativa: 400 "El valor debe ser numerico" |
-| vacio | Negativa: 400 "El valor de la lectura es obligatorio" |
-| `150` | Negativa: 400 "fuera del rango fisico permitido ... [-10.00, 60.00]" |
-| `24.555` | Negativa: 400 "admite como maximo 2 decimales" |
-| sensor `999` (curl) | Negativa: 400 "El sensor seleccionado no existe" |
+| 25.5 | valida, sin alerta |
+| 38 / 10 | valida, alerta ALTA / BAJA en la misma transaccion |
+| 15 / 32 | validas, sin alerta (limites) |
+| vacio, `abc` | rechazada, se conserva lo capturado |
+| 150 | rechazada por rango fisico; PostgreSQL no cambia |
+| 24.555 | rechazada por decimales; no se redondea |
 
-Valores sugeridos en `/anotaciones`:
-
-| Entrada | Resultado |
-|---|---|
-| Zona `Cama A`, rol `OBSERVADOR`, texto "Hojas con manchas" | Positiva: 303, anotacion guardada |
-| Rol `ADMIN` (curl) o texto `ok` | Negativa: 400 "rol no valido" / "al menos 3 caracteres" |
+Anotaciones: de 3 a 300 caracteres; el rol sale de la sesion; una referencia a lectura inexistente se rechaza.
 
 ## 5. Verificacion reproducible
 
 ```bash
-export CATALINA_HOME=/ruta/a/apache-tomcat-9.0.115     # Windows Git Bash: /c/Tools/apache-tomcat-9.0.115
-./scripts/verify-module.sh M02
+export CATALINA_HOME=/c/Tools/apache-tomcat-9.0.115
+python -m pip install playwright && python -m playwright install chromium   # una vez
+./scripts/verify-module.sh M03
+./scripts/cleanup.sh
 ```
 
-El script compila, corre las 14 pruebas unitarias, inspecciona el WAR, consulta PostgreSQL, (re)despliega en Tomcat,
-espera la ruta de salud y ejecuta el protocolo HTTP completo con `curl` (lecturas, alertas y anotaciones). Cada paso
-imprime `VERIFICADO` o `NO_VERIFICADO`, guarda su salida en `docs/evidencia/txt/` y al final anonimiza las rutas
-locales. Termina con `RESULTADO: VERIFICADO` (codigo 0) o `NO_VERIFICADO` (codigo 1). Variables opcionales:
-`BASE_URL`, `PSQL_CMD`, `SKIP_DEPLOY=1`.
+Compila, corre las pruebas unitarias, inspecciona el WAR, consulta PostgreSQL, redespliega, espera `/health`, comprueba
+la pagina de acceso y la proteccion de `/app`, ejecuta el recorrido en navegador (`pruebas_jsf.py`: 26 casos con conteos
+antes/despues en la base) y vuelve a consultar PostgreSQL. Deja todo en `docs/p03/evidencia/` (rutas anonimizadas) y termina
+con `RESULTADO: VERIFICADO` o `NO_VERIFICADO`. Variables opcionales: `BASE_URL`, `PSQL_CMD`, `SKIP_DEPLOY=1`;
+`SKIP_DB_DOWN=1` y `SKIP_TX_TEST=1` omiten los dos casos que tocan la infraestructura.
 
-Protocolo manual equivalente (URL, entrada, accion, resultado):
+Sin Python/Playwright el recorrido queda PENDIENTE y hay que repetirlo a mano con los casos de
+`docs/p03/pruebas-aceptacion.md`. `./scripts/verify-module.sh M02` sigue disponible para el incremento anterior.
 
-```bash
-B=http://localhost:8080/web1
-curl -i $B/lecturas                                                  # 200, sensores + historial
-curl -i -X POST -d "sensorId=2&valor=25.5" $B/lecturas               # 303, Location: /web1/lecturas?creada=N
-curl -i -X POST -d "sensorId=2&valor=abc"  $B/lecturas               # 400, "El valor debe ser numerico"
-curl -i -X POST -d "sensorId=2&valor=38"   $B/lecturas               # 303, ...&alerta=ALTA
-curl -i $B/lecturas                                                  # 200, la lectura nueva aparece
-curl -i $B/alertas                                                   # 200, alerta ALTA listada
-curl -i -X POST -d "zonaId=1&autorRol=OBSERVADOR&texto=Hojas+con+manchas" $B/anotaciones   # 303
-curl -i -X POST -d "zonaId=1&autorRol=ADMIN&texto=ok" $B/anotaciones                       # 400
-docker exec -i dsw-p02-huerto-db psql -U huerto_app -d huerto_db < sql/03_consultas_verificacion.sql
-```
+## 6. Decisiones que conviene poder explicar
 
-(`sensorId` es el id de `SEN-A-TEMP-01` y `zonaId` el de `Cama A`; el script los obtiene del HTML porque dependen del orden de insercion.)
+- **Por que Weld**: JSF 2.3 exige CDI para `@Named`/`@ViewScoped`; Tomcat no lo trae. Weld Servlet se registra solo e
+  inyecta tambien en filtros.
+- **Por que `p:inputText` y no `p:inputNumber` para el valor**: un convertidor numerico redondea 24.555; la regla del
+  huerto es rechazarlo, y `LecturaValidator` lo hace con `BigDecimal`.
+- **Por que `f:viewAction` en cada vista**: crea el bean antes del render; si no, el mensaje "base de datos no disponible"
+  se generaba despues de que `p:messages` ya se habia pintado.
+- **Por que el filtro responde con `partial-response`**: una redireccion HTTP normal rompe la respuesta parcial de JSF; asi el
+  navegador va al acceso tambien cuando la sesion caduca a mitad de un envio AJAX.
+- **Por que no hay tabla de usuarios**: el modelo aprobado tiene siete entidades; los usuarios ficticios viven en
+  `usuarios.properties` con hash PBKDF2. Migrarlos a una tabla es el siguiente paso natural si se aprueba.
+- **Por que `jaxb-api`**: Mojarra 2.3.9 usa `DatatypeConverter` al cifrar el *flash* en cada `faces-redirect`; el JDK 11 no lo trae.
 
-Capturas de pantalla (opcional):
+Mas detalle en `docs/p03/arquitectura.md`; trazabilidad en `docs/p03/trazabilidad-r03.md`; estados de prueba en
+`docs/p03/pruebas-aceptacion.md` y `docs/p03/verificacion.md`; fallos encontrados y corregidos en `docs/bitacora.md`.
 
-```bash
-python -m pip install playwright && python -m playwright install chromium
-python scripts/capturas.py            # genera docs/evidencia/img/01..13
-```
-
-Limpieza:
-
-```bash
-./scripts/cleanup.sh          # borra lecturas/alertas/anotaciones de prueba y target/
-./scripts/cleanup.sh --all    # ademas detiene Tomcat, retira web1 y elimina contenedor + volumen
-```
-
-## 6. Pruebas
-
-- **Unitarias (JUnit 5, sin BD):** `LecturaValidatorTest` (10 casos: 3 positivos y 7 negativos) y
-  `AnotacionValidatorTest` (4 casos: 1 positivo y 3 negativos, incluido rol fuera de los tres roles funcionales).
-  Se ejecutan en `mvn package`.
-- **HTTP (integracion):** `scripts/verify-module.sh` (18 comprobaciones) o el protocolo manual de la seccion 5.
-- **Persistencia:** `sql/03_consultas_verificacion.sql` antes y despues del protocolo.
-- **Infraestructura:** con la BD detenida `/health` responde 503 y `/lecturas` muestra la pagina de error controlada
-  (`docs/evidencia/txt/18_health_sin_bd.txt`).
-- **Pruebas minimas de la ficha PR09:** validar unidad/rango (400 por rango fisico), conservar tiempo
-  (`registrado_en`), activar alertas (38 C -> ALTA). Desactivar/atender alertas queda declarado como pendiente.
-
-Estados declarados por prueba en `docs/verification-report.md`.
-
-## 7. Evidencia
-
-Indice completo relacionado con R02 en `docs/evidencia/INDICE.md`.
-
-| Captura | Contenido |
-|---|---|
-| `img/01_get_inicial_lecturas.png` | GET inicial: 5 sensores por zona/variable con umbral y 2 lecturas semilla (`simulado`) |
-| `img/02_formulario_lectura_valida.png` | Formulario lleno (27.5 C) antes del POST |
-| `img/03_post_valido_resultado.png` | Resultado del POST valido: mensaje de exito y fila `manual` |
-| `img/04_post_invalido_no_numerico.png` | Validacion negativa: `abc` |
-| `img/05_post_invalido_rango_fisico.png` | Validacion negativa: `150` |
-| `img/06_post_invalido_vacio.png` | Validacion negativa: campos vacios |
-| `img/07_post_valido_con_alerta.png` | POST 38 C: lectura guardada y alerta ALTA |
-| `img/08_get_alertas.png` | Vista de alertas |
-| `img/09_health_json.png` | Ruta de salud con version de PostgreSQL |
-| `img/10_error_404.png` | Pagina de error controlada |
-| `img/11_get_zonas_anotaciones.png` | Zonas del huerto y anotaciones |
-| `img/12_post_anotacion_valida.png` | Anotacion registrada por el rol OBSERVADOR |
-| `img/13_post_anotacion_invalida.png` | Validacion negativa: texto demasiado corto |
-
-## 8. Decisiones de diseno (para poder explicarlas)
-
-| Decision | Por que | Alternativa considerada | Consecuencia |
-|---|---|---|---|
-| JSP solo presenta; reglas en `*Validator`/`LecturaService`; SQL en `*Repository` | Separar capas permite probar las reglas sin Tomcat ni BD (14 pruebas JUnit). | Scriptlets con JDBC dentro de la JSP. | Mas clases, pero cada una explicable y probable. |
-| POST-Redirect-GET (303) | Evita reenvios duplicados y demuestra persistencia con un GET independiente. | Responder 200 con la lista en el mismo POST. | Se pasa el resultado por query string (`creada`, `alerta`). |
-| Lectura + alerta en una transaccion | Si falla la alerta no debe quedar una lectura huerfana. | Dos operaciones autocommit. | Una conexion por peticion; sin pool (limitacion declarada). |
-| Dos rangos: fisico (`variable`) y operativo (`umbral`) | Distingue "entrada imposible" (400, CA02) de "valor preocupante" (alerta, CA01). | Un solo rango. | Ambas reglas se prueban por separado. |
-| Entidad `sensor` ademas de las 6 de la ficha | El dispositivo es lo que la ficha exige identificar en el evento IoT (Web 4.0); 7 entidades siguen dentro del limite. | Guardar `zona_id` y `variable_id` en cada lectura. | Un JOIN mas en las consultas. |
-| Columna `lectura.origen` (`manual`/`simulado`) | Control del riesgo principal de la ficha: no presentar simulacion como medicion real. | Distinguir por convencion en la observacion. | `CHECK` en BD y etiqueta visible en la interfaz. |
-| Rol funcional declarado en la anotacion (sin login) | P02 es Web 1.0 sin autenticacion; el rol queda persistido con `CHECK` de tres valores. | Autenticacion basica desde P02. | La autorizacion real (RNF02) se abordara en Web 2.0/3.0 (declarado). |
-| Credenciales por entorno (`DbConfig`) | M02 exige no versionar secretos; el WAR es el mismo en cualquier entorno. | JNDI `context.xml` de Tomcat. | Hay que crear `setenv.*` en cada maquina (documentado). |
-
-## 9. Seguridad y datos
-
-- Sin credenciales, tokens ni datos personales en el repositorio; `setenv.*` y `.env` estan en `.gitignore`.
-- Todos los datos son ficticios (huerto escolar demo). Las rutas locales en la evidencia se sustituyen por marcadores.
-- Consultas solo con `PreparedStatement`; salida HTML escapada con JSTL; la pagina de error no muestra trazas.
-- Accesibilidad base (RNF03): etiquetas `<label for>`, formularios navegables por teclado, mensajes de error en texto.
-
-## 10. Autoria
-
-Producto de equipo del PR09 (ver `docs/acta-proyecto.md`):
+## 7. Equipo
 
 | Responsabilidad | Integrante | GitHub |
 |---|---|---|
-| Desarrollo web (JSP/Servlet) | Juan Pablo Kuri Ricardez | `juankuri` |
+| Desarrollo web | Juan Pablo Kuri Ricardez | `juankuri` |
 | Datos (PostgreSQL) | Pedro Garcia Padilla | `pedro-gar-pad` |
 | Evidencia y documentacion | Alejandro Pacheco Luna | `zywoxxx` |
 | Evidencia y documentacion | Ariadna Trejo Alvarez | `ariadna-19` |
-
-Las contribuciones de cada integrante se describen en la seccion 10 del documento de entrega (`docs/entrega/P02_EQUIPO_01.docx`).

@@ -15,7 +15,9 @@ import mx.uv.dsw.huerto.model.Sensor;
  * Acceso JDBC a la tabla sensor y sus catalogos relacionados (zona, variable, umbral).
  * Todas las consultas son parametrizadas y cierran recursos con try-with-resources.
  */
-public class SensorRepository {
+public class SensorRepository implements java.io.Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private static final String BASE_SELECT =
         "SELECT s.id, s.codigo, s.activo, s.zona_id, z.nombre AS zona, "

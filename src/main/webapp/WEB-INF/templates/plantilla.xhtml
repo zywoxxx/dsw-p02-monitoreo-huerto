@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      lang="es">
+<f:view contentType="text/html" locale="es">
+<!-- Cada vista declara aqui un f:viewAction que crea su bean ANTES del render, para que los
+     mensajes de @PostConstruct (por ejemplo, base de datos no disponible) lleguen a p:messages. -->
+<ui:insert name="metadata"/>
+<h:head>
+    <f:facet name="first">
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    </f:facet>
+    <title><ui:insert name="titulo">Inicio</ui:insert> | PR09 Monitoreo de huerto</title>
+    <h:outputStylesheet library="css" name="huerto.css"/>
+</h:head>
+<h:body>
+    <header class="cabecera">
+        <div class="contenedor barra">
+            <div>
+                <h1>PR09 · Monitoreo de huerto o ambiente</h1>
+                <p class="subtitulo">Incremento P03 · JSF 2.3 + PrimeFaces 12 · Tomcat 9 · PostgreSQL 16</p>
+            </div>
+            <div class="sesion">
+                <span class="usuario"><i class="pi pi-user"/> #{sesion.nombre} · <b>#{sesion.rol}</b></span>
+                <h:form id="formSalir">
+                    <p:commandButton id="btnSalir" value="Salir" icon="pi pi-sign-out" action="#{sesion.cerrarSesion}"
+                                     ajax="false" styleClass="ui-button-outlined boton-salir"/>
+                </h:form>
+            </div>
+        </div>
+        <nav class="contenedor navegacion">
+            <h:link outcome="/app/lecturas" value="Lecturas"
+                    styleClass="#{view.viewId eq '/app/lecturas.xhtml' ? 'activo' : ''}"/>
+            <h:link outcome="/app/alertas" value="Alertas"
+                    styleClass="#{view.viewId eq '/app/alertas.xhtml' ? 'activo' : ''}"/>
+            <h:link outcome="/app/anotaciones" value="Zonas y anotaciones"
+                    styleClass="#{view.viewId eq '/app/anotaciones.xhtml' ? 'activo' : ''}"/>
+            <h:outputLink value="#{request.contextPath}/health" target="_blank">Salud (JSON)</h:outputLink>
+        </nav>
+    </header>
+
+    <main class="contenedor">
+        <p:messages id="mensajes" showDetail="true" showSummary="true" closable="true" escape="true"/>
+        <ui:insert name="contenido"/>
+    </main>
+
+    <footer class="pie contenedor">
+        Desarrollo de Sistemas Web · DSW-19559 · Equipo DSW-E01 · Datos ficticios de laboratorio.
+    </footer>
+</h:body>
+</f:view>
+</html>

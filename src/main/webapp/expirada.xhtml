@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      lang="es">
+<h:head>
+    <f:facet name="first"><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/></f:facet>
+    <title>Sesion expirada | PR09 Monitoreo de huerto</title>
+    <h:outputStylesheet library="css" name="huerto.css"/>
+</h:head>
+<h:body styleClass="fondo-acceso">
+    <main class="acceso">
+        <div class="tarjeta">
+            <h2>La vista expiro</h2>
+            <p>Tu sesion caduco por inactividad o el formulario que enviaste ya no es valido. No se guardo nada.</p>
+            <p><h:outputLink value="#{request.contextPath}/login.xhtml" styleClass="enlace-boton">Volver a iniciar sesion</h:outputLink></p>
+        </div>
+    </main>
+</h:body>
+</html>

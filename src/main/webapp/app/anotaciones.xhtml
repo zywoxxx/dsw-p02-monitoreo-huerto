@@ -1,0 +1,89 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/plantilla.xhtml">
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:viewAction action="#{anotacionBean.preparar}"/>
+        </f:metadata>
+    </ui:define>
+    <ui:define name="titulo">Zonas y anotaciones</ui:define>
+    <ui:define name="contenido">
+
+        <h:form id="formZonas">
+            <p:dataTable id="tablaZonas" var="z" value="#{anotacionBean.zonas}" reflow="true" styleClass="tabla tarjeta"
+                         emptyMessage="No hay zonas registradas.">
+                <f:facet name="header">Zonas del huerto (RF01)</f:facet>
+                <p:column headerText="#" width="60">#{z.id}</p:column>
+                <p:column headerText="Zona">#{z.nombre}</p:column>
+                <p:column headerText="Cultivo">#{z.cultivo}</p:column>
+                <p:column headerText="Ubicacion">#{z.ubicacion}</p:column>
+            </p:dataTable>
+        </h:form>
+
+        <h:form id="formAnotacion" rendered="#{sesion.puede('ANOTAR') and anotacionBean.baseDisponible}">
+            <p:panel header="Registrar anotacion (RF06)" styleClass="tarjeta">
+                <p class="ayuda">La anotacion se firma con el rol de tu sesion (<b>#{sesion.rol}</b>); no se elige en el
+                    formulario. Puedes ligarla al numero de una lectura existente.</p>
+                <div class="rejilla">
+                    <div class="campo">
+                        <p:outputLabel for="zona" value="Zona *"/>
+                        <p:selectOneMenu id="zona" value="#{anotacionBean.zonaId}" converter="javax.faces.Long" styleClass="ancho">
+                            <f:selectItem itemLabel="-- Selecciona una zona --" itemValue="" noSelectionOption="true"/>
+                            <f:selectItems value="#{anotacionBean.zonas}" var="z" itemValue="#{z.id}" itemLabel="#{z.nombre} - #{z.cultivo}"/>
+                        </p:selectOneMenu>
+                    </div>
+                    <div class="campo">
+                        <p:outputLabel for="lectura" value="Lectura relacionada (opcional, numero)"/>
+                        <p:inputText id="lectura" value="#{anotacionBean.lecturaId}" maxlength="18" inputmode="numeric" styleClass="ancho"/>
+                    </div>
+                    <div class="campo campo-ancho">
+                        <p:outputLabel for="texto" value="Anotacion * (3 a 300 caracteres)"/>
+                        <p:inputTextarea id="texto" value="#{anotacionBean.texto}" rows="3" maxlength="300"
+                                         counter="contadorTexto" counterTemplate="{0} caracteres disponibles"
+                                         autoResize="false" styleClass="ancho"/>
+                        <h:outputText id="contadorTexto" styleClass="nota"/>
+                    </div>
+                </div>
+                <div class="acciones">
+                    <p:commandButton id="btnAnotar" value="Registrar anotacion" icon="pi pi-pencil"
+                                     action="#{anotacionBean.guardar}" process="@form"
+                                     update="@form :mensajes :formAnotaciones:tablaAnotaciones"/>
+                    <p:blockUI block="formAnotacion" trigger="btnAnotar">
+                        <i class="pi pi-spin pi-spinner"/> Guardando...
+                    </p:blockUI>
+                </div>
+            </p:panel>
+        </h:form>
+
+        <h:form id="formAnotaciones">
+            <p:dataTable id="tablaAnotaciones" widgetVar="tablaAnotaciones" var="n"
+                         value="#{anotacionBean.anotaciones}" filteredValue="#{anotacionBean.anotacionesFiltradas}"
+                         paginator="true" rows="10" rowsPerPageTemplate="10,20,50" paginatorPosition="bottom"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         currentPageReportTemplate="Anotaciones {startRecord}-{endRecord} de {totalRecords}"
+                         sortMode="single" reflow="true" styleClass="tabla tarjeta"
+                         emptyMessage="No hay anotaciones registradas.">
+                <f:facet name="header">Anotaciones recientes</f:facet>
+                <p:column headerText="#" sortBy="#{n.id}" width="60">#{n.id}</p:column>
+                <p:column headerText="Zona" filterBy="#{n.zona}" filterMatchMode="contains">#{n.zona}</p:column>
+                <p:column headerText="Rol" filterBy="#{n.autorRol}" filterMatchMode="exact" width="150">
+                    <f:facet name="filter">
+                        <p:selectOneMenu onchange="PF('tablaAnotaciones').filter()" styleClass="filtro">
+                            <f:selectItem itemLabel="Todos" itemValue="#{null}" noSelectionOption="true"/>
+                            <f:selectItem itemLabel="RESPONSABLE" itemValue="RESPONSABLE"/>
+                            <f:selectItem itemLabel="OBSERVADOR" itemValue="OBSERVADOR"/>
+                            <f:selectItem itemLabel="COORDINACION" itemValue="COORDINACION"/>
+                        </p:selectOneMenu>
+                    </f:facet>
+                    <p:tag value="#{n.autorRol}" severity="secondary"/>
+                </p:column>
+                <p:column headerText="Anotacion">#{n.texto}</p:column>
+                <p:column headerText="Lectura" width="90"><h:outputText rendered="#{n.lecturaId != null}" value="##{n.lecturaId}"/></p:column>
+                <p:column headerText="Creada" sortBy="#{n.creadaEn}">#{n.creadaEnTexto}</p:column>
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+</ui:composition>

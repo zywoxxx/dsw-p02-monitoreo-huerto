@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      lang="es">
+<h:head>
+    <f:facet name="first"><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/></f:facet>
+    <title>Error | PR09 Monitoreo de huerto</title>
+    <h:outputStylesheet library="css" name="huerto.css"/>
+</h:head>
+<h:body styleClass="fondo-acceso">
+    <main class="acceso">
+        <div class="tarjeta">
+            <h2>Ocurrio un problema (HTTP #{requestScope['javax.servlet.error.status_code']})</h2>
+            <h:panelGroup rendered="#{requestScope['javax.servlet.error.status_code'] == 404}">
+                <p>La ruta solicitada no existe en esta aplicacion.</p>
+            </h:panelGroup>
+            <h:panelGroup rendered="#{requestScope['javax.servlet.error.status_code'] != 404}">
+                <p>No fue posible completar la operacion. Si el problema persiste, verifica que PostgreSQL este activo y que
+                    las variables DB_URL, DB_USER y DB_PASSWORD esten definidas en Tomcat.</p>
+                <p class="nota">Detalle: #{requestScope['javax.servlet.error.message']}</p>
+            </h:panelGroup>
+            <p>
+                <h:outputLink value="#{request.contextPath}/app/lecturas.xhtml" styleClass="enlace-boton">Ir a lecturas</h:outputLink>
+                <h:outputLink value="#{request.contextPath}/health">Ruta de salud</h:outputLink>
+            </p>
+        </div>
+    </main>
+</h:body>
+</html>

@@ -10,7 +10,7 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
 /**
- * Ciclo de vida de la aplicacion: al arrancar registra en el log si la configuracion de BD esta
+ * Ciclo de vida de la aplicacion (web2, P03): al arrancar registra en el log si la configuracion de BD esta
  * completa; al detenerse anula el registro del driver JDBC para que Tomcat no reporte fugas de
  * memoria al re-desplegar el WAR.
  */

@@ -1,0 +1,56 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ---------------------------< mx.uv.dsw:web2 >---------------------------
+[INFO] Building PR09 Monitoreo de huerto o ambiente - Incremento P03 (web2-jsf) 0.3.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ war ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ web2 ---
+[INFO] Deleting <REPO>\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ web2 ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ web2 ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 25 source files with javac [debug release 11] to target\classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ web2 ---
+[INFO] skip non existing resourceDirectory <REPO>\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ web2 ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 4 source files with javac [debug release 11] to target\test-classes
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ web2 ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running mx.uv.dsw.huerto.service.AnotacionValidatorTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.026 s -- in mx.uv.dsw.huerto.service.AnotacionValidatorTest
+[INFO] Running mx.uv.dsw.huerto.service.AuthServiceTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.108 s -- in mx.uv.dsw.huerto.service.AuthServiceTest
+[INFO] Running mx.uv.dsw.huerto.service.LecturaValidatorLimitesTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in mx.uv.dsw.huerto.service.LecturaValidatorLimitesTest
+[INFO] Running mx.uv.dsw.huerto.service.LecturaValidatorTest
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 s -- in mx.uv.dsw.huerto.service.LecturaValidatorTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 21, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- war:3.3.2:war (default-war) @ web2 ---
+[INFO] Packaging webapp
+[INFO] Assembling webapp [web2] in [<REPO>\target\web2]
+[INFO] Processing war project
+[INFO] Copying webapp resources [<REPO>\src\main\webapp]
+[INFO] Building war: <REPO>\target\web2.war
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  2.842 s
+[INFO] Finished at: 2026-09-25T22:30:12-06:00
+[INFO] ------------------------------------------------------------------------

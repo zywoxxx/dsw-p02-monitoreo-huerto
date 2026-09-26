@@ -1,0 +1,153 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/plantilla.xhtml">
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:viewAction action="#{lecturaBean.preparar}"/>
+        </f:metadata>
+    </ui:define>
+    <ui:define name="titulo">Lecturas</ui:define>
+    <ui:define name="contenido">
+
+        <!-- Formulario del flujo principal (RF03). Solo el rol con permiso lo ve; el bean vuelve a comprobarlo. -->
+        <h:form id="formLectura" rendered="#{sesion.puede('REGISTRAR_LECTURA') and lecturaBean.baseDisponible}">
+            <p:panel header="Registrar lectura manual" styleClass="tarjeta">
+                <p class="ayuda">Elige el sensor y captura el valor medido. Se valida el rango fisico de la variable,
+                    se guarda con procedencia <b>manual</b> y su instante, y si sale del umbral operativo se genera
+                    la alerta en la misma transaccion.</p>
+                <div class="rejilla">
+                    <div class="campo">
+                        <p:outputLabel for="sensor" value="Sensor *"/>
+                        <p:selectOneMenu id="sensor" value="#{lecturaBean.sensorId}" converter="javax.faces.Long"
+                                         filter="true" filterMatchMode="contains" styleClass="ancho">
+                            <f:selectItem itemLabel="-- Selecciona un sensor --" itemValue="" noSelectionOption="true"/>
+                            <f:selectItems value="#{lecturaBean.sensores}" var="s" itemValue="#{s.id}" itemLabel="#{s.etiqueta}"/>
+                            <p:ajax process="@this" update="infoSensor"/>
+                        </p:selectOneMenu>
+                    </div>
+                    <div class="campo">
+                        <p:outputLabel for="valor" value="Valor medido *"/>
+                        <p:inputText id="valor" value="#{lecturaBean.valor}" maxlength="12" placeholder="Ej. 24.5"
+                                     styleClass="ancho" inputmode="decimal"/>
+                        <small class="nota">Numerico, maximo dos decimales. No se redondea: 24.555 se rechaza.</small>
+                    </div>
+                    <div class="campo campo-ancho">
+                        <p:outputLabel for="observacion" value="Observacion (opcional, maximo 200)"/>
+                        <p:inputTextarea id="observacion" value="#{lecturaBean.observacion}" rows="2" maxlength="200"
+                                         counter="contador" counterTemplate="{0} caracteres disponibles"
+                                         autoResize="false" styleClass="ancho"/>
+                        <h:outputText id="contador" styleClass="nota"/>
+                    </div>
+                </div>
+                <p:outputPanel id="infoSensor" styleClass="info-sensor">
+                    <ui:fragment rendered="#{not empty lecturaBean.sensorSeleccionado}">
+                        <i class="pi pi-info-circle"/>
+                        <b>#{lecturaBean.sensorSeleccionado.variableNombre}</b> en
+                        #{lecturaBean.sensorSeleccionado.zona} · unidad <b>#{lecturaBean.sensorSeleccionado.unidad}</b> ·
+                        rango fisico [#{lecturaBean.sensorSeleccionado.valorMinimo}, #{lecturaBean.sensorSeleccionado.valorMaximo}] ·
+                        umbral operativo
+                        <h:outputText rendered="#{lecturaBean.sensorSeleccionado.conUmbral}"
+                                      value="[#{lecturaBean.sensorSeleccionado.umbralMinimo}, #{lecturaBean.sensorSeleccionado.umbralMaximo}]"/>
+                        <h:outputText rendered="#{not lecturaBean.sensorSeleccionado.conUmbral}" value="sin umbral"/>
+                    </ui:fragment>
+                    <ui:fragment rendered="#{empty lecturaBean.sensorSeleccionado}">
+                        <span class="nota">Al elegir un sensor veras su unidad, rango fisico y umbral.</span>
+                    </ui:fragment>
+                </p:outputPanel>
+                <div class="acciones">
+                    <p:commandButton id="btnGuardar" value="Registrar lectura" icon="pi pi-save"
+                                     action="#{lecturaBean.guardar}" process="@form"
+                                     update="@form :mensajes :formTabla:tablaLecturas"/>
+                    <p:blockUI block="formLectura" trigger="btnGuardar">
+                        <i class="pi pi-spin pi-spinner"/> Guardando...
+                    </p:blockUI>
+                </div>
+            </p:panel>
+        </h:form>
+
+        <h:panelGroup layout="block" styleClass="aviso aviso-info" rendered="#{not sesion.puede('REGISTRAR_LECTURA')}">
+            Tu rol <b>#{sesion.rol}</b> consulta el historial y las alertas; la captura de lecturas corresponde al observador.
+        </h:panelGroup>
+
+        <h:form id="formCatalogo">
+            <p:panel header="Sensores por zona y variable (RF01, RF02, RF04)" toggleable="true" collapsed="true"
+                     styleClass="tarjeta" widgetVar="panelSensores">
+                <p:dataTable id="tablaSensores" var="s" value="#{lecturaBean.sensores}" reflow="true" styleClass="tabla"
+                             emptyMessage="No hay sensores activos registrados.">
+                    <p:column headerText="Codigo"><code>#{s.codigo}</code></p:column>
+                    <p:column headerText="Variable">#{s.variableNombre}</p:column>
+                    <p:column headerText="Unidad">#{s.unidad}</p:column>
+                    <p:column headerText="Zona">#{s.zona}</p:column>
+                    <p:column headerText="Rango fisico">[#{s.valorMinimo}, #{s.valorMaximo}]</p:column>
+                    <p:column headerText="Umbral operativo">
+                        <h:outputText rendered="#{s.conUmbral}" value="[#{s.umbralMinimo}, #{s.umbralMaximo}]"/>
+                        <h:outputText rendered="#{not s.conUmbral}" value="sin umbral"/>
+                    </p:column>
+                </p:dataTable>
+            </p:panel>
+        </h:form>
+
+        <!-- Historial (RF05) con filtros por sensor, variable, zona y procedencia, orden y paginacion -->
+        <h:form id="formTabla">
+            <p:dataTable id="tablaLecturas" widgetVar="tablaLecturas" var="l"
+                         value="#{lecturaBean.lecturas}" filteredValue="#{lecturaBean.lecturasFiltradas}"
+                         paginator="true" rows="10" rowsPerPageTemplate="10,20,50" paginatorPosition="bottom"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         currentPageReportTemplate="Lecturas {startRecord}-{endRecord} de {totalRecords}"
+                         sortMode="single" reflow="true" styleClass="tabla tarjeta"
+                         emptyMessage="Aun no hay lecturas registradas (o ninguna coincide con los filtros).">
+                <f:facet name="header">
+                    <div class="encabezado-tabla">
+                        <span>Historial de lecturas (RF05)</span>
+                        <p:commandButton icon="pi pi-refresh" title="Actualizar historial" action="#{lecturaBean.cargar}"
+                                         update="tablaLecturas :mensajes" styleClass="ui-button-flat"/>
+                    </div>
+                </f:facet>
+                <p:column headerText="#" sortBy="#{l.id}" width="70">#{l.id}</p:column>
+                <p:column headerText="Sensor" filterBy="#{l.sensorCodigo}" filterMatchMode="contains" sortBy="#{l.sensorCodigo}">
+                    <code>#{l.sensorCodigo}</code>
+                </p:column>
+                <p:column headerText="Variable" filterBy="#{l.variableNombre}" filterMatchMode="exact">
+                    <f:facet name="filter">
+                        <p:selectOneMenu onchange="PF('tablaLecturas').filter()" styleClass="filtro">
+                            <f:selectItem itemLabel="Todas" itemValue="#{null}" noSelectionOption="true"/>
+                            <f:selectItems value="#{lecturaBean.variables}"/>
+                        </p:selectOneMenu>
+                    </f:facet>
+                    #{l.variableNombre}
+                </p:column>
+                <p:column headerText="Zona" filterBy="#{l.zona}" filterMatchMode="exact">
+                    <f:facet name="filter">
+                        <p:selectOneMenu onchange="PF('tablaLecturas').filter()" styleClass="filtro">
+                            <f:selectItem itemLabel="Todas" itemValue="#{null}" noSelectionOption="true"/>
+                            <f:selectItems value="#{lecturaBean.zonas}"/>
+                        </p:selectOneMenu>
+                    </f:facet>
+                    #{l.zona}
+                </p:column>
+                <p:column headerText="Valor" sortBy="#{l.valor}" styleClass="num">
+                    <h:outputText value="#{l.valor}"/> #{l.unidad}
+                </p:column>
+                <p:column headerText="Procedencia" filterBy="#{l.origen}" filterMatchMode="exact">
+                    <f:facet name="filter">
+                        <p:selectOneMenu onchange="PF('tablaLecturas').filter()" styleClass="filtro">
+                            <f:selectItem itemLabel="Todas" itemValue="#{null}" noSelectionOption="true"/>
+                            <f:selectItem itemLabel="manual" itemValue="manual"/>
+                            <f:selectItem itemLabel="simulado" itemValue="simulado"/>
+                        </p:selectOneMenu>
+                    </f:facet>
+                    <p:tag value="#{l.origen}" severity="#{l.origen eq 'manual' ? 'info' : 'warning'}"/>
+                </p:column>
+                <p:column headerText="Observacion">#{l.observacion}</p:column>
+                <p:column headerText="Registrada" sortBy="#{l.registradoEn}">#{l.registradoEnTexto}</p:column>
+                <p:column headerText="Alerta" width="90">
+                    <p:tag rendered="#{l.conAlerta}" value="#{l.alertaNivel}" severity="danger"/>
+                    <h:outputText rendered="#{not l.conAlerta}" value="en rango" styleClass="en-rango"/>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+</ui:composition>

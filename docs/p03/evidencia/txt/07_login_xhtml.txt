@@ -1,0 +1,31 @@
+HTTP/1.1 200 
+Set-Cookie: JSESSIONID=8B9888326289EBE43DB500F749FC5A8A; Path=/web2; HttpOnly
+Content-Type: text/html;charset=UTF-8
+Content-Length: 4827
+Date: Sat, 26 Sep 2026 04:30:23 GMT
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head id="j_idt2">
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" /><link type="text/css" rel="stylesheet" href="/web2/javax.faces.resource/theme.css.xhtml?ln=primefaces-saga&amp;v=12.0.0" /><link type="text/css" rel="stylesheet" href="/web2/javax.faces.resource/primeicons/primeicons.css.xhtml?ln=primefaces&amp;v=12.0.0" /><link type="text/css" rel="stylesheet" href="/web2/javax.faces.resource/huerto.css.xhtml?ln=css" /><link type="text/css" rel="stylesheet" href="/web2/javax.faces.resource/components.css.xhtml?ln=primefaces&amp;v=12.0.0" /><script type="text/javascript" src="/web2/javax.faces.resource/jquery/jquery.js.xhtml?ln=primefaces&amp;v=12.0.0"></script><script type="text/javascript" src="/web2/javax.faces.resource/core.js.xhtml?ln=primefaces&amp;v=12.0.0"></script><script type="text/javascript" src="/web2/javax.faces.resource/components.js.xhtml?ln=primefaces&amp;v=12.0.0"></script><script type="text/javascript" src="/web2/javax.faces.resource/jquery/jquery-plugins.js.xhtml?ln=primefaces&amp;v=12.0.0"></script><script type="text/javascript">if(window.PrimeFaces){PrimeFaces.settings.locale='es';PrimeFaces.settings.viewId='/login.xhtml';PrimeFaces.settings.contextPath='/web2';PrimeFaces.settings.cookiesSecure=false;}</script>
+    <title>Acceso | PR09 Monitoreo de huerto</title></head><body class="fondo-acceso">
+    <main class="acceso">
+        <div class="acceso-titulo">
+            <h1>PR09 · Monitoreo de huerto o ambiente</h1>
+            <p class="subtitulo">Incremento P03 · JSF 2.3 + PrimeFaces 12 · Equipo DSW-E01</p>
+        </div><div id="mensajes" class="ui-messages ui-widget" aria-live="polite"></div><script id="mensajes_s" type="text/javascript">$(function(){PrimeFaces.cw("Messages","widget_mensajes",{id:"mensajes"});});</script>
+<form id="formAcceso" name="formAcceso" method="post" action="/web2/login.xhtml" class="tarjeta" enctype="application/x-www-form-urlencoded">
+<input type="hidden" name="formAcceso" value="formAcceso" />
+
+            <h2>Iniciar sesion</h2>
+            <div class="campo"><label id="formAcceso:j_idt13" class="ui-outputlabel ui-widget" for="formAcceso:usuario">Usuario<span class="ui-outputlabel-rfi">*</span></label><input id="formAcceso:usuario" name="formAcceso:usuario" type="text" class="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all ancho" aria-required="true" autocomplete="username" /><script id="formAcceso:usuario_s" type="text/javascript">$(function(){PrimeFaces.cw("InputText","widget_formAcceso_usuario",{id:"formAcceso:usuario"});});</script><div id="formAcceso:j_idt14" role="alert" aria-atomic="true" aria-live="polite" class="ui-message"></div><script id="formAcceso:j_idt14_s" type="text/javascript">$(function(){PrimeFaces.cw("Message","widget_formAcceso_j_idt14",{id:"formAcceso:j_idt14",target:"formAcceso:usuario"});});</script>
+            </div>
+            <div class="campo"><label id="formAcceso:j_idt16" class="ui-outputlabel ui-widget" for="formAcceso:contrasena">Contrasena<span class="ui-outputlabel-rfi">*</span></label><input id="formAcceso:contrasena" name="formAcceso:contrasena" type="password" class="ui-password ui-inputfield ui-widget ui-state-default ui-corner-all ancho" aria-required="true" autocomplete="current-password" /><script id="formAcceso:contrasena_s" type="text/javascript">$(function(){PrimeFaces.cw("Password","widget_formAcceso_contrasena",{id:"formAcceso:contrasena"});});</script><div id="formAcceso:j_idt17" role="alert" aria-atomic="true" aria-live="polite" class="ui-message"></div><script id="formAcceso:j_idt17_s" type="text/javascript">$(function(){PrimeFaces.cw("Message","widget_formAcceso_j_idt17",{id:"formAcceso:j_idt17",target:"formAcceso:contrasena"});});</script>
+            </div>
+            <div class="acciones"><button id="formAcceso:btnEntrar" name="formAcceso:btnEntrar" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-left" onclick="" type="submit"><span class="ui-button-icon-left ui-icon ui-c pi pi-sign-in"></span><span class="ui-button-text ui-c">Entrar</span></button><script id="formAcceso:btnEntrar_s" type="text/javascript">$(function(){PrimeFaces.cw("CommandButton","widget_formAcceso_btnEntrar",{id:"formAcceso:btnEntrar"});});</script>
+            </div>
+            <p class="ayuda">Roles funcionales del PR09: observador (captura lecturas y anota), responsable y
+                coordinacion (consultan y anotan). Los usuarios de prueba estan en el README; son datos ficticios.</p><input type="hidden" name="javax.faces.ViewState" id="j_id1:javax.faces.ViewState:0" value="-1347152184052338893:1308107659539136915" autocomplete="off" />
+</form>
+    </main></body>
+</html>

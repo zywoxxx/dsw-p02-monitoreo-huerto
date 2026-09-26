@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-EVID = ROOT / "docs" / "evidencia" / "txt"
+EVID = Path(os.environ["EVID_DIR"]) if os.environ.get("EVID_DIR") else ROOT / "docs" / "evidencia" / "txt"
 
 
 def variantes(ruta):

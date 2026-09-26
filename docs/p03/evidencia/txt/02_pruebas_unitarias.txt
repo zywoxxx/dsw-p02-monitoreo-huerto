@@ -1,0 +1,16 @@
+-------------------------------------------------------------------------------
+Test set: mx.uv.dsw.huerto.service.AnotacionValidatorTest
+-------------------------------------------------------------------------------
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.026 s -- in mx.uv.dsw.huerto.service.AnotacionValidatorTest
+-------------------------------------------------------------------------------
+Test set: mx.uv.dsw.huerto.service.AuthServiceTest
+-------------------------------------------------------------------------------
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.108 s -- in mx.uv.dsw.huerto.service.AuthServiceTest
+-------------------------------------------------------------------------------
+Test set: mx.uv.dsw.huerto.service.LecturaValidatorLimitesTest
+-------------------------------------------------------------------------------
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in mx.uv.dsw.huerto.service.LecturaValidatorLimitesTest
+-------------------------------------------------------------------------------
+Test set: mx.uv.dsw.huerto.service.LecturaValidatorTest
+-------------------------------------------------------------------------------
+Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 s -- in mx.uv.dsw.huerto.service.LecturaValidatorTest

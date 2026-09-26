@@ -21,13 +21,13 @@ rm -rf target
 
 if [ "${1:-}" = "--all" ]; then
   if [ -n "${CATALINA_HOME:-}" ] && [ -d "$CATALINA_HOME/bin" ]; then
-    echo "== Deteniendo Tomcat y retirando web1 =="
+    echo "== Deteniendo Tomcat y retirando web1/web2 =="
     case "$(uname -s)" in
       MINGW*|MSYS*|CYGWIN*) cmd //c "$(cygpath -w "$CATALINA_HOME/bin/shutdown.bat")" >/dev/null 2>&1 ;;
       *) "$CATALINA_HOME/bin/shutdown.sh" >/dev/null 2>&1 ;;
     esac
     sleep 3
-    rm -rf "$CATALINA_HOME/webapps/web1" "$CATALINA_HOME/webapps/web1.war"
+    rm -rf "$CATALINA_HOME/webapps/web1" "$CATALINA_HOME/webapps/web1.war" "$CATALINA_HOME/webapps/web2" "$CATALINA_HOME/webapps/web2.war"
   fi
   echo "== Eliminando contenedor y volumen de PostgreSQL =="
   docker compose -f docker/docker-compose.yml down -v

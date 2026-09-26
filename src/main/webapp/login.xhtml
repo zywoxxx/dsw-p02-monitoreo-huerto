@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      lang="es">
+<h:head>
+    <f:facet name="first">
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    </f:facet>
+    <title>Acceso | PR09 Monitoreo de huerto</title>
+    <h:outputStylesheet library="css" name="huerto.css"/>
+</h:head>
+<h:body styleClass="fondo-acceso">
+    <main class="acceso">
+        <div class="acceso-titulo">
+            <h1>PR09 · Monitoreo de huerto o ambiente</h1>
+            <p class="subtitulo">Incremento P03 · JSF 2.3 + PrimeFaces 12 · Equipo DSW-E01</p>
+        </div>
+        <p:messages id="mensajes" showDetail="true" closable="true"/>
+        <h:panelGroup layout="block" styleClass="aviso aviso-info" rendered="#{param.expirada eq '1'}">
+            Tu sesion expiro o no has iniciado sesion. Vuelve a entrar para continuar.
+        </h:panelGroup>
+        <h:panelGroup layout="block" styleClass="aviso aviso-ok" rendered="#{param.salida eq '1'}">
+            Sesion cerrada correctamente.
+        </h:panelGroup>
+        <h:form id="formAcceso" styleClass="tarjeta">
+            <h2>Iniciar sesion</h2>
+            <div class="campo">
+                <p:outputLabel for="usuario" value="Usuario"/>
+                <p:inputText id="usuario" value="#{sesion.nombreUsuario}" required="true"
+                             requiredMessage="Escribe tu usuario." autocomplete="username" styleClass="ancho"/>
+                <p:message for="usuario"/>
+            </div>
+            <div class="campo">
+                <p:outputLabel for="contrasena" value="Contrasena"/>
+                <p:password id="contrasena" value="#{sesion.contrasena}" required="true" feedback="false"
+                            requiredMessage="Escribe tu contrasena." autocomplete="current-password" styleClass="ancho"/>
+                <p:message for="contrasena"/>
+            </div>
+            <div class="acciones">
+                <p:commandButton id="btnEntrar" value="Entrar" icon="pi pi-sign-in"
+                                 action="#{sesion.iniciarSesion}" ajax="false"/>
+            </div>
+            <p class="ayuda">Roles funcionales del PR09: observador (captura lecturas y anota), responsable y
+                coordinacion (consultan y anotan). Los usuarios de prueba estan en el README; son datos ficticios.</p>
+        </h:form>
+    </main>
+</h:body>
+</html>

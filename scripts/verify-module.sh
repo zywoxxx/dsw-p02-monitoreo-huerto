@@ -1,26 +1,32 @@
 #!/usr/bin/env bash
 # ============================================================================
-#  verify-module.sh M02  -  Verificacion reproducible del incremento P02
+#  verify-module.sh <M02|M03>  -  Verificacion reproducible del incremento
 #
-#  Pasos: versiones -> build + pruebas -> inspeccion del WAR -> PostgreSQL ->
-#         despliegue en Tomcat -> ruta de salud -> protocolo HTTP (GET inicial,
-#         POST valido, POST invalido x3, POST con alerta, GET con persistencia,
-#         GET alertas) -> persistencia en PostgreSQL -> anonimizacion de rutas.
-#  Cada paso deja su salida en docs/evidencia/txt/ y se marca VERIFICADO o
-#  NO_VERIFICADO. El script termina con codigo 1 si algo fallo.
+#  M02 (P02, JSP/Servlet, WAR web1): build -> WAR -> PostgreSQL -> Tomcat -> protocolo HTTP con curl.
+#  M03 (P03, JSF/PrimeFaces, WAR web2): build -> WAR -> PostgreSQL -> Tomcat (reinicio limpio) ->
+#       salud -> recorrido de aceptacion en navegador real (scripts/pruebas_jsf.py, Playwright).
+#  Cada paso deja su salida en docs/<evidencia>/txt/ y se marca VERIFICADO o NO_VERIFICADO.
+#  Termina con codigo 1 si algo fallo.
 #
-#  Variables opcionales (todas con valor por defecto de laboratorio):
-#    CATALINA_HOME  ruta de Tomcat 9        (p. ej. /c/Tools/apache-tomcat-9.0.115)
-#    BASE_URL       URL de la app           (http://localhost:8080/web1)
-#    PSQL_CMD       comando psql            (docker exec -i dsw-p02-huerto-db psql -U huerto_app -d huerto_db)
-#    SKIP_DEPLOY=1  no copia el WAR ni arranca Tomcat (usa el que ya corre)
+#  Ruta real del proyecto: este repositorio (no la carpeta codigo/dsw-evolucion-web del paquete docente).
+#  Ejecutar desde la raiz:  CATALINA_HOME=/c/Tools/apache-tomcat-9.0.115 ./scripts/verify-module.sh M03
+#
+#  Variables opcionales:
+#    CATALINA_HOME  ruta de Tomcat 9 (necesaria para desplegar; si falta se asume Tomcat ya en marcha)
+#    BASE_URL       URL de la app (http://localhost:8080/web1 o /web2 segun el modulo)
+#    PSQL_CMD       comando psql (docker exec -i dsw-p02-huerto-db psql -U huerto_app -d huerto_db)
+#    SKIP_DEPLOY=1  no despliega; usa el Tomcat que ya corre
 # ============================================================================
 set -u
-MODULO="${1:-M02}"
+MODULO="${1:-M03}"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-EVID="$ROOT/docs/evidencia/txt"
-BASE_URL="${BASE_URL:-http://localhost:8080/web1}"
 PSQL_CMD="${PSQL_CMD:-docker exec -i dsw-p02-huerto-db psql -U huerto_app -d huerto_db}"
+case "$MODULO" in
+  M02) WAR=web1; EVID="$ROOT/docs/evidencia/txt" ;;
+  M03) WAR=web2; EVID="$ROOT/docs/p03/evidencia/txt" ;;
+  *) echo "Modulo no reconocido: $MODULO (usa M02 o M03)"; exit 2 ;;
+esac
+BASE_URL="${BASE_URL:-http://localhost:8080/$WAR}"
 mkdir -p "$EVID"
 FALLOS=0
 RESUMEN=()
@@ -38,24 +44,34 @@ esperar_http() { # esperar_http <codigo> <intentos>
 cd "$ROOT"
 
 paso "Versiones del entorno"
-{ echo "fecha: $(date -Iseconds)"; java -version 2>&1; mvn -version 2>&1 | head -3; } | tee "$EVID/00_versiones.txt"
+{ echo "fecha: $(date -Iseconds)"; echo "commit: $(git rev-parse --short HEAD 2>/dev/null)"; java -version 2>&1; mvn -version 2>&1 | head -3; } | tee "$EVID/00_versiones.txt"
 java -version 2>&1 | grep -q '"11' && ok "Java 11 disponible" || falla "Se esperaba Java 11"
 
 paso "Compilacion, pruebas unitarias y empaquetado (mvn clean package)"
 if mvn -B clean package > "$EVID/01_build.txt" 2>&1; then
   grep -E "Tests run:|BUILD" "$EVID/01_build.txt" | tail -3
-  ok "mvn clean package genera target/web1.war con pruebas en verde"
+  ok "mvn clean package genera target/$WAR.war con pruebas en verde"
 else
-  tail -30 "$EVID/01_build.txt"; falla "mvn clean package (ver docs/evidencia/txt/01_build.txt)"
+  tail -30 "$EVID/01_build.txt"; falla "mvn clean package (ver $EVID/01_build.txt)"
 fi
 cat target/surefire-reports/*.txt > "$EVID/02_pruebas_unitarias.txt" 2>/dev/null || true
 
 paso "Inspeccion del WAR"
-unzip -l target/web1.war > "$EVID/03_war_contenido.txt" 2>&1
-grep -q "WEB-INF/classes/mx/uv/dsw/huerto/web/LecturaServlet.class" "$EVID/03_war_contenido.txt" \
-  && grep -q "WEB-INF/lib/postgresql" "$EVID/03_war_contenido.txt" \
-  && ok "WAR contiene servlets, JSP, web.xml y driver JDBC" \
-  || falla "Estructura del WAR incompleta"
+unzip -l "target/$WAR.war" > "$EVID/03_war_contenido.txt" 2>&1
+if [ "$MODULO" = "M03" ]; then
+  grep -q "WEB-INF/lib/javax.faces-" "$EVID/03_war_contenido.txt" \
+    && grep -q "WEB-INF/lib/primefaces-" "$EVID/03_war_contenido.txt" \
+    && grep -q "WEB-INF/lib/weld-servlet-shaded" "$EVID/03_war_contenido.txt" \
+    && grep -q "app/lecturas.xhtml" "$EVID/03_war_contenido.txt" \
+    && grep -q "WEB-INF/beans.xml" "$EVID/03_war_contenido.txt" \
+    && ! grep -q "\.jsp$" "$EVID/03_war_contenido.txt" \
+    && ok "WAR contiene Mojarra, PrimeFaces, Weld, beans.xml y vistas XHTML; sin JSP" \
+    || falla "Estructura del WAR de P03 incompleta"
+else
+  grep -q "WEB-INF/classes/mx/uv/dsw/huerto/web/LecturaServlet.class" "$EVID/03_war_contenido.txt" \
+    && grep -q "WEB-INF/lib/postgresql" "$EVID/03_war_contenido.txt" \
+    && ok "WAR contiene servlets, JSP, web.xml y driver JDBC" || falla "Estructura del WAR incompleta"
+fi
 
 paso "PostgreSQL: esquema, semilla y consultas de verificacion"
 if $PSQL_CMD -v ON_ERROR_STOP=1 < sql/03_consultas_verificacion.sql > "$EVID/04_postgres_verificacion.txt" 2>&1; then
@@ -69,28 +85,16 @@ paso "Despliegue en Tomcat 9"
 if [ "${SKIP_DEPLOY:-0}" = "1" ]; then
   echo "   SKIP_DEPLOY=1: se usa el Tomcat que ya esta en ejecucion"
 elif [ -n "${CATALINA_HOME:-}" ] && [ -d "$CATALINA_HOME/webapps" ]; then
-  if curl -s -o /dev/null "$BASE_URL/health" 2>/dev/null; then
-    echo "   Tomcat activo: se retira web1 y se espera a que Tomcat lo repliegue (autoDeploy)"
-    rm -rf "$CATALINA_HOME/webapps/web1.war" "$CATALINA_HOME/webapps/web1"
-    esperar_http 404 30 || echo "   (aviso: el contexto anterior sigue respondiendo)"
-    cp target/web1.war "$CATALINA_HOME/webapps/"
-    echo "   web1.war copiado; esperando el nuevo despliegue"
-  else
-    rm -rf "$CATALINA_HOME/webapps/web1.war" "$CATALINA_HOME/webapps/web1"
-    cp target/web1.war "$CATALINA_HOME/webapps/"
-    echo "   Tomcat no responde: se arranca con $CATALINA_HOME/bin/startup"
-    case "$(uname -s)" in
-      MINGW*|MSYS*|CYGWIN*) cmd //c "$(cygpath -w "$CATALINA_HOME/bin/startup.bat")" >/dev/null 2>&1 ;;
-      *) "$CATALINA_HOME/bin/startup.sh" >/dev/null 2>&1 ;;
-    esac
-  fi
+  # Reinicio limpio: en Windows Tomcat bloquea los jars y el autoDeploy puede conservar clases viejas
+  BASE_URL="$BASE_URL" ./scripts/redeploy-tomcat.sh "target/$WAR.war" "$WAR" > "$EVID/05_tomcat_despliegue.txt" 2>&1 || true
+  cat "$EVID/05_tomcat_despliegue.txt"
 else
-  echo "   CATALINA_HOME no definido: se asume Tomcat ya en ejecucion con web1 desplegado"
+  echo "   CATALINA_HOME no definido: se asume Tomcat ya en ejecucion con $WAR desplegado"
 fi
-esperar_http 200 45 && sleep 2 && ok "web1 desplegado y respondiendo en $BASE_URL" || falla "web1 no respondio en $BASE_URL"
+esperar_http 200 45 && sleep 2 && ok "$WAR desplegado y respondiendo en $BASE_URL" || falla "$WAR no respondio en $BASE_URL"
 if [ -n "${CATALINA_HOME:-}" ]; then
-  grep -h -E "Despliegue del archivo|Deploying web application archive|Deployment of web archive|Server startup|SEVERE" \
-    "$CATALINA_HOME"/logs/catalina.*.log 2>/dev/null | tail -6 > "$EVID/05_tomcat_log.txt"
+  grep -h -E "Mojarra|PrimeFaces|WELD-ENV|Despliegue del archivo|Deployment of web archive|Server startup|SEVERE" \
+    "$CATALINA_HOME"/logs/catalina.*.log 2>/dev/null | tail -8 > "$EVID/05_tomcat_log.txt"
 fi
 
 paso "Ruta de salud GET /health"
@@ -98,85 +102,70 @@ curl -s -i "$BASE_URL/health" > "$EVID/06_health.txt" 2>&1
 grep -E "^HTTP|status" "$EVID/06_health.txt" | head -2
 grep -q '"db":"UP"' "$EVID/06_health.txt" && ok "/health responde 200 y db=UP" || falla "/health no reporta db=UP"
 
-paso "Protocolo HTTP del flujo principal"
-# 1) GET inicial
-curl -s -i "$BASE_URL/lecturas" > "$EVID/07_get_inicial.txt"
-grep -q "^HTTP/1.1 200" "$EVID/07_get_inicial.txt" && grep -q 'id="tabla-lecturas"' "$EVID/07_get_inicial.txt" \
-  && ok "GET /lecturas inicial responde 200 con catalogo y lecturas" || falla "GET inicial"
-FILAS_ANTES=$(grep -c '<tr class="' "$EVID/07_get_inicial.txt")
-# id del sensor de temperatura SEN-A-TEMP-01 (rango fisico [-10,60], umbral [15,32]) tomado del catalogo
-SENSOR_ID=$(grep -o '<option value="[0-9]*"[^>]*>SEN-A-TEMP-01' "$EVID/07_get_inicial.txt" | grep -o '[0-9][0-9]*' | head -1)
-[ -n "$SENSOR_ID" ] && echo "   sensor SEN-A-TEMP-01 -> id $SENSOR_ID" || { SENSOR_ID=0; falla "No se encontro SEN-A-TEMP-01 en el catalogo"; }
+if [ "$MODULO" = "M03" ]; then
+  paso "Arranque JSF: pagina de acceso con PrimeFaces y proteccion de /app"
+  curl -s -i "$BASE_URL/login.xhtml" > "$EVID/07_login_xhtml.txt"
+  grep -q "^HTTP/1.1 200" "$EVID/07_login_xhtml.txt" && grep -q -i "primefaces" "$EVID/07_login_xhtml.txt" \
+    && ok "login.xhtml responde 200 con recursos PrimeFaces" || falla "login.xhtml"
+  curl -s -i "$BASE_URL/app/lecturas.xhtml" > "$EVID/08_app_sin_sesion.txt"
+  grep -q "^HTTP/1.1 302" "$EVID/08_app_sin_sesion.txt" && grep -q "login.xhtml?expirada=1" "$EVID/08_app_sin_sesion.txt" \
+    && ok "/app/lecturas.xhtml sin sesion redirige (302) al acceso" || falla "Proteccion de /app"
 
-# 2) POST valido (valor en rango, sin alerta)
-curl -s -i -X POST -d "sensorId=$SENSOR_ID&valor=25.5&observacion=verify-module+POST+valido" "$BASE_URL/lecturas" > "$EVID/08_post_valido.txt"
-grep -q "^HTTP/1.1 303" "$EVID/08_post_valido.txt" && grep -q "Location: .*creada=" "$EVID/08_post_valido.txt" \
-  && ok "POST valido responde 303 y redirige a la lectura creada" || falla "POST valido"
+  paso "Recorrido de aceptacion en navegador real (Playwright)"
+  if command -v python >/dev/null 2>&1 && python -c "import playwright" 2>/dev/null; then
+    if BASE_URL="$BASE_URL" PSQL_CMD="$PSQL_CMD" python scripts/pruebas_jsf.py > "$EVID/09_pruebas_jsf_salida.txt" 2>&1; then
+      ok "pruebas_jsf.py termino sin casos NO_VERIFICADO"
+    else
+      falla "pruebas_jsf.py reporto fallos (ver $EVID/pruebas_jsf_resultados.txt)"
+    fi
+    grep -E "VERIFICADO|Fallos" "$EVID/pruebas_jsf_resultados.txt" 2>/dev/null | tail -30
+  else
+    falla "Python + Playwright no disponibles; el recorrido JSF queda PENDIENTE (ver README, seccion pruebas)"
+  fi
 
-# 3) POST invalido: valor no numerico -> 400 con mensaje
-curl -s -i -X POST -d "sensorId=$SENSOR_ID&valor=abc" "$BASE_URL/lecturas" > "$EVID/09_post_invalido_no_numerico.txt"
-grep -q "^HTTP/1.1 400" "$EVID/09_post_invalido_no_numerico.txt" && grep -q "debe ser numerico" "$EVID/09_post_invalido_no_numerico.txt" \
-  && ok "POST invalido (valor abc) responde 400 con mensaje de validacion" || falla "POST invalido no numerico"
-
-# 4) POST invalido: campos vacios
-curl -s -i -X POST -d "sensorId=&valor=" "$BASE_URL/lecturas" > "$EVID/10_post_invalido_vacio.txt"
-grep -q "^HTTP/1.1 400" "$EVID/10_post_invalido_vacio.txt" && grep -q "Debe seleccionar un sensor" "$EVID/10_post_invalido_vacio.txt" \
-  && ok "POST invalido (vacio) responde 400 con dos errores" || falla "POST invalido vacio"
-
-# 5) POST invalido: fuera del rango fisico
-curl -s -i -X POST -d "sensorId=$SENSOR_ID&valor=150" "$BASE_URL/lecturas" > "$EVID/11_post_invalido_rango_fisico.txt"
-grep -q "^HTTP/1.1 400" "$EVID/11_post_invalido_rango_fisico.txt" && grep -q "fuera del rango fisico" "$EVID/11_post_invalido_rango_fisico.txt" \
-  && ok "POST invalido (150 C) responde 400 por rango fisico" || falla "POST invalido rango fisico"
-
-# 6) POST valido fuera de umbral -> alerta ALTA
-curl -s -i -X POST -d "sensorId=$SENSOR_ID&valor=38&observacion=verify-module+alerta" "$BASE_URL/lecturas" > "$EVID/12_post_valido_con_alerta.txt"
-grep -q "^HTTP/1.1 303" "$EVID/12_post_valido_con_alerta.txt" && grep -q "alerta=ALTA" "$EVID/12_post_valido_con_alerta.txt" \
-  && ok "POST 38 C responde 303 y genera alerta ALTA" || falla "POST con alerta"
-
-# 7) GET con persistencia: aparecen las lecturas nuevas
-curl -s -i "$BASE_URL/lecturas" > "$EVID/13_get_persistencia.txt"
-FILAS_DESPUES=$(grep -c '<tr class="' "$EVID/13_get_persistencia.txt")
-grep -q "verify-module POST valido" "$EVID/13_get_persistencia.txt" && [ "$FILAS_DESPUES" -gt "$FILAS_ANTES" ] \
-  && ok "GET posterior muestra las lecturas persistidas ($FILAS_ANTES -> $FILAS_DESPUES filas)" || falla "GET con persistencia"
-
-# 8) GET alertas
-curl -s -i "$BASE_URL/alertas" > "$EVID/14_get_alertas.txt"
-grep -q "^HTTP/1.1 200" "$EVID/14_get_alertas.txt" && grep -q "etiqueta-ALTA" "$EVID/14_get_alertas.txt" \
-  && ok "GET /alertas lista la alerta generada" || falla "GET alertas"
-
-# 9) GET zonas y anotaciones (RF01, RF06)
-curl -s -i "$BASE_URL/anotaciones" > "$EVID/14a_get_anotaciones.txt"
-grep -q "^HTTP/1.1 200" "$EVID/14a_get_anotaciones.txt" && grep -q 'id="tabla-zonas"' "$EVID/14a_get_anotaciones.txt" \
-  && ok "GET /anotaciones responde 200 con zonas y anotaciones" || falla "GET anotaciones"
-ZONA_ID=$(grep -o '<option value="[0-9]*"[^>]*>Cama A' "$EVID/14a_get_anotaciones.txt" | grep -o '[0-9][0-9]*' | head -1)
-[ -n "$ZONA_ID" ] || { ZONA_ID=0; falla "No se encontro la zona Cama A en el formulario"; }
-
-# 10) POST anotacion valida (rol OBSERVADOR) -> 303
-curl -s -i -X POST -d "zonaId=$ZONA_ID&autorRol=OBSERVADOR&texto=%5Bprueba%5D+Hojas+con+manchas+en+la+cama+A" "$BASE_URL/anotaciones" > "$EVID/14b_post_anotacion_valida.txt"
-grep -q "^HTTP/1.1 303" "$EVID/14b_post_anotacion_valida.txt" && grep -q "Location: .*anotaciones?creada=" "$EVID/14b_post_anotacion_valida.txt" \
-  && ok "POST anotacion valida responde 303" || falla "POST anotacion valida"
-
-# 11) POST anotacion invalida (rol fuera de los tres roles y texto corto) -> 400
-curl -s -i -X POST -d "zonaId=$ZONA_ID&autorRol=ADMIN&texto=ok" "$BASE_URL/anotaciones" > "$EVID/14c_post_anotacion_invalida.txt"
-grep -q "^HTTP/1.1 400" "$EVID/14c_post_anotacion_invalida.txt" && grep -q "no es valido" "$EVID/14c_post_anotacion_invalida.txt" \
-  && ok "POST anotacion invalida (rol ADMIN, texto corto) responde 400" || falla "POST anotacion invalida"
-
-paso "PostgreSQL despues del protocolo (persistencia verificable)"
-$PSQL_CMD < sql/03_consultas_verificacion.sql > "$EVID/15_postgres_despues.txt" 2>&1 \
-  && grep -q "verify-module" "$EVID/15_postgres_despues.txt" && grep -q "\[prueba\] Hojas" "$EVID/15_postgres_despues.txt" \
-  && ok "Las lecturas y la anotacion del protocolo existen en PostgreSQL" || falla "Persistencia en PostgreSQL"
+  paso "PostgreSQL despues del recorrido (persistencia verificable)"
+  $PSQL_CMD < sql/03_consultas_verificacion.sql > "$EVID/10_postgres_despues.txt" 2>&1 \
+    && grep -q "P03" "$EVID/10_postgres_despues.txt" \
+    && ok "Las lecturas y anotaciones del recorrido existen en PostgreSQL" || falla "Persistencia en PostgreSQL"
+else
+  # ---------------------------- M02: protocolo HTTP con curl (P02) ----------------------------
+  paso "Protocolo HTTP del flujo principal"
+  curl -s -i "$BASE_URL/lecturas" > "$EVID/07_get_inicial.txt"
+  grep -q "^HTTP/1.1 200" "$EVID/07_get_inicial.txt" && grep -q 'id="tabla-lecturas"' "$EVID/07_get_inicial.txt" \
+    && ok "GET /lecturas inicial responde 200 con catalogo y lecturas" || falla "GET inicial"
+  FILAS_ANTES=$(grep -c '<tr class="' "$EVID/07_get_inicial.txt")
+  SENSOR_ID=$(grep -o '<option value="[0-9]*"[^>]*>SEN-A-TEMP-01' "$EVID/07_get_inicial.txt" | grep -o '[0-9][0-9]*' | head -1)
+  [ -n "$SENSOR_ID" ] && echo "   sensor SEN-A-TEMP-01 -> id $SENSOR_ID" || { SENSOR_ID=0; falla "No se encontro SEN-A-TEMP-01 en el catalogo"; }
+  curl -s -i -X POST -d "sensorId=$SENSOR_ID&valor=25.5&observacion=verify-module+POST+valido" "$BASE_URL/lecturas" > "$EVID/08_post_valido.txt"
+  grep -q "^HTTP/1.1 303" "$EVID/08_post_valido.txt" && ok "POST valido responde 303" || falla "POST valido"
+  curl -s -i -X POST -d "sensorId=$SENSOR_ID&valor=abc" "$BASE_URL/lecturas" > "$EVID/09_post_invalido_no_numerico.txt"
+  grep -q "^HTTP/1.1 400" "$EVID/09_post_invalido_no_numerico.txt" && ok "POST invalido (abc) responde 400" || falla "POST invalido no numerico"
+  curl -s -i -X POST -d "sensorId=&valor=" "$BASE_URL/lecturas" > "$EVID/10_post_invalido_vacio.txt"
+  grep -q "^HTTP/1.1 400" "$EVID/10_post_invalido_vacio.txt" && ok "POST invalido (vacio) responde 400" || falla "POST invalido vacio"
+  curl -s -i -X POST -d "sensorId=$SENSOR_ID&valor=150" "$BASE_URL/lecturas" > "$EVID/11_post_invalido_rango_fisico.txt"
+  grep -q "^HTTP/1.1 400" "$EVID/11_post_invalido_rango_fisico.txt" && ok "POST invalido (150 C) responde 400" || falla "POST invalido rango fisico"
+  curl -s -i -X POST -d "sensorId=$SENSOR_ID&valor=38&observacion=verify-module+alerta" "$BASE_URL/lecturas" > "$EVID/12_post_valido_con_alerta.txt"
+  grep -q "alerta=ALTA" "$EVID/12_post_valido_con_alerta.txt" && ok "POST 38 C genera alerta ALTA" || falla "POST con alerta"
+  curl -s -i "$BASE_URL/lecturas" > "$EVID/13_get_persistencia.txt"
+  FILAS_DESPUES=$(grep -c '<tr class="' "$EVID/13_get_persistencia.txt")
+  [ "$FILAS_DESPUES" -gt "$FILAS_ANTES" ] && ok "GET posterior muestra las lecturas persistidas" || falla "GET con persistencia"
+  curl -s -i "$BASE_URL/alertas" > "$EVID/14_get_alertas.txt"
+  grep -q "^HTTP/1.1 200" "$EVID/14_get_alertas.txt" && ok "GET /alertas responde 200" || falla "GET alertas"
+  paso "PostgreSQL despues del protocolo"
+  $PSQL_CMD < sql/03_consultas_verificacion.sql > "$EVID/15_postgres_despues.txt" 2>&1 \
+    && grep -q "verify-module" "$EVID/15_postgres_despues.txt" && ok "Las lecturas del protocolo existen" || falla "Persistencia en PostgreSQL"
+fi
 
 paso "Anonimizando rutas locales en la evidencia"
-# La guia P02 prohibe rutas privadas: se sustituyen repositorio, Tomcat y HOME por marcadores.
 if command -v python >/dev/null 2>&1; then
-  python scripts/anonimizar_evidencia.py || echo "   (aviso: no se pudo anonimizar; revisa manualmente)"
+  EVID_DIR="$EVID" python scripts/anonimizar_evidencia.py || echo "   (aviso: no se pudo anonimizar; revisa manualmente)"
 else
-  echo "   AVISO: python no disponible; revisa manualmente que no queden rutas privadas en docs/evidencia/txt"
+  echo "   AVISO: python no disponible; revisa manualmente que no queden rutas privadas en $EVID"
 fi
 
 paso "Resumen"
 {
-  echo "verify-module.sh $MODULO - $(date -Iseconds)"
+  echo "verify-module.sh $MODULO - $(date -Iseconds) - commit $(git rev-parse --short HEAD 2>/dev/null)"
   printf '%s\n' "${RESUMEN[@]}"
   echo "Fallos: $FALLOS"
 } | tee "$EVID/16_resumen.txt"

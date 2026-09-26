@@ -57,6 +57,7 @@ public final class DbConfig {
         } catch (ClassNotFoundException e) {
             throw new SQLException("Driver JDBC de PostgreSQL no encontrado en el WAR", e);
         }
+        DriverManager.setLoginTimeout(5); // si PostgreSQL no responde, fallar pronto y avisar en la vista
         return DriverManager.getConnection(read(KEY_URL), read(KEY_USER), read(KEY_PASSWORD));
     }
 

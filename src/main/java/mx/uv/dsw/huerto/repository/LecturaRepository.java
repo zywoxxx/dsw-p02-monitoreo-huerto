@@ -18,7 +18,9 @@ import mx.uv.dsw.huerto.model.Lectura;
  * Equivale al CatalogRepository del starter, adaptado al dominio PR09 (huerto).
  * Solo SQL parametrizado; ninguna cadena del usuario se concatena en la consulta.
  */
-public class LecturaRepository {
+public class LecturaRepository implements java.io.Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     /** RF05 (historial): lecturas mas recientes con datos del sensor y nivel de alerta si existe. */
     public List<Lectura> findRecientes(int limite) throws SQLException {

@@ -1,0 +1,4 @@
+== Deteniendo Tomcat ==
+== Retirando despliegue anterior de /web2 y copiando target/web2.war ==
+== Arrancando Tomcat ==
+   /web2/health -> 200

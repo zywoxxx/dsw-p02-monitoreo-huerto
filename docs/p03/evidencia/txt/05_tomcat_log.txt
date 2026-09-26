@@ -1,0 +1,8 @@
+25-Sep-2026 22:30:15.751 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Despliegue del archivo [<CATALINA_HOME>\webapps\web1.war] de la aplicación web
+25-Sep-2026 22:30:16.294 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Despliegue del archivo [<CATALINA_HOME>\webapps\web2.war] de la aplicación web
+25-Sep-2026 22:30:17.148 INFO [main] org.jboss.weld.environment.servlet.EnhancedListener.onStartup WELD-ENV-001008: Initialize Weld using ServletContainerInitializer
+25-Sep-2026 22:30:17.250 INFO [main] org.jboss.weld.environment.deployment.discovery.ReflectionDiscoveryStrategy.processAnnotatedDiscovery WELD-ENV-000014: Falling back to Java Reflection for bean-discovery-mode="annotated" discovery. Add org.jboss:jandex to the classpath to speed-up startup.
+25-Sep-2026 22:30:17.511 INFO [main] org.jboss.weld.environment.tomcat.TomcatContainer.initialize WELD-ENV-001100: Tomcat 7+ detected, CDI injection will be available in Servlets, Filters and Listeners.
+25-Sep-2026 22:30:17.692 INFO [main] com.sun.faces.config.ConfigureListener.contextInitialized Inicializando Mojarra 2.3.9 ( 20190401-1936 77894020e94a338c9701619b7ef6e9871c5a9079) para el contexto '/web2'
+25-Sep-2026 22:30:18.344 INFO [main] org.primefaces.webapp.PostConstructApplicationEventListener.processEvent Running on PrimeFaces 12.0.0
+25-Sep-2026 22:30:18.628 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in [2917] milliseconds
