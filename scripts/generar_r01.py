@@ -174,7 +174,7 @@ p("Equipo DSW-E01", tam=12, alinear=WD_ALIGN_PARAGRAPH.CENTER, despues=0)
 for _ in range(3):
     doc.add_paragraph()
 p("Facilitador: Dr. Gabriel Rodríguez Vásquez", tam=11, alinear=WD_ALIGN_PARAGRAPH.CENTER, despues=0)
-p("Xalapa, Ver., 25 de septiembre de 2026", tam=11, alinear=WD_ALIGN_PARAGRAPH.CENTER)
+p("Orizaba, Ver., 25 de septiembre de 2026", tam=11, alinear=WD_ALIGN_PARAGRAPH.CENTER)
 salto()
 
 h("1. Para qué sirve este comparativo")
