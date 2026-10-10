@@ -18,8 +18,13 @@ cd "$ROOT"
 echo "== Borrando lecturas y alertas de prueba (origen = manual) =="
 $PSQL_CMD < sql/99_cleanup.sql || echo "   (PostgreSQL no disponible; se omite)"
 
-echo "== Eliminando target/ =="
-rm -rf target
+echo "== Eliminando carpetas generadas (target/, api-spring/target/, frontend-angular/dist/) =="
+rm -rf target api-spring/target frontend-angular/dist frontend-angular/.angular
+
+# La API de P04 no debe quedar corriendo
+if curl -s -o /dev/null "http://localhost:${API_PORT:-8081}/api/health" 2>/dev/null; then
+  echo "   AVISO: hay una API respondiendo en el puerto ${API_PORT:-8081}; detengala con Ctrl+C en su terminal."
+fi
 
 if [ "${1:-}" = "--all" ]; then
   if [ -n "${CATALINA_HOME:-}" ] && [ -d "$CATALINA_HOME/bin" ]; then
