@@ -1,0 +1,89 @@
+<p class="aviso aviso-ok" *ngIf="exito" id="aviso-ok" role="status">{{ exito }}</p>
+<p class="aviso aviso-alerta" *ngIf="alerta" id="aviso-alerta" role="status">{{ alerta }}</p>
+<div class="aviso aviso-error" *ngIf="error" id="aviso-error" role="alert">
+  <strong>{{ error.mensaje }}</strong> <span class="nota">({{ error.codigo }})</span>
+  <ul *ngIf="error.errores?.length">
+    <li *ngFor="let e of error.errores">{{ e.campo }}: {{ e.mensaje }}</li>
+  </ul>
+</div>
+
+<section class="tarjeta" *ngIf="sesion.puedeRegistrarLecturas; else soloConsulta">
+  <h2>Registrar lectura manual</h2>
+  <form (ngSubmit)="registrar()" id="form-lectura" class="rejilla">
+    <div class="campo">
+      <label for="sensor">Sensor *</label>
+      <select id="sensor" name="sensor" [(ngModel)]="sensorId">
+        <option [ngValue]="null">-- Selecciona un sensor --</option>
+        <option *ngFor="let s of sensores" [ngValue]="s.id">{{ s.codigo }} - {{ s.variable }} ({{ s.unidad }}) - {{ s.zona }}</option>
+      </select>
+      <small class="error-campo" *ngIf="errorDe('sensorId')">{{ errorDe('sensorId') }}</small>
+    </div>
+    <div class="campo">
+      <label for="valor">Valor medido *</label>
+      <input id="valor" name="valor" [(ngModel)]="valor" inputmode="decimal" maxlength="12" placeholder="Ej. 24.5">
+      <small class="error-campo" *ngIf="errorDe('valor')">{{ errorDe('valor') }}</small>
+    </div>
+    <div class="campo campo-ancho">
+      <label for="observacion">Observacion (opcional, maximo 200)</label>
+      <input id="observacion" name="observacion" [(ngModel)]="observacion" maxlength="200">
+    </div>
+    <p class="info-sensor campo-ancho" *ngIf="sensorElegido as s" id="info-sensor">
+      <strong>{{ s.variable }}</strong> en {{ s.zona }} · unidad <strong>{{ s.unidad }}</strong> ·
+      rango fisico [{{ s.rangoFisicoMinimo }}, {{ s.rangoFisicoMaximo }}] ·
+      umbral operativo
+      <ng-container *ngIf="s.umbralMinimo !== undefined; else sinUmbral">[{{ s.umbralMinimo }}, {{ s.umbralMaximo }}]</ng-container>
+      <ng-template #sinUmbral>sin umbral</ng-template>
+    </p>
+    <div class="campo-ancho">
+      <button type="submit" id="btn-registrar" [disabled]="enviando">{{ enviando ? 'Guardando...' : 'Registrar lectura' }}</button>
+    </div>
+  </form>
+</section>
+<ng-template #soloConsulta>
+  <p class="aviso aviso-info" id="aviso-rol">
+    Tu rol <strong>{{ sesion.rol }}</strong> consulta el historial; la captura de lecturas corresponde al observador.
+  </p>
+</ng-template>
+
+<section class="tarjeta">
+  <div class="encabezado">
+    <h2>Historial de lecturas</h2>
+    <label>Procedencia
+      <select id="filtro-origen" name="filtroOrigen" [(ngModel)]="filtroOrigen" (change)="cargar(0)">
+        <option value="">Todas</option>
+        <option value="manual">manual</option>
+        <option value="simulado">simulado</option>
+      </select>
+    </label>
+  </div>
+  <p class="nota" *ngIf="cargando">Cargando lecturas...</p>
+  <p class="vacio" *ngIf="!cargando && pagina.total === 0" id="sin-lecturas">Aun no hay lecturas que coincidan.</p>
+  <div class="tabla-scroll" *ngIf="pagina.total > 0">
+    <table id="tabla-lecturas">
+      <thead>
+        <tr><th>#</th><th>Sensor</th><th>Variable</th><th>Zona</th><th>Valor</th><th>Procedencia</th><th>Observacion</th><th>Registrada</th><th>Alerta</th></tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let l of pagina.contenido" [class.fila-alerta]="l.alerta">
+          <td>{{ l.id }}</td>
+          <td><code>{{ l.sensorCodigo }}</code></td>
+          <td>{{ l.variable }}</td>
+          <td>{{ l.zona }}</td>
+          <td class="num">{{ l.valor }} {{ l.unidad }}</td>
+          <td><span class="etiqueta" [ngClass]="'etiqueta-' + l.origen">{{ l.origen }}</span></td>
+          <td>{{ l.observacion }}</td>
+          <td>{{ l.registradoEn | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
+          <td>
+            <span class="etiqueta" [ngClass]="'etiqueta-' + l.alerta.nivel" *ngIf="l.alerta; else enRango">{{ l.alerta.nivel }}</span>
+            <ng-template #enRango><span class="en-rango">en rango</span></ng-template>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <nav class="paginador" *ngIf="pagina.total > 0" aria-label="Paginas del historial">
+    <button type="button" (click)="cargar(pagina.pagina - 1)" [disabled]="pagina.pagina === 0">Anterior</button>
+    <span id="pagina-actual">Pagina {{ pagina.pagina + 1 }} de {{ totalPaginas }} · {{ pagina.total }} lecturas</span>
+    <button type="button" (click)="cargar(pagina.pagina + 1)" [disabled]="pagina.pagina + 1 >= totalPaginas">Siguiente</button>
+  </nav>
+</section>

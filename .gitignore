@@ -3,6 +3,11 @@ target/
 *.class
 *.log
 
+# Cliente Angular (P04)
+node_modules/
+frontend-angular/dist/
+frontend-angular/.angular/
+
 # Secretos y configuracion local (nunca versionar)
 .env
 setenv.bat

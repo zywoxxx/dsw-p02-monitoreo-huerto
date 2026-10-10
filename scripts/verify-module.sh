@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 # ============================================================================
-#  verify-module.sh <M02|M03>  -  Verificacion reproducible del incremento
+#  verify-module.sh <M02|M03|M04>  -  Verificacion reproducible del incremento
 #
 #  M02 (P02, JSP/Servlet, WAR web1): build -> WAR -> PostgreSQL -> Tomcat -> protocolo HTTP con curl.
 #  M03 (P03, JSF/PrimeFaces, WAR web2): build -> WAR -> PostgreSQL -> Tomcat (reinicio limpio) ->
 #       salud -> recorrido de aceptacion en navegador real (scripts/pruebas_jsf.py, Playwright).
+#  M04 (P04, Angular + API Spring Boot): delega en scripts/verify-m04.sh (no usa Tomcat externo).
 #  Cada paso deja su salida en docs/<evidencia>/txt/ y se marca VERIFICADO o NO_VERIFICADO.
 #  Termina con codigo 1 si algo fallo.
 #
@@ -24,7 +25,8 @@ PSQL_CMD="${PSQL_CMD:-docker exec -i dsw-p02-huerto-db psql -U huerto_app -d hue
 case "$MODULO" in
   M02) WAR=web1; EVID="$ROOT/docs/evidencia/txt" ;;
   M03) WAR=web2; EVID="$ROOT/docs/p03/evidencia/txt" ;;
-  *) echo "Modulo no reconocido: $MODULO (usa M02 o M03)"; exit 2 ;;
+  M04) exec bash "$ROOT/scripts/verify-m04.sh" ;;
+  *) echo "Modulo no reconocido: $MODULO (usa M02, M03 o M04)"; exit 2 ;;
 esac
 BASE_URL="${BASE_URL:-http://localhost:8080/$WAR}"
 mkdir -p "$EVID"

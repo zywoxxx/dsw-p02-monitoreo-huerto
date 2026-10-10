@@ -7,14 +7,16 @@ sus dos formas (Windows con backslash y POSIX con slash). Lo invoca scripts/veri
 
 Uso:  python scripts/anonimizar_evidencia.py
 """
+import getpass
 import os
 import re
+import socket
 import subprocess
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-EVID = Path(os.environ["EVID_DIR"]) if os.environ.get("EVID_DIR") else ROOT / "docs" / "evidencia" / "txt"
+EVID = Path(os.environ["EVID_DIR"]).resolve() if os.environ.get("EVID_DIR") else ROOT / "docs" / "evidencia" / "txt"
 
 
 def variantes(ruta):
@@ -44,6 +46,12 @@ def main():
     for ruta, marcador in reemplazos:
         for forma in variantes(ruta):
             patrones.append((re.compile(re.escape(forma), re.IGNORECASE), marcador))
+
+    # Nombre del equipo y usuario del sistema (Spring Boot los escribe al arrancar)
+    for dato, marcador in ((socket.gethostname(), "<EQUIPO>"), (os.environ.get("COMPUTERNAME", ""), "<EQUIPO>"),
+                           (getpass.getuser(), "<USUARIO>")):
+        if dato and len(dato) > 2:
+            patrones.append((re.compile(r"(?<![A-Za-z0-9_])" + re.escape(dato) + r"(?![A-Za-z0-9_])", re.IGNORECASE), marcador))
 
     total = 0
     for archivo in sorted(EVID.glob("*.txt")):

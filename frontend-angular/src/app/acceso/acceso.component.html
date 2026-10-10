@@ -1,0 +1,19 @@
+<section class="acceso">
+  <h2>Iniciar sesion</h2>
+
+  <p class="aviso aviso-info" *ngIf="expirada" id="aviso-expirada">
+    Tu sesion caduco o el token ya no es valido. Vuelve a entrar.
+  </p>
+  <p class="aviso aviso-error" *ngIf="error" id="aviso-error" role="alert">{{ error }}</p>
+
+  <form (ngSubmit)="entrar()" class="tarjeta" id="form-acceso">
+    <label for="usuario">Usuario</label>
+    <input id="usuario" name="usuario" [(ngModel)]="usuario" autocomplete="username" required>
+
+    <label for="contrasena">Contrasena</label>
+    <input id="contrasena" name="contrasena" type="password" [(ngModel)]="contrasena" autocomplete="current-password" required>
+
+    <button type="submit" id="btn-entrar" [disabled]="enviando">{{ enviando ? 'Entrando...' : 'Entrar' }}</button>
+    <p class="nota">Usuarios ficticios de laboratorio: observador, responsable y coordinacion (ver README).</p>
+  </form>
+</section>

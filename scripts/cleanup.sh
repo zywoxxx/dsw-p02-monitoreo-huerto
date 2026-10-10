@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 # ============================================================================
-#  cleanup.sh  -  Limpieza de recursos locales del incremento P02
+#  cleanup.sh  -  Limpieza de recursos locales (P02, P03 y P04)
 #
 #  Sin argumentos : borra SOLO las lecturas/alertas creadas por las pruebas
-#                   (origen = 'manual') y la carpeta target/. Conserva semilla.
+#                   (origen = 'manual') y las carpetas generadas: target/,
+#                   api-spring/target/, frontend-angular/dist/ y .angular/.
+#                   Conserva semilla y node_modules.
 #  --all          : ademas detiene Tomcat (si CATALINA_HOME esta definido) y
 #                   elimina el contenedor y el volumen de PostgreSQL.
 #  Solo afecta recursos declarados en este repositorio; nunca infraestructura ajena.

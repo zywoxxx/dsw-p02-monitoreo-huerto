@@ -1,0 +1,21 @@
+<header class="cabecera">
+  <div class="contenedor barra">
+    <div>
+      <h1>PR09 · Monitoreo de huerto o ambiente</h1>
+      <p class="subtitulo">Web 3.0 · Angular 16 + API Spring Boot (Java 11) + PostgreSQL 16</p>
+    </div>
+    <div class="sesion" *ngIf="sesion.sesion as s">
+      <span id="usuario-sesion">{{ s.usuario }} · <strong>{{ s.rol }}</strong></span>
+      <button type="button" id="btn-salir" class="boton-claro" (click)="salir()">Salir</button>
+    </div>
+  </div>
+  <nav class="contenedor navegacion" *ngIf="sesion.autenticado">
+    <a routerLink="/lecturas" routerLinkActive="activo">Lecturas</a>
+  </nav>
+</header>
+
+<main class="contenedor">
+  <router-outlet></router-outlet>
+</main>
+
+<footer class="pie contenedor">Desarrollo de Sistemas Web · DSW-19559 · Equipo DSW-E01 · Datos ficticios de laboratorio.</footer>
