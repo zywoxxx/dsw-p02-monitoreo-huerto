@@ -1,0 +1,33 @@
+pruebas_api.py - 2026-10-09T21:57:45 - http://localhost:8081
+Casos: 30  VERIFICADO: 30  NO_VERIFICADO: 0
+
+01 | VERIFICADO    | Salud publica: 200, base UP
+02 | VERIFICADO    | Login correcto: 200 con token y rol OBSERVADOR
+03 | VERIFICADO    | Login incorrecto: 401 sin token
+04 | VERIFICADO    | Login incompleto: 400
+05 | VERIFICADO    | Recurso protegido sin token: 401
+06 | VERIFICADO    | Token con firma alterada: 401
+07 | VERIFICADO    | Catalogo de sensores: 200 con rango fisico y umbral
+08 | VERIFICADO    | Parametro de consulta no numerico: 400
+09 | VERIFICADO    | Historial paginado: 200 y total igual al de PostgreSQL
+10 | VERIFICADO    | Filtro por procedencia: solo lecturas simuladas
+11 | VERIFICADO    | Procedencia desconocida: 400
+12 | VERIFICADO    | Lectura valida: 201, Location, procedencia manual, sin alerta, +1 lectura
+13 | VERIFICADO    | La lectura creada se recupera por su identificador
+14 | VERIFICADO    | Lectura sobre el umbral: 201 con alerta ALTA, +1 lectura y +1 alerta
+15 | VERIFICADO    | Lectura bajo el umbral: 201 con alerta BAJA
+16 | VERIFICADO    | Limites inclusivos: 15 y 32 se guardan sin alerta
+17 | VERIFICADO    | Rechazo: valor no numerico "abc" -> 400 VALIDACION, la base no cambia
+18 | VERIFICADO    | Rechazo: valor con tres decimales 24.555 -> 400 VALIDACION, la base no cambia
+19 | VERIFICADO    | Rechazo: sin valor -> 400 VALIDACION, la base no cambia
+20 | VERIFICADO    | Rechazo: sin sensor -> 400 VALIDACION, la base no cambia
+21 | VERIFICADO    | Rechazo: JSON mal formado -> 400 VALIDACION, la base no cambia
+22 | VERIFICADO    | Rechazo: observacion de 201 caracteres -> 400 VALIDACION, la base no cambia
+23 | VERIFICADO    | Rechazo: valor 150, fuera del rango fisico -> 422 REGLA_DE_NEGOCIO, la base no cambia
+24 | VERIFICADO    | Rechazo: sensor 999, no existe -> 404 NO_ENCONTRADO, la base no cambia
+25 | VERIFICADO    | Sensor inactivo: 409 y la base no cambia
+26 | VERIFICADO    | Registrar sin token: 401 y la base no cambia
+27 | VERIFICADO    | Rol sin permiso de captura: 403 al registrar, 200 al consultar
+28 | VERIFICADO    | Lectura inexistente: 404
+29 | VERIFICADO    | CORS: solo se admite el origen del cliente Angular
+30 | VERIFICADO    | Todo lo implementado esta en el contrato; lo pendiente son zonas, alertas y anotaciones

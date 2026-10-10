@@ -1,0 +1,50 @@
+prueba_base_detenida.sh - 2026-09-29T12:42:19-06:00
+
+== 1. Base en marcha ==
+--- GET /api/health
+{"app":"huerto-api PR09 (P04 Spring Boot)","status":"UP","db":"UP","postgres":"PostgreSQL 16.15","lecturas":33}
+[estado 200, 0.005914 s]
+
+token obtenido para observador (no se imprime)
+
+== 2. Rutas del contrato que aun no tienen codigo ==
+GET /api/zonas con token -> 404   sin token -> 401
+GET /api/alertas con token -> 404   sin token -> 401
+GET /api/anotaciones con token -> 404   sin token -> 401
+
+== 3. Usuario desconocido y contrasena incorrecta dan el mismo mensaje ==
+--- login de un usuario que no existe
+{"codigo":"NO_AUTENTICADO","mensaje":"Usuario o contrasena incorrectos.","instante":"2026-09-29T12:42:19.4649254-06:00"}
+[estado 401, 0.030221 s]
+
+--- login de observador con contrasena incorrecta
+{"codigo":"NO_AUTENTICADO","mensaje":"Usuario o contrasena incorrectos.","instante":"2026-09-29T12:42:19.5169765-06:00"}
+[estado 401, 0.021950 s]
+
+== 4. docker stop dsw-p02-huerto-db ==
+contenedor detenido (los datos quedan en su volumen)
+
+--- GET /api/health
+{"app":"huerto-api PR09 (P04 Spring Boot)","status":"DOWN","db":"DOWN","error":"PostgreSQL no responde"}
+[estado 503, 5.014689 s]
+
+--- GET /api/sensores con token
+{"codigo":"BASE_NO_DISPONIBLE","mensaje":"No fue posible completar la operacion en PostgreSQL; no se guardo nada.","instante":"2026-09-29T12:42:30.0616608-06:00"}
+[estado 503, 5.018525 s]
+
+--- POST /api/lecturas con token
+{"codigo":"BASE_NO_DISPONIBLE","mensaje":"No fue posible completar la operacion en PostgreSQL; no se guardo nada.","instante":"2026-09-29T12:42:35.114822-06:00"}
+[estado 503, 5.016927 s]
+
+--- POST /api/auth/login (no usa la base)
+
+[estado 200, 0.023324 s]
+
+== 5. docker start dsw-p02-huerto-db ==
+contenedor en marcha
+
+--- GET /api/health (la API se recupera sin reiniciarla)
+{"app":"huerto-api PR09 (P04 Spring Boot)","status":"UP","db":"UP","postgres":"PostgreSQL 16.15","lecturas":33}
+[estado 200, 0.004511 s]
+
+lecturas con la observacion de esta prueba en PostgreSQL: 0

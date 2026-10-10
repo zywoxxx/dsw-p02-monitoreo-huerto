@@ -1,0 +1,167 @@
+pruebas_api.py - 2026-10-09T21:57:36 - http://localhost:8081
+Contrato: docs/p04/openapi.yaml (OpenAPI 3.0.3, version 0.4.0)
+
+[01] GET /api/health sin token
+  > GET /api/health
+  < 200 {"app":"huerto-api PR09 (P04 Spring Boot)","status":"UP","db":"UP","postgres":"PostgreSQL 16.15","lecturas":33}
+  = VERIFICADO
+
+[02] POST /api/auth/login con credenciales correctas (observador)
+  > POST /api/auth/login  {"usuario": "observador", "contrasena": "<oculta>"}
+  < 200 {"token": "eyJhbGciOiJI...(recortado)", "tipo": "Bearer", "usuario": "observador", "rol": "OBSERVADOR", "expiraEn": "2026-10-09T22:27:36.6932453-06:00"}
+  = VERIFICADO
+
+[03] POST /api/auth/login con contrasena incorrecta
+  > POST /api/auth/login  {"usuario": "observador", "contrasena": "<oculta>"}
+  < 401 {"codigo":"NO_AUTENTICADO","mensaje":"Usuario o contrasena incorrectos.","instante":"2026-10-09T21:57:36.7291879-06:00"}
+  = VERIFICADO
+
+[04] POST /api/auth/login sin contrasena
+  > POST /api/auth/login  {"usuario": "observador"}
+  < 400 {"codigo":"VALIDACION","mensaje":"La peticion tiene datos invalidos; no se guardo nada.","errores":[{"campo":"contrasena","mensaje":"La contrasena es obligatoria."}],"instante":"2026-10-09T21:57:36.7497527-06:00"}
+  = VERIFICADO
+
+[05] GET /api/sensores sin token
+  > GET /api/sensores
+  < 401 {"codigo":"NO_AUTENTICADO","mensaje":"Falta el token, es invalido o ya caduco. Inicia sesion de nuevo.","instante":"2026-10-09T21:57:36.7695095-06:00"}
+  = VERIFICADO
+
+[06] GET /api/sensores con un token alterado
+  > GET /api/sensores  [Bearer ...]
+  < 401 {"codigo":"NO_AUTENTICADO","mensaje":"Falta el token, es invalido o ya caduco. Inicia sesion de nuevo.","instante":"2026-10-09T21:57:36.7928041-06:00"}
+  = VERIFICADO
+
+[07] GET /api/sensores con token
+  > GET /api/sensores  [Bearer ...]
+  < 200 [{"id":3,"codigo":"SEN-A-HSUE-01","activo":true,"zonaId":1,"zona":"Cama A","variable":"Humedad de suelo","unidad":"%","rangoFisicoMinimo":0.00,"rangoFisicoMaximo":100.00,"umbralMinimo":40.00,"umbralMaximo":80.00},{"id":2,"codigo":"SEN-A-TEMP-01","activo":true,"zonaId":1,"zona":"Cama A","variable":"Temperatura ambiente","unidad":"C","rangoFisicoMinimo":-10.00,"rangoFisicoMaximo":60.00,"umbralMinimo":15.00,"umbralMaximo":32.00},{"id":4,"codigo":"SEN-I1-HAIR-01","activo":true,"zonaId":2,"zona":"Invernadero 1","variable":"Humedad relativa","unidad":"%","rangoFisicoMinimo":0.00,"rangoFisicoMaximo": ...(recortado)
+  = VERIFICADO
+
+[08] GET /api/sensores?zonaId=abc
+  > GET /api/sensores?zonaId=abc  [Bearer ...]
+  < 400 {"codigo":"VALIDACION","mensaje":"Parametro de consulta invalido o faltante.","instante":"2026-10-09T21:57:36.8621624-06:00"}
+  = VERIFICADO
+
+[09] GET /api/lecturas?tamano=3
+  > GET /api/lecturas?tamano=3  [Bearer ...]
+  < 200 {"contenido":[{"id":77,"sensorId":2,"sensorCodigo":"SEN-A-TEMP-01","variable":"Temperatura ambiente","zona":"Cama A","valor":38.00,"unidad":"C","origen":"manual","observacion":"[prueba] P04 Angular alerta","registradoEn":"2026-09-29T18:37:45.560346Z","alerta":{"nivel":"ALTA","mensaje":"Temperatura ambiente en Cama A: 38 C por encima del maximo 32.00 C."}},{"id":76,"sensorId":2,"sensorCodigo":"SEN-A-TEMP-01","variable":"Temperatura ambiente","zona":"Cama A","valor":25.50,"unidad":"C","origen":"manual","observacion":"[prueba] P04 Angular lectura valida","registradoEn":"2026-09-29T18:37:45.128492 ...(recortado)
+  = VERIFICADO
+
+[10] GET /api/lecturas?origen=simulado
+  > GET /api/lecturas?origen=simulado&tamano=100  [Bearer ...]
+  < 200 {"contenido":[{"id":2,"sensorId":3,"sensorCodigo":"SEN-A-HSUE-01","variable":"Humedad de suelo","zona":"Cama A","valor":55.00,"unidad":"%","origen":"simulado","observacion":"Carga inicial del laboratorio","registradoEn":"2026-09-12T00:24:51.395115Z"},{"id":1,"sensorId":2,"sensorCodigo":"SEN-A-TEMP-01","variable":"Temperatura ambiente","zona":"Cama A","valor":24.50,"unidad":"C","origen":"simulado","observacion":"Carga inicial del laboratorio","registradoEn":"2026-09-12T00:24:51.395115Z"}],"pagina":0,"tamano":100,"total":2}
+  = VERIFICADO
+
+[11] GET /api/lecturas?origen=inventado
+  > GET /api/lecturas?origen=inventado  [Bearer ...]
+  < 400 {"codigo":"VALIDACION","mensaje":"La peticion tiene datos invalidos; no se guardo nada.","errores":[{"campo":"origen","mensaje":"origen debe ser manual o simulado."}],"instante":"2026-10-09T21:57:37.089385-06:00"}
+  = VERIFICADO
+
+[12] POST /api/lecturas valor 25.5 (dentro del umbral)
+  > POST /api/lecturas  [Bearer ...]  {"sensorId": 2, "valor": 25.5, "observacion": "[prueba] P04 lectura valida"}
+  < 201 {"id":78,"sensorId":2,"sensorCodigo":"SEN-A-TEMP-01","variable":"Temperatura ambiente","zona":"Cama A","valor":25.50,"unidad":"C","origen":"manual","observacion":"[prueba] P04 lectura valida","registradoEn":"2026-10-10T03:57:37.340064Z"}
+  = VERIFICADO
+
+[13] GET /api/lecturas/78
+  > GET /api/lecturas/78  [Bearer ...]
+  < 200 {"id":78,"sensorId":2,"sensorCodigo":"SEN-A-TEMP-01","variable":"Temperatura ambiente","zona":"Cama A","valor":25.50,"unidad":"C","origen":"manual","observacion":"[prueba] P04 lectura valida","registradoEn":"2026-10-10T03:57:37.340064Z"}
+  = VERIFICADO
+
+[14] POST /api/lecturas valor 38 (sobre el umbral)
+  > POST /api/lecturas  [Bearer ...]  {"sensorId": 2, "valor": 38, "observacion": "[prueba] P04 alerta alta"}
+  < 201 {"id":79,"sensorId":2,"sensorCodigo":"SEN-A-TEMP-01","variable":"Temperatura ambiente","zona":"Cama A","valor":38.00,"unidad":"C","origen":"manual","observacion":"[prueba] P04 alerta alta","registradoEn":"2026-10-10T03:57:37.909153Z","alerta":{"nivel":"ALTA","mensaje":"Temperatura ambiente en Cama A: 38 C por encima del maximo 32.00 C."}}
+  = VERIFICADO
+
+[15] POST /api/lecturas valor 10 (bajo el umbral)
+  > POST /api/lecturas  [Bearer ...]  {"sensorId": 2, "valor": 10, "observacion": "[prueba] P04 alerta baja"}
+  < 201 {"id":80,"sensorId":2,"sensorCodigo":"SEN-A-TEMP-01","variable":"Temperatura ambiente","zona":"Cama A","valor":10.00,"unidad":"C","origen":"manual","observacion":"[prueba] P04 alerta baja","registradoEn":"2026-10-10T03:57:38.35018Z","alerta":{"nivel":"BAJA","mensaje":"Temperatura ambiente en Cama A: 10 C por debajo del minimo 15.00 C."}}
+  = VERIFICADO
+
+[16] POST /api/lecturas valores 15 y 32 (limites del umbral)
+  > POST /api/lecturas  [Bearer ...]  {"sensorId": 2, "valor": 15, "observacion": "[prueba] P04 limite inferior"}
+  < 201 {"id":81,"sensorId":2,"sensorCodigo":"SEN-A-TEMP-01","variable":"Temperatura ambiente","zona":"Cama A","valor":15.00,"unidad":"C","origen":"manual","observacion":"[prueba] P04 limite inferior","registradoEn":"2026-10-10T03:57:38.632086Z"}
+  > POST /api/lecturas  [Bearer ...]  {"sensorId": 2, "valor": 32, "observacion": "[prueba] P04 limite superior"}
+  < 201 {"id":82,"sensorId":2,"sensorCodigo":"SEN-A-TEMP-01","variable":"Temperatura ambiente","zona":"Cama A","valor":32.00,"unidad":"C","origen":"manual","observacion":"[prueba] P04 limite superior","registradoEn":"2026-10-10T03:57:38.65229Z"}
+  = VERIFICADO
+
+[17] POST /api/lecturas valor no numerico "abc"
+  > POST /api/lecturas  [Bearer ...]  {"sensorId": 2, "valor": "abc"}
+  < 400 {"codigo":"VALIDACION","mensaje":"El cuerpo de la peticion no es un JSON valido o algun campo no tiene el tipo esperado.","errores":[{"campo":"cuerpo","mensaje":"Revisa que 'valor' sea numerico y 'sensorId' un entero."}],"instante":"2026-10-09T21:57:39.1095543-06:00"}
+  = VERIFICADO
+
+[18] POST /api/lecturas valor con tres decimales 24.555
+  > POST /api/lecturas  [Bearer ...]  {"sensorId": 2, "valor": 24.555}
+  < 400 {"codigo":"VALIDACION","mensaje":"La peticion tiene datos invalidos; no se guardo nada.","errores":[{"campo":"valor","mensaje":"El valor admite como maximo 2 decimales; no se redondea."}],"instante":"2026-10-09T21:57:39.683873-06:00"}
+  = VERIFICADO
+
+[19] POST /api/lecturas sin valor
+  > POST /api/lecturas  [Bearer ...]  {"sensorId": 2}
+  < 400 {"codigo":"VALIDACION","mensaje":"La peticion tiene datos invalidos; no se guardo nada.","errores":[{"campo":"valor","mensaje":"El valor de la lectura es obligatorio."}],"instante":"2026-10-09T21:57:40.2208319-06:00"}
+  = VERIFICADO
+
+[20] POST /api/lecturas sin sensor
+  > POST /api/lecturas  [Bearer ...]  {"valor": 25}
+  < 400 {"codigo":"VALIDACION","mensaje":"La peticion tiene datos invalidos; no se guardo nada.","errores":[{"campo":"sensorId","mensaje":"Debe indicar el sensor."}],"instante":"2026-10-09T21:57:40.715808-06:00"}
+  = VERIFICADO
+
+[21] POST /api/lecturas JSON mal formado
+  > POST /api/lecturas  [Bearer ...]  {"sensorId": 2, "valor": 
+  < 400 {"codigo":"VALIDACION","mensaje":"El cuerpo de la peticion no es un JSON valido o algun campo no tiene el tipo esperado.","errores":[{"campo":"cuerpo","mensaje":"Revisa que 'valor' sea numerico y 'sensorId' un entero."}],"instante":"2026-10-09T21:57:41.2600799-06:00"}
+  = VERIFICADO
+
+[22] POST /api/lecturas observacion de 201 caracteres
+  > POST /api/lecturas  [Bearer ...]  {"sensorId": 2, "valor": 25, "observacion": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}
+  < 400 {"codigo":"VALIDACION","mensaje":"La peticion tiene datos invalidos; no se guardo nada.","errores":[{"campo":"observacion","mensaje":"La observacion no puede exceder 200 caracteres."}],"instante":"2026-10-09T21:57:41.8042802-06:00"}
+  = VERIFICADO
+
+[23] POST /api/lecturas valor 150, fuera del rango fisico
+  > POST /api/lecturas  [Bearer ...]  {"sensorId": 2, "valor": 150}
+  < 422 {"codigo":"REGLA_DE_NEGOCIO","mensaje":"El valor 150 C esta fuera del rango fisico de Temperatura ambiente [-10.00, 60.00].","instante":"2026-10-09T21:57:42.3294451-06:00"}
+  = VERIFICADO
+
+[24] POST /api/lecturas sensor 999, no existe
+  > POST /api/lecturas  [Bearer ...]  {"sensorId": 999, "valor": 25}
+  < 404 {"codigo":"NO_ENCONTRADO","mensaje":"El sensor 999 no existe.","instante":"2026-10-09T21:57:42.9054779-06:00"}
+  = VERIFICADO
+
+[25] POST /api/lecturas sobre un sensor inactivo
+  (el sensor 5 se desactiva solo durante este caso)
+  > POST /api/lecturas  [Bearer ...]  {"sensorId": 5, "valor": 5000}
+  < 409 {"codigo":"CONFLICTO","mensaje":"El sensor SEN-I1-LUZ-01 esta inactivo; no admite lecturas.","instante":"2026-10-09T21:57:43.7121106-06:00"}
+  = VERIFICADO
+
+[26] POST /api/lecturas sin token
+  > POST /api/lecturas  {"sensorId": 2, "valor": 25}
+  < 401 {"codigo":"NO_AUTENTICADO","mensaje":"Falta el token, es invalido o ya caduco. Inicia sesion de nuevo.","instante":"2026-10-09T21:57:44.2572407-06:00"}
+  = VERIFICADO
+
+[27] POST /api/lecturas con el rol COORDINACION
+  > POST /api/auth/login  {"usuario": "coordinacion", "contrasena": "<oculta>"}
+  < 200 {"token": "eyJhbGciOiJI...(recortado)", "tipo": "Bearer", "usuario": "coordinacion", "rol": "COORDINACION", "expiraEn": "2026-10-09T22:27:44.4309366-06:00"}
+  > POST /api/lecturas  [Bearer ...]  {"sensorId": 2, "valor": 25}
+  < 403 {"codigo":"ROL_SIN_PERMISO","mensaje":"El rol COORDINACION no tiene permiso para esta operacion.","instante":"2026-10-09T21:57:44.6015946-06:00"}
+  > GET /api/lecturas?tamano=1  [Bearer ...]
+  < 200 {"contenido":[{"id":82,"sensorId":2,"sensorCodigo":"SEN-A-TEMP-01","variable":"Temperatura ambiente","zona":"Cama A","valor":32.00,"unidad":"C","origen":"manual","observacion":"[prueba] P04 limite superior","registradoEn":"2026-10-10T03:57:38.65229Z"}],"pagina":0,"tamano":1,"total":38}
+  = VERIFICADO
+
+[28] GET /api/lecturas/999999
+  > GET /api/lecturas/999999  [Bearer ...]
+  < 404 {"codigo":"NO_ENCONTRADO","mensaje":"La lectura 999999 no existe.","instante":"2026-10-09T21:57:44.7966382-06:00"}
+  = VERIFICADO
+
+[29] OPTIONS /api/lecturas (preflight CORS)
+  > OPTIONS /api/lecturas
+  < 200 
+  > OPTIONS /api/lecturas
+  < 403 Invalid CORS request
+  Access-Control-Allow-Origin para http://localhost:4200: http://localhost:4200
+  Access-Control-Allow-Origin para sitio ajeno: None
+  = VERIFICADO
+
+[30] GET /v3/api-docs (OpenAPI generado por springdoc) frente al contrato escrito
+  > GET /v3/api-docs
+  < 200 {"openapi":"3.0.1","info":{"title":"PR09 Monitoreo de huerto - API REST","description":"Generado desde el codigo. El contrato de referencia es docs/p04/openapi.yaml.","version":"0.4.0"},"servers":[{"url":"http://localhost:8081","description":"Generated server url"}],"paths":{"/api/lecturas":{"get":{"tags":["lectura-controller"],"operationId":"listar_1","parameters":[{"name":"sensorId","in":"query","required":false,"schema":{"type":"integer","format":"int64"}},{"name":"zonaId","in":"query","required":false,"schema":{"type":"integer","format":"int64"}},{"name":"origen","in":"query","required":fa ...(recortado)
+  Operaciones implementadas: POST /api/auth/login, GET /api/health, GET /api/lecturas, POST /api/lecturas, GET /api/lecturas/{id}, GET /api/sensores
+  En el contrato y aun sin implementar (PENDIENTE): GET /api/alertas, GET /api/anotaciones, POST /api/anotaciones, GET /api/zonas
+  = VERIFICADO
+
+RESUMEN: 30/30 casos VERIFICADO

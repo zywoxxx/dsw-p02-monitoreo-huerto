@@ -1,4 +1,4 @@
-# Bitacora del incremento P02 - PR09 Monitoreo de huerto o ambiente
+# Bitacora del proyecto PR09 Monitoreo de huerto o ambiente (P02, P03 y P04)
 
 Formato (M02, "Bitacora minima"): fecha, version, comando, resultado, interpretacion, siguiente accion.
 Hora local America/Mexico_City (UTC-6). Un resultado fallido se registra tal cual; no se borra historial.
@@ -29,8 +29,26 @@ Hora local America/Mexico_City (UTC-6). Un resultado fallido se registra tal cua
 | 22 | 2026-09-25 22:16-22:21 | pruebas_jsf.py v1-v3 | `python scripts/pruebas_jsf.py` (Playwright) | Tres correcciones al script, no a la app: (a) el boton de plegado del `p:panel` en PrimeFaces 12 es `.ui-panel-titlebar-icon`; (b) el contenedor de mensajes conserva el texto anterior hasta que llega la respuesta AJAX, asi que se vacia antes de cada envio; (c) PrimeFaces recorta a 300 en el cliente el texto de la anotacion, por lo que la regla >300 solo se ejerce con JUnit. Ademas la restriccion temporal para simular el fallo de transaccion debe crearse `NOT VALID` porque ya hay alertas ALTA. | Los postbacks JSF no se prueban como los POST de P02; hay que esperar la respuesta parcial y leer el DOM. | Repetir el recorrido completo. |
 | 23 | 2026-09-25 22:24 | web2 0.3.0 | Caso "base de datos no disponible" (`docker stop`) | El mensaje de error nunca aparecia en `p:messages`. **Fallo diagnosticado:** el bean de vista se creaba durante el render, despues de que `p:messages` ya se habia pintado. | Agregar `f:viewAction` en cada vista (crea el bean antes del render) y `DriverManager.setLoginTimeout(5)` para fallar pronto. | Relanzar. |
 | 24 | 2026-09-25 22:30 | verify-module.sh M03 | `CATALINA_HOME=... ./scripts/verify-module.sh M03` (build, WAR, PostgreSQL, redespliegue limpio, salud, recorrido Playwright, estado final, anonimizacion) | Ver `docs/p03/evidencia/txt/16_resumen.txt` y `pruebas_jsf_resultados.txt`. | La evidencia de P03 se regenera con un solo comando; la de P02 queda intacta. | Documentar, commit y push sin coautoria. |
+| 25 | 2026-09-29 11:40 | - | Lectura de la guia P04 (PDF) y de la rubrica R04. Revision de herramientas: `node --version`, `java -version`. | Java 11 y Maven presentes; Node ausente. | El curso fija Node 18.20.8 y Angular 16.2.12. | Instalar Node 18.20.8 portatil, sin tocar el sistema. |
+| 26 | 2026-09-29 11:50 | Angular CLI 16.2.12 | `npx -y @angular/cli@16.2.12 new frontend-angular --routing --style=css --skip-git` | Proyecto generado con `NgModule`; `ng build` correcto. | El cliente vive en su carpeta, dentro del mismo repositorio. | Escribir el esqueleto de la API. |
+| 27 | 2026-09-29 12:11 | api-spring 0.4.0 | `mvn -f api-spring/pom.xml clean package` | `Tests run: 14, Failures: 0`; `api-spring.jar` de 25 MB. | Spring Boot 2.7.18 compila con Java 11. | Escribir `openapi.yaml` y probar contra la API en marcha. |
+| 28 | 2026-09-29 12:16 | openapi.yaml 0.4.0 | `python scripts/pruebas_api.py` | 29 de 30. **Fallo:** el login sin contrasena respondia 401 y el contrato dice 400. | El controlador comparaba credenciales sin revisar antes que vinieran los campos. | `AuthController` valida primero; repetir. |
+| 29 | 2026-09-29 12:20 | frontend-angular 0.4.0 | `npx ng test --watch=false --browsers=ChromeHeadless` | **Fallo:** `ChromeHeadless has not captured in 60000 ms`, tres intentos. | No era la ruta del ejecutable. Chromium reciente separa el modo sin ventana en `chrome-headless-shell`. | Apuntar `CHROME_BIN` a ese ejecutable: 5 de 5. |
+| 30 | 2026-09-29 12:31 | - | `python scripts/recorrido_angular.py` con la API y `ng serve` en marcha | 11 de 12. El caso 03 fallaba por la prueba: buscaba una URL terminada en `/api/sensores` y el cliente envia `?activo=true`. | El cliente estaba bien; se corrigio la comprobacion. | Repetir: 12 de 12. |
+| 31 | 2026-09-29 12:33 | - | Revision de `docs/p04/evidencia/txt` | El registro de arranque de Spring Boot incluia el nombre del equipo y el usuario del sistema. | Son datos privados que la guia pide no entregar. | `spring.main.log-startup-info=false`; el anonimizador sustituye ambos datos. |
+| 32 | 2026-09-29 12:41 | api-spring 0.4.0 | `./scripts/prueba_base_detenida.sh` (`docker stop`, peticiones, `docker start`) | `/api/health` y `GET /api/sensores` 503. **Fallo:** `POST /api/lecturas` respondia 500. | Con `@Transactional`, si no hay conexion la excepcion es `CannotCreateTransactionException`, que no es `DataAccessException`. | `ApiExceptionHandler` atiende tambien `TransactionException`; prueba `baseNoDisponible`. Repetido: 503. |
+| 33 | 2026-09-29 12:45 | verify-module.sh M04 | `./scripts/verify-module.sh M04` | Ver `docs/p04/evidencia/txt/13_resumen.txt`, `pruebas_api_resultados.txt` y `recorrido_angular.txt`. | La evidencia de P04 se regenera con un comando; la de P02 y P03 queda intacta. | Documentar y entregar. |
+| 34 | 2026-10-09 21:55 | verify-module.sh M04 | `./scripts/verify-module.sh M04` (corrida final, despues de las correcciones 28 a 32 y de la prueba `baseNoDisponible`) | Ver `docs/p04/evidencia/txt/13_resumen.txt`: 16 pruebas de la API, 5 del cliente, 30 casos del contrato, 12 en navegador. | La evidencia entregada corresponde al codigo final. | Generar documentos, commit y push sin coautoria. |
 
 ## Pruebas pendientes o no verificadas (declaracion honesta)
+
+P04 (ver tambien `docs/p04/verificacion.md`):
+
+- **PENDIENTE**: implementar `GET /api/zonas`, `GET /api/alertas` y `GET`/`POST /api/anotaciones`, y sus vistas en Angular; hoy solo estan en el contrato.
+- **NO_VERIFICADO**: caducidad real del token a los 30 minutos (probada con reloj fijo en JUnit); rol RESPONSABLE contra la API; peticion CORS real desde otro origen; servir el resultado de `ng build`; despliegue en Linux.
+- **PENDIENTE**: reproduccion por otro integrante en maquina limpia; registros individuales de los otros tres integrantes.
+- **PENDIENTE**: confirmacion del facilitador en F02 (sigue sin registrarse en `docs/F02-seleccion-proyecto.md`).
+
 
 P03 (ver tambien `docs/p03/pruebas-aceptacion.md`):
 

@@ -1,0 +1,74 @@
+                                                       version                                                        
+----------------------------------------------------------------------------------------------------------------------
+ PostgreSQL 16.15 (Debian 16.15-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+(1 row)
+
+   base    |  usuario   
+-----------+------------
+ huerto_db | huerto_app
+(1 row)
+
+ table_name 
+------------
+ alerta
+ anotacion
+ lectura
+ sensor
+ umbral
+ variable
+ zona
+(7 rows)
+
+  entidad  | registros 
+-----------+-----------
+ zona      |         2
+ variable  |         4
+ sensor    |         5
+ umbral    |         5
+ lectura   |        40
+ alerta    |        16
+ anotacion |         4
+(7 rows)
+
+ id |    codigo     |       variable       |  zona  | valor | unidad | origen |             observacion             |         registrado_en         | alerta 
+----+---------------+----------------------+--------+-------+--------+--------+-------------------------------------+-------------------------------+--------
+ 84 | SEN-A-TEMP-01 | Temperatura ambiente | Cama A | 38.00 | C      | manual | [prueba] P04 Angular alerta         | 2026-10-10 03:57:56.766188+00 | ALTA
+ 83 | SEN-A-TEMP-01 | Temperatura ambiente | Cama A | 25.50 | C      | manual | [prueba] P04 Angular lectura valida | 2026-10-10 03:57:56.353442+00 | 
+ 82 | SEN-A-TEMP-01 | Temperatura ambiente | Cama A | 32.00 | C      | manual | [prueba] P04 limite superior        | 2026-10-10 03:57:38.65229+00  | 
+ 81 | SEN-A-TEMP-01 | Temperatura ambiente | Cama A | 15.00 | C      | manual | [prueba] P04 limite inferior        | 2026-10-10 03:57:38.632086+00 | 
+ 80 | SEN-A-TEMP-01 | Temperatura ambiente | Cama A | 10.00 | C      | manual | [prueba] P04 alerta baja            | 2026-10-10 03:57:38.35018+00  | BAJA
+ 79 | SEN-A-TEMP-01 | Temperatura ambiente | Cama A | 38.00 | C      | manual | [prueba] P04 alerta alta            | 2026-10-10 03:57:37.909153+00 | ALTA
+ 78 | SEN-A-TEMP-01 | Temperatura ambiente | Cama A | 25.50 | C      | manual | [prueba] P04 lectura valida         | 2026-10-10 03:57:37.340064+00 | 
+ 77 | SEN-A-TEMP-01 | Temperatura ambiente | Cama A | 38.00 | C      | manual | [prueba] P04 Angular alerta         | 2026-09-29 18:37:45.560346+00 | ALTA
+ 76 | SEN-A-TEMP-01 | Temperatura ambiente | Cama A | 25.50 | C      | manual | [prueba] P04 Angular lectura valida | 2026-09-29 18:37:45.128492+00 | 
+ 75 | SEN-A-TEMP-01 | Temperatura ambiente | Cama A | 32.00 | C      | manual | [prueba] P04 limite superior        | 2026-09-29 18:37:29.687856+00 | 
+(10 rows)
+
+ id |    codigo     | nivel |                               mensaje                               | atendida |           creada_en           
+----+---------------+-------+---------------------------------------------------------------------+----------+-------------------------------
+ 36 | SEN-A-TEMP-01 | ALTA  | Temperatura ambiente en Cama A: 38 C por encima del maximo 32.00 C. | f        | 2026-10-10 03:57:56.766188+00
+ 35 | SEN-A-TEMP-01 | BAJA  | Temperatura ambiente en Cama A: 10 C por debajo del minimo 15.00 C. | f        | 2026-10-10 03:57:38.35018+00
+ 34 | SEN-A-TEMP-01 | ALTA  | Temperatura ambiente en Cama A: 38 C por encima del maximo 32.00 C. | f        | 2026-10-10 03:57:37.909153+00
+ 33 | SEN-A-TEMP-01 | ALTA  | Temperatura ambiente en Cama A: 38 C por encima del maximo 32.00 C. | f        | 2026-09-29 18:37:45.560346+00
+ 32 | SEN-A-TEMP-01 | BAJA  | Temperatura ambiente en Cama A: 10 C por debajo del minimo 15.00 C. | f        | 2026-09-29 18:37:29.272825+00
+ 31 | SEN-A-TEMP-01 | ALTA  | Temperatura ambiente en Cama A: 38 C por encima del maximo 32.00 C. | f        | 2026-09-29 18:37:28.858531+00
+ 30 | SEN-A-TEMP-01 | ALTA  | Temperatura ambiente en Cama A: 38 C por encima del maximo 32.00 C. | f        | 2026-09-29 18:31:30.505964+00
+ 29 | SEN-A-TEMP-01 | ALTA  | Temperatura ambiente en Cama A: 38 C por encima del maximo 32.00 C. | f        | 2026-09-29 18:31:10.209317+00
+ 28 | SEN-A-TEMP-01 | BAJA  | Temperatura ambiente en Cama A: 10 C por debajo del minimo 15.00 C. | f        | 2026-09-29 18:27:51.559241+00
+ 27 | SEN-A-TEMP-01 | ALTA  | Temperatura ambiente en Cama A: 38 C por encima del maximo 32.00 C. | f        | 2026-09-29 18:27:51.164095+00
+ 26 | SEN-A-TEMP-01 | BAJA  | Temperatura ambiente en Cama A: 10 C por debajo del minimo 15.00 C. | f        | 2026-09-29 18:23:19.667122+00
+ 25 | SEN-A-TEMP-01 | ALTA  | Temperatura ambiente en Cama A: 38 C por encima del maximo 32.00 C. | f        | 2026-09-29 18:23:19.221381+00
+ 24 | SEN-A-TEMP-01 | BAJA  | Temperatura ambiente en Cama A: 10 C por debajo del minimo 15.00 C. | f        | 2026-09-29 18:17:41.979021+00
+ 23 | SEN-A-TEMP-01 | ALTA  | Temperatura ambiente en Cama A: 38 C por encima del maximo 32.00 C. | f        | 2026-09-29 18:17:41.528887+00
+ 21 | SEN-A-TEMP-01 | BAJA  | Temperatura ambiente en Cama A: 10 C por debajo del minimo 15.00 C. | f        | 2026-09-26 04:30:33.507246+00
+ 20 | SEN-A-TEMP-01 | ALTA  | Temperatura ambiente en Cama A: 38 C por encima del maximo 32.00 C. | f        | 2026-09-26 04:30:32.007972+00
+(16 rows)
+
+ id |     zona      |  autor_rol   |                                                                                                                                                    texto                                                                                                                                                     | lectura_id |           creada_en           
+----+---------------+--------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------+-------------------------------
+ 25 | Invernadero 1 | COORDINACION | [prueba] revision de coordinacion (P03)                                                                                                                                                                                                                                                                      |            | 2026-09-26 04:30:50.496812+00
+ 24 | Cama A        | OBSERVADOR   | [prueba] xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx |            | 2026-09-26 04:30:47.313246+00
+ 23 | Cama A        | OBSERVADOR   | [prueba] Hojas con manchas en la cama A (P03)                                                                                                                                                                                                                                                                |            | 2026-09-26 04:30:45.881779+00
+  1 | Cama A        | RESPONSABLE  | Sensores instalados y calibrados con datos ficticios de laboratorio.                                                                                                                                                                                                                                         |            | 2026-09-12 00:24:51.395115+00
+(4 rows)
+

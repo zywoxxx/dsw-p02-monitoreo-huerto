@@ -1,0 +1,17 @@
+- Generating browser application bundles (phase: setup)...
+✔ Browser application bundle generation complete.
+✔ Browser application bundle generation complete.
+- Copying assets...
+✔ Copying assets complete.
+- Generating index html...
+✔ Index html generation complete.
+
+Initial Chunk Files           | Names         |  Raw Size | Estimated Transfer Size
+main.155089f102438aa6.js      | main          | 297.17 kB |                76.86 kB
+polyfills.c6086f7132c2ae25.js | polyfills     |  33.04 kB |                10.64 kB
+styles.e092f34b732ccd10.css   | styles        |   3.67 kB |                 1.12 kB
+runtime.6b2d3b1dbfec6fe7.js   | runtime       | 910 bytes |               518 bytes
+
+| Initial Total | 334.77 kB |                89.13 kB
+
+Build at: 2026-10-10T03:57:23.077Z - Hash: 5c02722d8d2781ea - Time: 1719ms

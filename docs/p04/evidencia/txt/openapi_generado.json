@@ -1,0 +1,386 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "PR09 Monitoreo de huerto - API REST",
+    "description": "Generado desde el codigo. El contrato de referencia es docs/p04/openapi.yaml.",
+    "version": "0.4.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8081",
+      "description": "Generated server url"
+    }
+  ],
+  "paths": {
+    "/api/lecturas": {
+      "get": {
+        "tags": [
+          "lectura-controller"
+        ],
+        "operationId": "listar_1",
+        "parameters": [
+          {
+            "name": "sensorId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "zonaId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "origen",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pagina",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "tamano",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginaLectura"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "lectura-controller"
+        ],
+        "operationId": "registrar",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LecturaRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Lectura"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": [
+          "auth-controller"
+        ],
+        "operationId": "login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Credenciales"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sensores": {
+      "get": {
+        "tags": [
+          "sensor-controller"
+        ],
+        "operationId": "listar",
+        "parameters": [
+          {
+            "name": "zonaId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "activo",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Sensor"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/lecturas/{id}": {
+      "get": {
+        "tags": [
+          "lectura-controller"
+        ],
+        "operationId": "porId",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Lectura"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/health": {
+      "get": {
+        "tags": [
+          "health-controller"
+        ],
+        "operationId": "salud",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "LecturaRequest": {
+        "type": "object",
+        "properties": {
+          "sensorId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "valor": {
+            "type": "number"
+          },
+          "observacion": {
+            "type": "string"
+          }
+        }
+      },
+      "AlertaResumen": {
+        "type": "object",
+        "properties": {
+          "nivel": {
+            "type": "string"
+          },
+          "mensaje": {
+            "type": "string"
+          }
+        }
+      },
+      "Lectura": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "sensorId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "sensorCodigo": {
+            "type": "string"
+          },
+          "variable": {
+            "type": "string"
+          },
+          "zona": {
+            "type": "string"
+          },
+          "valor": {
+            "type": "number"
+          },
+          "unidad": {
+            "type": "string"
+          },
+          "origen": {
+            "type": "string"
+          },
+          "observacion": {
+            "type": "string"
+          },
+          "registradoEn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "alerta": {
+            "$ref": "#/components/schemas/AlertaResumen"
+          }
+        }
+      },
+      "Credenciales": {
+        "type": "object",
+        "properties": {
+          "usuario": {
+            "type": "string"
+          },
+          "contrasena": {
+            "type": "string"
+          }
+        }
+      },
+      "Sensor": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "codigo": {
+            "type": "string"
+          },
+          "activo": {
+            "type": "boolean"
+          },
+          "zonaId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "zona": {
+            "type": "string"
+          },
+          "variable": {
+            "type": "string"
+          },
+          "unidad": {
+            "type": "string"
+          },
+          "rangoFisicoMinimo": {
+            "type": "number"
+          },
+          "rangoFisicoMaximo": {
+            "type": "number"
+          },
+          "umbralMinimo": {
+            "type": "number"
+          },
+          "umbralMaximo": {
+            "type": "number"
+          }
+        }
+      },
+      "PaginaLectura": {
+        "type": "object",
+        "properties": {
+          "contenido": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Lectura"
+            }
+          },
+          "pagina": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tamano": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      }
+    }
+  }
+}

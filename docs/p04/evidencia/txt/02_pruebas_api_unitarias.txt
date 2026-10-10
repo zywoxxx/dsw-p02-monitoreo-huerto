@@ -1,0 +1,12 @@
+-------------------------------------------------------------------------------
+Test set: mx.uv.dsw.huerto.api.lecturas.LecturaControllerTest
+-------------------------------------------------------------------------------
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.365 s - in mx.uv.dsw.huerto.api.lecturas.LecturaControllerTest
+-------------------------------------------------------------------------------
+Test set: mx.uv.dsw.huerto.api.lecturas.ReglasLecturaTest
+-------------------------------------------------------------------------------
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s - in mx.uv.dsw.huerto.api.lecturas.ReglasLecturaTest
+-------------------------------------------------------------------------------
+Test set: mx.uv.dsw.huerto.api.seguridad.TokenServiceTest
+-------------------------------------------------------------------------------
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in mx.uv.dsw.huerto.api.seguridad.TokenServiceTest

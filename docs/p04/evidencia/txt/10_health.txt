@@ -1,0 +1,9 @@
+HTTP/1.1 200 
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+Transfer-Encoding: chunked
+Date: Sat, 10 Oct 2026 03:57:35 GMT
+
+{"app":"huerto-api PR09 (P04 Spring Boot)","status":"UP","db":"UP","postgres":"PostgreSQL 16.15","lecturas":33}

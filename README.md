@@ -6,7 +6,8 @@ umbral operativo y permite anotaciones por rol. Todos los datos son ficticios.
 
 | Incremento | Estado | Tecnologia | WAR / contexto |
 |---|---|---|---|
-| **P03 (actual)** - Web 2.0 | `verify-module.sh M03` -> VERIFICADO el 2026-09-25 (26 casos en navegador, 21 pruebas unitarias) | JSF 2.3 (Mojarra 2.3.9) + PrimeFaces 12 + CDI (Weld 3.1.9) sobre Tomcat 9.0.115; JDBC a PostgreSQL 16 | `web2.war` -> `http://localhost:8080/web2/` |
+| **P04 (actual)** - Web 3.0 | `verify-module.sh M04` -> VERIFICADO el 2026-09-29 y el 2026-10-09 (30 casos del contrato, 12 en navegador, 16 pruebas de la API, 5 del cliente) | Angular 16.2.12 + API REST Spring Boot 2.7.18 (Java 11) + PostgreSQL 16; contrato OpenAPI 3.0.3 | `frontend-angular/` en `http://localhost:4200`, `api-spring/` en `http://localhost:8081` |
+| P03 - Web 2.0 | `verify-module.sh M03` -> VERIFICADO el 2026-09-25 (26 casos en navegador, 21 pruebas unitarias) | JSF 2.3 (Mojarra 2.3.9) + PrimeFaces 12 + CDI (Weld 3.1.9) sobre Tomcat 9.0.115; JDBC a PostgreSQL 16 | `web2.war` -> `http://localhost:8080/web2/` |
 | P02 - Web 1.0 | VERIFICADO el 2026-09-11; evidencia conservada en `docs/evidencia/` y `docs/entrega/` | JSP/Servlet 4.0 sobre Tomcat 9; mismo modelo y misma base | `web1.war` (historial de git hasta `832f377`) |
 
 Modelo de datos (sin cambios desde P02): `zona, variable, sensor, umbral, lectura, alerta, anotacion` (`docs/modelo-datos.md`).
@@ -23,16 +24,22 @@ Roles funcionales del PR09: **observador** (captura lecturas y anota), **respons
 | Docker | cualquiera reciente | levantar PostgreSQL con `docker compose` (opcional si ya tienes PostgreSQL) |
 | Git Bash o bash, `curl`, `unzip` | - | scripts de verificacion |
 | Python 3.11 + Playwright | para `verify-module.sh M03` y `pruebas_jsf.py` | recorrido de aceptacion en navegador real |
+| Node.js | 18.20.8 (npm 10) | P04: compilar y servir el cliente Angular |
+| Angular CLI | 16.2.x (se instala con `npm ci`, no hace falta global) | P04 |
+| Python: `pyyaml`, `openapi-spec-validator`, `jsonschema` | - | P04: validar el contrato y las respuestas |
 
 ## 2. Estructura
 
 ```
 dsw-p02-monitoreo-huerto/
 ├── pom.xml                        # WAR web2: Mojarra 2.3.9, PrimeFaces 12, Weld 3.1.9, jaxb-api, driver PostgreSQL, JUnit 5
+├── api-spring/                    # P04: API REST Spring Boot 2.7.18 (Java 11); paquetes config, seguridad, error, salud, sensores, lecturas
+├── frontend-angular/              # P04: cliente Angular 16.2.12; src/app/core, acceso, lecturas; proxy.conf.json
 ├── docker/docker-compose.yml      # PostgreSQL 16 en localhost:5436; ejecuta sql/01 y 02 al crear el volumen
 ├── sql/                           # 01_schema, 02_seed, 03_consultas_verificacion, 99_cleanup
 ├── scripts/
-│   ├── verify-module.sh           # M02 o M03: build, WAR, PostgreSQL, despliegue, salud y pruebas
+│   ├── verify-module.sh           # M02, M03 o M04 (M04 delega en verify-m04.sh)
+│   ├── verify-m04.sh, pruebas_api.py, recorrido_angular.py, prueba_base_detenida.sh, diagramas_p04.py   # P04
 │   ├── redeploy-tomcat.sh         # reinicio limpio de Tomcat (Windows bloquea los jars desplegados)
 │   ├── pruebas_jsf.py             # recorrido de aceptacion P03 con Playwright (capturas + conteos en psql)
 │   ├── cleanup.sh                 # borra datos de prueba; --all detiene Tomcat y elimina el contenedor
@@ -193,7 +200,86 @@ Sin Python/Playwright el recorrido queda PENDIENTE y hay que repetirlo a mano co
 Mas detalle en `docs/p03/arquitectura.md`; trazabilidad en `docs/p03/trazabilidad-r03.md`; estados de prueba en
 `docs/p03/pruebas-aceptacion.md` y `docs/p03/verificacion.md`; fallos encontrados y corregidos en `docs/bitacora.md`.
 
-## 7. Equipo
+## 7. P04: arquitectura Web 3.0 (Angular + API Spring Boot)
+
+P04 separa la aplicacion en un cliente Angular y una API REST que hablan JSON. La base, el modelo, los tres roles y
+el flujo principal son los mismos. P02 y P03 siguen en el repositorio y no se tocaron.
+
+| Documento | Contenido |
+|---|---|
+| `docs/p04/arquitectura.md` | Componentes, responsabilidades, decisiones con alternativas, seguridad, despliegue |
+| `docs/p04/openapi.yaml` | Contrato de la API (OpenAPI 3.0.3) |
+| `docs/p04/endpoints.md` | Catalogo de endpoints con entradas, salidas y errores |
+| `docs/p04/modelo-datos.md` | Modelo PostgreSQL y su relacion con los recursos de la API |
+| `docs/p04/trazabilidad-rf.md` | RF -> componente -> prueba |
+| `docs/p04/verificacion.md` | Estados VERIFICADO / NO_VERIFICADO / PENDIENTE, fallos y limitaciones |
+| `docs/p04/evidencia/INDICE.md` | Evidencia frente a cada criterio de R04 |
+| `docs/p04/individual/` | Registro individual de cada integrante |
+
+### 7.1 Preparar
+
+```bash
+docker compose -f docker/docker-compose.yml up -d     # la misma base de P02 y P03
+cd frontend-angular && npm ci && cd ..                # dependencias del cliente (una vez)
+python -m pip install pyyaml openapi-spec-validator jsonschema playwright
+python -m playwright install chromium                 # para las pruebas en navegador
+```
+
+### 7.2 API (terminal 1)
+
+```bash
+export DB_URL=jdbc:postgresql://localhost:5436/huerto_db
+export DB_USER=huerto_app
+export DB_PASSWORD=huerto_dev
+# opcionales: JWT_SECRET (32 caracteres o mas), CORS_ORIGIN (http://localhost:4200), PORT (8081)
+mvn -f api-spring/pom.xml clean package               # 16 pruebas; genera api-spring/target/api-spring.jar
+java -jar api-spring/target/api-spring.jar
+```
+
+En PowerShell las variables se definen con `$env:DB_URL = "..."`. Sin las tres variables `DB_*` la API no arranca.
+Sin `JWT_SECRET` se genera un secreto distinto en cada arranque y los tokens anteriores dejan de valer.
+
+### 7.3 Cliente (terminal 2)
+
+```bash
+cd frontend-angular
+npx ng serve                                          # http://localhost:4200; reenvia /api a la API
+```
+
+| URL | Que es |
+|---|---|
+| `http://localhost:4200/` | Cliente Angular: acceso y flujo principal |
+| `http://localhost:8081/api/health` | Salud de la API; 503 si PostgreSQL no responde |
+| `http://localhost:8081/swagger-ui.html` | Operaciones implementadas, generadas desde el codigo |
+| `http://localhost:8081/v3/api-docs` | OpenAPI generado (el de referencia es `docs/p04/openapi.yaml`) |
+
+Los usuarios de prueba son los de la seccion 3.5. El token dura 30 minutos.
+
+### 7.4 Probar la API sin el cliente
+
+```bash
+TOKEN=$(curl -s -X POST http://localhost:8081/api/auth/login -H 'Content-Type: application/json'   -d '{"usuario":"observador","contrasena":"Observador#2026"}' | python -c "import sys,json; print(json.load(sys.stdin)['token'])")
+curl -s -H "Authorization: Bearer $TOKEN" "http://localhost:8081/api/sensores"
+curl -s -i -X POST http://localhost:8081/api/lecturas -H "Authorization: Bearer $TOKEN"   -H 'Content-Type: application/json' -d '{"sensorId":2,"valor":25.5,"observacion":"[prueba] manual"}'
+```
+
+### 7.5 Verificar y limpiar
+
+```bash
+./scripts/verify-module.sh M04        # con la API y el cliente detenidos: el script los arranca y los apaga
+./scripts/prueba_base_detenida.sh     # opcional: detiene y vuelve a arrancar el contenedor de la base
+./scripts/cleanup.sh                  # retira lecturas de prueba y carpetas generadas
+```
+
+`verify-module.sh M04` compila la API y el cliente, corre sus pruebas, valida `openapi.yaml`, arranca la API, ejecuta
+los 30 casos del contrato (`scripts/pruebas_api.py`), sirve el cliente y hace el recorrido en navegador
+(`scripts/recorrido_angular.py`), consulta PostgreSQL y apaga todo. Deja la evidencia en `docs/p04/evidencia/`.
+Variables opcionales: `API_PORT`, `WEB_PORT`, `PSQL_CMD`, `CHROME_BIN`, `SKIP_FRONT=1`, `SKIP_NAVEGADOR=1`.
+
+Implementado: salud, acceso, sensores y lecturas. Definido en el contrato y pendiente de implementar: zonas, alertas
+y anotaciones.
+
+## 8. Equipo
 
 | Responsabilidad | Integrante | GitHub |
 |---|---|---|
