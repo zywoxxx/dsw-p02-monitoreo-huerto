@@ -31,7 +31,7 @@ public class ApiExceptionHandler {
     public ResponseEntity<ApiError> ilegible(HttpMessageNotReadableException e) {
         return ResponseEntity.badRequest().body(new ApiError("VALIDACION",
             "El cuerpo de la peticion no es un JSON valido o algun campo no tiene el tipo esperado.",
-            List.of(new ApiError.Campo("cuerpo", "Revisa que 'valor' sea numerico y 'sensorId' un entero."))));
+            List.of(new ApiError.Campo("cuerpo", "Revisa que cada campo tenga el tipo del contrato: numeros como 'valor', enteros como 'sensorId', booleanos como 'atendida'."))));
     }
 
     @ExceptionHandler({MethodArgumentTypeMismatchException.class, MissingServletRequestParameterException.class})

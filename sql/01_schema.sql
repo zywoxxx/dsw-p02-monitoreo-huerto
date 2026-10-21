@@ -67,13 +67,20 @@ CREATE INDEX IF NOT EXISTS idx_lectura_sensor_fecha ON lectura (sensor_id, regis
 
 -- 6. ALERTA (RF06): aviso generado cuando una lectura sale del umbral
 CREATE TABLE IF NOT EXISTS alerta (
-    id         BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    lectura_id BIGINT       NOT NULL UNIQUE REFERENCES lectura(id) ON DELETE CASCADE,
-    nivel      VARCHAR(10)  NOT NULL,
-    mensaje    VARCHAR(200) NOT NULL,
-    atendida   BOOLEAN      NOT NULL DEFAULT FALSE,
-    creada_en  TIMESTAMPTZ  NOT NULL DEFAULT now(),
-    CONSTRAINT ck_alerta_nivel CHECK (nivel IN ('BAJA', 'ALTA'))
+    id           BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    lectura_id   BIGINT       NOT NULL UNIQUE REFERENCES lectura(id) ON DELETE CASCADE,
+    nivel        VARCHAR(10)  NOT NULL,
+    mensaje      VARCHAR(200) NOT NULL,
+    atendida     BOOLEAN      NOT NULL DEFAULT FALSE,
+    creada_en    TIMESTAMPTZ  NOT NULL DEFAULT now(),
+    -- P05: atencion. Instante y rol que atendio; solo tienen valor cuando atendida es TRUE
+    atendida_en  TIMESTAMPTZ,
+    atendida_por VARCHAR(15),
+    CONSTRAINT ck_alerta_nivel CHECK (nivel IN ('BAJA', 'ALTA')),
+    CONSTRAINT ck_alerta_atencion CHECK (
+        (atendida AND atendida_en IS NOT NULL AND atendida_por IN ('RESPONSABLE', 'OBSERVADOR', 'COORDINACION'))
+        OR (NOT atendida AND atendida_en IS NULL AND atendida_por IS NULL)
+    )
 );
 COMMENT ON TABLE alerta IS 'Alerta generada automaticamente por una lectura fuera del umbral';
 

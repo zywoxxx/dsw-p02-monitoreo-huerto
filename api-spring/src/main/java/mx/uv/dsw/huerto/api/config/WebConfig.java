@@ -23,7 +23,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**")
             .allowedOrigins(origenPermitido)
-            .allowedMethods("GET", "POST", "OPTIONS")
+            .allowedMethods("GET", "POST", "PATCH", "OPTIONS")
             .allowedHeaders("Authorization", "Content-Type", "Accept")
             .exposedHeaders("Location")
             .maxAge(3600);
@@ -33,7 +33,7 @@ public class WebConfig implements WebMvcConfigurer {
     public OpenAPI informacionApi() {
         return new OpenAPI().info(new Info()
             .title("PR09 Monitoreo de huerto - API REST")
-            .version("0.4.0")
+            .version("0.5.0")
             .description("Generado desde el codigo. El contrato de referencia es docs/p04/openapi.yaml."));
     }
 }

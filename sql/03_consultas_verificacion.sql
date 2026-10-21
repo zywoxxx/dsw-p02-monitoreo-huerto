@@ -34,8 +34,8 @@ LEFT JOIN alerta a ON a.lectura_id = l.id
 ORDER BY l.registrado_en DESC
 LIMIT 10;
 
--- e) Alertas generadas
-SELECT a.id, s.codigo, a.nivel, a.mensaje, a.atendida, a.creada_en
+-- e) Alertas generadas y su atencion (P05)
+SELECT a.id, s.codigo, a.nivel, a.mensaje, a.atendida, a.atendida_en, a.atendida_por, a.creada_en
 FROM alerta a
 JOIN lectura l ON l.id = a.lectura_id
 JOIN sensor s  ON s.id = l.sensor_id

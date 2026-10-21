@@ -13,7 +13,7 @@
 
   <groupId>mx.uv.dsw</groupId>
   <artifactId>api-spring</artifactId>
-  <version>0.4.0</version>
+  <version>0.5.0</version>
   <name>PR09 Monitoreo de huerto - API REST (P04, Web 3.0)</name>
   <description>Backend Spring Boot 2.7 / Java 11: API REST con JDBC sobre PostgreSQL para el cliente Angular.</description>
 

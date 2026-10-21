@@ -6,16 +6,17 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Permisos por rol funcional del PR09, iguales a los de P03 (acta, seccion 2): el observador captura
- * lecturas y anota; el responsable y coordinacion consultan y anotan. Son exactamente tres roles.
+ * Permisos por rol funcional del PR09 (acta, seccion 2): el observador captura lecturas y anota; el
+ * responsable y coordinacion consultan y anotan. Desde P05 solo el responsable atiende o reabre
+ * alertas, porque en el acta es quien "anota decisiones" sobre el huerto. Son exactamente tres roles.
  */
 public final class Permisos {
 
-    public enum Permiso { CONSULTAR, REGISTRAR_LECTURA, ANOTAR }
+    public enum Permiso { CONSULTAR, REGISTRAR_LECTURA, ANOTAR, ATENDER_ALERTA }
 
     private static final Map<String, Set<Permiso>> POR_ROL = Map.of(
         "OBSERVADOR", EnumSet.of(Permiso.CONSULTAR, Permiso.REGISTRAR_LECTURA, Permiso.ANOTAR),
-        "RESPONSABLE", EnumSet.of(Permiso.CONSULTAR, Permiso.ANOTAR),
+        "RESPONSABLE", EnumSet.of(Permiso.CONSULTAR, Permiso.ANOTAR, Permiso.ATENDER_ALERTA),
         "COORDINACION", EnumSet.of(Permiso.CONSULTAR, Permiso.ANOTAR)
     );
 
