@@ -28,3 +28,6 @@ docker/pgdata/
 
 # archivos de bloqueo de Word
 ~$*.docx
+
+# Python
+__pycache__/

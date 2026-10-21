@@ -35,6 +35,16 @@ export class SesionService {
     return this.rol === 'OBSERVADOR';
   }
 
+  // P05: solo el responsable atiende o reabre alertas (permiso ATENDER_ALERTA en la API).
+  get puedeAtenderAlertas(): boolean {
+    return this.rol === 'RESPONSABLE';
+  }
+
+  // Los tres roles anotan; basta con tener sesion vigente.
+  get puedeAnotar(): boolean {
+    return this.autenticado;
+  }
+
   abrir(sesion: Sesion): void {
     this.actual = sesion;
     sessionStorage.setItem(CLAVE, JSON.stringify(sesion));

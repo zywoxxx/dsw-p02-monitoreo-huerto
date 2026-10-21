@@ -1,0 +1,70 @@
+<p class="aviso aviso-ok" *ngIf="exito" id="aviso-ok" role="status">{{ exito }}</p>
+<div class="aviso aviso-error" *ngIf="error" id="aviso-error" role="alert">
+  <strong>{{ error.mensaje }}</strong> <span class="nota">({{ error.codigo }})</span>
+  <ul *ngIf="error.errores?.length">
+    <li *ngFor="let e of error.errores">{{ e.campo }}: {{ e.mensaje }}</li>
+  </ul>
+</div>
+
+<p class="aviso aviso-info" *ngIf="!sesion.puedeAtenderAlertas" id="aviso-rol-alertas">
+  Tu rol <strong>{{ sesion.rol }}</strong> consulta las alertas; atenderlas corresponde al responsable del huerto.
+</p>
+
+<section class="tarjeta">
+  <div class="encabezado">
+    <h2>Alertas</h2>
+    <div class="filtros">
+      <label>Nivel
+        <select id="filtro-nivel" name="filtroNivel" [(ngModel)]="filtroNivel" (change)="cargar(0)">
+          <option value="">Todas</option>
+          <option value="BAJA">BAJA</option>
+          <option value="ALTA">ALTA</option>
+        </select>
+      </label>
+      <label>Estado
+        <select id="filtro-atendida" name="filtroAtendida" [(ngModel)]="filtroAtendida" (change)="cargar(0)">
+          <option value="">Todas</option>
+          <option value="false">pendientes</option>
+          <option value="true">atendidas</option>
+        </select>
+      </label>
+    </div>
+  </div>
+  <p class="nota" *ngIf="cargando">Cargando alertas...</p>
+  <p class="vacio" *ngIf="!cargando && pagina.total === 0" id="sin-alertas">No hay alertas que coincidan.</p>
+  <div class="tabla-scroll" *ngIf="pagina.total > 0">
+    <table id="tabla-alertas">
+      <thead>
+        <tr><th>#</th><th>Sensor</th><th>Variable</th><th>Zona</th><th>Valor</th><th>Nivel</th><th>Generada</th><th>Estado</th><th>Accion</th></tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let a of pagina.contenido" [attr.data-id]="a.id" [class.fila-alerta]="!a.atendida">
+          <td>{{ a.id }}</td>
+          <td><code>{{ a.sensorCodigo }}</code></td>
+          <td>{{ a.variable }}</td>
+          <td>{{ a.zona }}</td>
+          <td class="num">{{ a.valor }} {{ a.unidad }}</td>
+          <td><span class="etiqueta" [ngClass]="'etiqueta-' + a.nivel">{{ a.nivel }}</span></td>
+          <td>{{ a.creadaEn | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
+          <td>
+            <span class="etiqueta etiqueta-atendida" *ngIf="a.atendida; else pendiente">
+              atendida por {{ a.atendidaPor }} el {{ a.atendidaEn | date: 'yyyy-MM-dd HH:mm:ss' }}
+            </span>
+            <ng-template #pendiente><span class="etiqueta etiqueta-pendiente">pendiente</span></ng-template>
+          </td>
+          <td>
+            <ng-container *ngIf="sesion.puedeAtenderAlertas">
+              <button type="button" class="btn-atender" *ngIf="!a.atendida" [disabled]="enviando" (click)="cambiar(a, true)">Marcar atendida</button>
+              <button type="button" class="btn-reabrir" *ngIf="a.atendida" [disabled]="enviando" (click)="cambiar(a, false)">Reabrir</button>
+            </ng-container>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <nav class="paginador" *ngIf="pagina.total > 0" aria-label="Paginas de alertas">
+    <button type="button" (click)="cargar(pagina.pagina - 1)" [disabled]="pagina.pagina === 0">Anterior</button>
+    <span id="pagina-actual">Pagina {{ pagina.pagina + 1 }} de {{ totalPaginas }} · {{ pagina.total }} alertas</span>
+    <button type="button" (click)="cargar(pagina.pagina + 1)" [disabled]="pagina.pagina + 1 >= totalPaginas">Siguiente</button>
+  </nav>
+</section>

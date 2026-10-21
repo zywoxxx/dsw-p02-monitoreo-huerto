@@ -1,15 +1,19 @@
 #!/usr/bin/env bash
 # ============================================================================
-#  verify-m04.sh  -  Verificacion reproducible de P04 (arquitectura Web 3.0)
+#  verify-m04.sh  -  Verificacion reproducible de P04 (arquitectura Web 3.0) y, con MODULO=M05, de P05
 #
-#  Lo invoca  ./scripts/verify-module.sh M04
+#  Lo invoca  ./scripts/verify-module.sh M04  (y scripts/verify-m05.sh con MODULO=M05)
 #  Pasos: versiones -> build y pruebas de api-spring -> contenido del jar -> build de
 #         frontend-angular -> pruebas del cliente -> validacion de openapi.yaml ->
-#         PostgreSQL -> arranque de la API -> pruebas del contrato -> apagado de la API.
-#  Cada paso deja su salida en docs/p04/evidencia/txt/ y se marca VERIFICADO,
+#         PostgreSQL -> (M05) migracion sql/04_p05_atencion_alerta.sql -> arranque de la API ->
+#         pruebas del contrato -> recorrido en navegador -> apagado de la API.
+#  Cada paso deja su salida en $EVID (docs/p04/evidencia/txt/ por omision) y se marca VERIFICADO,
 #  NO_VERIFICADO o PENDIENTE. Termina con codigo 1 si hubo algun NO_VERIFICADO.
 #
 #  Variables opcionales:
+#    MODULO       etiqueta del incremento: M04 (por omision) o M05 (agrega la migracion de P05 y
+#                 exige en el jar los controladores de zonas, alertas y anotaciones)
+#    EVID, IMG    carpetas de la evidencia en texto e imagenes (docs/p04/evidencia/{txt,img})
 #    DB_URL, DB_USER, DB_PASSWORD  conexion de la API (por omision, la base local de docker/)
 #    API_PORT     puerto de la API (8081)
 #    PSQL_CMD     comando psql (docker exec -i dsw-p02-huerto-db psql -U huerto_app -d huerto_db)
@@ -20,7 +24,9 @@
 # ============================================================================
 set -u
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-EVID="$ROOT/docs/p04/evidencia/txt"
+MODULO="${MODULO:-M04}"
+EVID="${EVID:-$ROOT/docs/p04/evidencia/txt}"
+IMG="${IMG:-$ROOT/docs/p04/evidencia/img}"
 PSQL_CMD="${PSQL_CMD:-docker exec -i dsw-p02-huerto-db psql -U huerto_app -d huerto_db}"
 API_PORT="${API_PORT:-8081}"
 API_URL="http://localhost:$API_PORT"
@@ -30,12 +36,12 @@ WEB_URL="http://localhost:$WEB_PORT"
 export DB_URL="${DB_URL:-jdbc:postgresql://localhost:5436/huerto_db}"
 export DB_USER="${DB_USER:-huerto_app}"
 export DB_PASSWORD="${DB_PASSWORD:-huerto_dev}"
-mkdir -p "$EVID"
+mkdir -p "$EVID" "$IMG"
 FALLOS=0
 RESUMEN=()
 API_PID=""
 
-paso()     { printf '\n== [M04] %s ==\n' "$1"; }
+paso()     { printf '\n== [%s] %s ==\n' "$MODULO" "$1"; }
 ok()       { echo "   VERIFICADO: $1";    RESUMEN+=("VERIFICADO    | $1"); }
 falla()    { echo "   NO_VERIFICADO: $1"; RESUMEN+=("NO_VERIFICADO | $1"); FALLOS=$((FALLOS+1)); }
 pendiente(){ echo "   PENDIENTE: $1";     RESUMEN+=("PENDIENTE     | $1"); }
@@ -88,12 +94,18 @@ cat api-spring/target/surefire-reports/*.txt > "$EVID/02_pruebas_api_unitarias.t
 
 paso "Backend: contenido del jar"
 unzip -l api-spring/target/api-spring.jar > "$EVID/03_jar_contenido.txt" 2>&1
-grep -q "BOOT-INF/classes/mx/uv/dsw/huerto/api/lecturas/LecturaController.class" "$EVID/03_jar_contenido.txt" \
+CONTROLADORES="lecturas/LecturaController"
+[ "$MODULO" = "M05" ] && CONTROLADORES="$CONTROLADORES zonas/ZonaController alertas/AlertaController anotaciones/AnotacionController"
+FALTAN=""
+for clase in $CONTROLADORES; do
+  grep -q "BOOT-INF/classes/mx/uv/dsw/huerto/api/$clase.class" "$EVID/03_jar_contenido.txt" || FALTAN="$FALTAN $clase"
+done
+[ -z "$FALTAN" ] \
   && grep -q "BOOT-INF/lib/postgresql-" "$EVID/03_jar_contenido.txt" \
   && grep -q "BOOT-INF/lib/spring-jdbc-" "$EVID/03_jar_contenido.txt" \
   && grep -q "BOOT-INF/lib/springdoc-openapi-" "$EVID/03_jar_contenido.txt" \
-  && ok "El jar contiene controladores, driver de PostgreSQL, Spring JDBC y springdoc" \
-  || falla "Contenido del jar incompleto"
+  && ok "El jar contiene controladores ($CONTROLADORES), driver de PostgreSQL, Spring JDBC y springdoc" \
+  || falla "Contenido del jar incompleto${FALTAN:+ (faltan:$FALTAN)}"
 if grep -E "^(spring\.datasource\.(url|username|password)|huerto\.jwt\.secreto)=" api-spring/src/main/resources/application.properties \
    | grep -v -q '=\${'; then
   falla "application.properties tiene credenciales escritas"
@@ -164,6 +176,19 @@ else
   tail -5 "$EVID/08_postgres_antes.txt"; falla "No fue posible consultar PostgreSQL (revisa PSQL_CMD / docker compose)"
 fi
 
+if [ "$MODULO" = "M05" ]; then
+  paso "PostgreSQL: migracion de P05 (sql/04_p05_atencion_alerta.sql, idempotente)"
+  if $PSQL_CMD -v ON_ERROR_STOP=1 < sql/04_p05_atencion_alerta.sql > "$EVID/08b_migracion_p05.txt" 2>&1; then
+    COLUMNAS=$($PSQL_CMD -At -c "SELECT string_agg(column_name, ',' ORDER BY column_name) FROM information_schema.columns WHERE table_name = 'alerta' AND column_name IN ('atendida_en', 'atendida_por')" < /dev/null 2>/dev/null | tr -d '[:space:]')
+    echo "columnas de atencion en alerta (information_schema.columns): ${COLUMNAS:-ninguna}" | tee -a "$EVID/08b_migracion_p05.txt"
+    [ "$COLUMNAS" = "atendida_en,atendida_por" ] \
+      && ok "La migracion de P05 se aplica sin error y alerta tiene atendida_en y atendida_por" \
+      || falla "alerta no tiene las columnas atendida_en y atendida_por (ver 08b_migracion_p05.txt)"
+  else
+    tail -5 "$EVID/08b_migracion_p05.txt"; falla "sql/04_p05_atencion_alerta.sql fallo (ver 08b_migracion_p05.txt)"
+  fi
+fi
+
 paso "Arranque de la API en el puerto $API_PORT"
 if [ "$(salud)" != "000" ]; then
   falla "El puerto $API_PORT ya esta ocupado; detenga ese proceso y repita"
@@ -180,7 +205,7 @@ curl -s -i "$API_URL/api/health" > "$EVID/10_health.txt" 2>&1
 grep -q '"db":"UP"' "$EVID/10_health.txt" && ok "/api/health reporta db=UP" || falla "/api/health no reporta db=UP"
 
 paso "Pruebas del contrato contra la API en marcha (scripts/pruebas_api.py)"
-if API_URL="$API_URL" PSQL_CMD="$PSQL_CMD" PYTHONIOENCODING=utf-8 PYTHONWARNINGS=ignore python scripts/pruebas_api.py > "$EVID/11_pruebas_api_salida.txt" 2>&1; then
+if API_URL="$API_URL" PSQL_CMD="$PSQL_CMD" EVID_DIR="$EVID" PYTHONIOENCODING=utf-8 PYTHONWARNINGS=ignore python scripts/pruebas_api.py > "$EVID/11_pruebas_api_salida.txt" 2>&1; then
   ok "pruebas_api.py termino sin casos NO_VERIFICADO"
 else
   falla "pruebas_api.py reporto fallos (ver pruebas_api_resultados.txt)"
@@ -201,7 +226,7 @@ else
   for i in $(seq 1 90); do
     [ "$(curl -s -o /dev/null -w '%{http_code}' "$WEB_URL/api/health" 2>/dev/null)" = "200" ] && break; sleep 1
   done
-  if WEB_URL="$WEB_URL" API_URL="$API_URL" PSQL_CMD="$PSQL_CMD" PYTHONIOENCODING=utf-8 python scripts/recorrido_angular.py > "$EVID/11_recorrido_salida.txt" 2>&1; then
+  if WEB_URL="$WEB_URL" API_URL="$API_URL" PSQL_CMD="$PSQL_CMD" EVID_DIR="$EVID" IMG_DIR="$IMG" PYTHONIOENCODING=utf-8 python scripts/recorrido_angular.py > "$EVID/11_recorrido_salida.txt" 2>&1; then
     ok "recorrido_angular.py termino sin casos NO_VERIFICADO"
   else
     tail -5 "$EVID/11_recorrido_salida.txt"; falla "recorrido_angular.py reporto fallos (ver recorrido_angular.txt)"
@@ -213,8 +238,8 @@ fi
 
 paso "PostgreSQL despues de las pruebas (persistencia verificable)"
 $PSQL_CMD < sql/03_consultas_verificacion.sql > "$EVID/12_postgres_despues.txt" 2>&1 \
-  && grep -q "P04" "$EVID/12_postgres_despues.txt" \
-  && ok "Las lecturas creadas por la API existen en PostgreSQL" || falla "Persistencia en PostgreSQL"
+  && grep -q '\[prueba\]' "$EVID/12_postgres_despues.txt" \
+  && ok "Las lecturas y anotaciones creadas por la API existen en PostgreSQL" || falla "Persistencia en PostgreSQL"
 
 paso "Apagado de la API"
 apagar_api
@@ -225,7 +250,7 @@ EVID_DIR="$EVID" python scripts/anonimizar_evidencia.py || echo "   (aviso: no s
 
 paso "Resumen"
 {
-  echo "verify-module.sh M04 - $(date -Iseconds) - commit $(git rev-parse --short HEAD 2>/dev/null)"
+  echo "verify-module.sh $MODULO - $(date -Iseconds) - commit $(git rev-parse --short HEAD 2>/dev/null)"
   printf '%s\n' "${RESUMEN[@]}"
   echo "Fallos: $FALLOS"
 } | tee "$EVID/13_resumen.txt"

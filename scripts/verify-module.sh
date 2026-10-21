@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 # ============================================================================
-#  verify-module.sh <M02|M03|M04>  -  Verificacion reproducible del incremento
+#  verify-module.sh <M02|M03|M04|M05>  -  Verificacion reproducible del incremento
 #
 #  M02 (P02, JSP/Servlet, WAR web1): build -> WAR -> PostgreSQL -> Tomcat -> protocolo HTTP con curl.
 #  M03 (P03, JSF/PrimeFaces, WAR web2): build -> WAR -> PostgreSQL -> Tomcat (reinicio limpio) ->
 #       salud -> recorrido de aceptacion en navegador real (scripts/pruebas_jsf.py, Playwright).
 #  M04 (P04, Angular + API Spring Boot): delega en scripts/verify-m04.sh (no usa Tomcat externo).
+#  M05 (P05, integracion Angular - Spring Boot - PostgreSQL): delega en scripts/verify-m05.sh
+#       (mismos pasos que M04 mas la migracion sql/04; evidencia en docs/p05/evidencia).
 #  Cada paso deja su salida en docs/<evidencia>/txt/ y se marca VERIFICADO o NO_VERIFICADO.
 #  Termina con codigo 1 si algo fallo.
 #
@@ -26,7 +28,8 @@ case "$MODULO" in
   M02) WAR=web1; EVID="$ROOT/docs/evidencia/txt" ;;
   M03) WAR=web2; EVID="$ROOT/docs/p03/evidencia/txt" ;;
   M04) exec bash "$ROOT/scripts/verify-m04.sh" ;;
-  *) echo "Modulo no reconocido: $MODULO (usa M02, M03 o M04)"; exit 2 ;;
+  M05) exec bash "$ROOT/scripts/verify-m05.sh" ;;
+  *) echo "Modulo no reconocido: $MODULO (usa M02, M03, M04 o M05)"; exit 2 ;;
 esac
 BASE_URL="${BASE_URL:-http://localhost:8080/$WAR}"
 mkdir -p "$EVID"

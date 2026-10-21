@@ -1,0 +1,72 @@
+<p class="aviso aviso-ok" *ngIf="exito" id="aviso-ok" role="status">{{ exito }}</p>
+<div class="aviso aviso-error" *ngIf="error" id="aviso-error" role="alert">
+  <strong>{{ error.mensaje }}</strong> <span class="nota">({{ error.codigo }})</span>
+  <ul *ngIf="error.errores?.length">
+    <li *ngFor="let e of error.errores">{{ e.campo }}: {{ e.mensaje }}</li>
+  </ul>
+</div>
+
+<section class="tarjeta" *ngIf="sesion.puedeAnotar">
+  <h2>Registrar anotacion</h2>
+  <form (ngSubmit)="registrar()" id="form-anotacion" class="rejilla">
+    <div class="campo">
+      <label for="zona">Zona *</label>
+      <select id="zona" name="zona" [(ngModel)]="zonaId">
+        <option [ngValue]="null">-- Selecciona una zona --</option>
+        <option *ngFor="let z of zonas" [ngValue]="z.id">{{ z.nombre }}<ng-container *ngIf="z.cultivo"> - {{ z.cultivo }}</ng-container></option>
+      </select>
+      <small class="error-campo" *ngIf="errorDe('zonaId')">{{ errorDe('zonaId') }}</small>
+    </div>
+    <div class="campo">
+      <label for="lectura-id">Lectura relacionada (opcional, numero)</label>
+      <input id="lectura-id" name="lecturaId" type="text" [(ngModel)]="lecturaId" inputmode="numeric" maxlength="12" placeholder="Ej. 12">
+      <small class="error-campo" *ngIf="errorDe('lecturaId')">{{ errorDe('lecturaId') }}</small>
+    </div>
+    <div class="campo campo-ancho">
+      <label for="texto">Texto * (de 3 a {{ maximoTexto }} caracteres)</label>
+      <textarea id="texto" name="texto" [(ngModel)]="texto" rows="4" placeholder="Ej. Riego manual por la tarde; suelo seco en la orilla norte."></textarea>
+      <small id="contador-texto" class="contador" [class.error-campo]="texto.length > maximoTexto">{{ texto.length }}/{{ maximoTexto }}</small>
+      <small class="error-campo" *ngIf="errorDe('texto')">{{ errorDe('texto') }}</small>
+    </div>
+    <div class="campo-ancho">
+      <button type="submit" id="btn-anotar" [disabled]="enviando">{{ enviando ? 'Guardando...' : 'Registrar anotacion' }}</button>
+      <p class="nota">La anotacion se firma con tu rol (<strong>{{ sesion.rol }}</strong>).</p>
+    </div>
+  </form>
+</section>
+
+<section class="tarjeta">
+  <div class="encabezado">
+    <h2>Anotaciones</h2>
+    <label>Zona
+      <select id="filtro-zona" name="filtroZona" [(ngModel)]="filtroZona" (change)="cargar(0)">
+        <option [ngValue]="null">Todas</option>
+        <option *ngFor="let z of zonas" [ngValue]="z.id">{{ z.nombre }}</option>
+      </select>
+    </label>
+  </div>
+  <p class="nota" *ngIf="cargando">Cargando anotaciones...</p>
+  <p class="vacio" *ngIf="!cargando && pagina.total === 0" id="sin-anotaciones">Aun no hay anotaciones que coincidan.</p>
+  <div class="tabla-scroll" *ngIf="pagina.total > 0">
+    <table id="tabla-anotaciones">
+      <thead>
+        <tr><th>#</th><th>Zona</th><th>Rol</th><th>Texto</th><th>Lectura</th><th>Fecha</th></tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let a of pagina.contenido" [attr.data-id]="a.id">
+          <td>{{ a.id }}</td>
+          <td>{{ a.zona }}</td>
+          <td><span class="etiqueta" [ngClass]="'etiqueta-rol-' + a.autorRol">{{ a.autorRol }}</span></td>
+          <td class="texto-anotacion">{{ a.texto }}</td>
+          <td class="num">{{ a.lecturaId ? '#' + a.lecturaId : '-' }}</td>
+          <td>{{ a.creadaEn | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <nav class="paginador" *ngIf="pagina.total > 0" aria-label="Paginas de anotaciones">
+    <button type="button" (click)="cargar(pagina.pagina - 1)" [disabled]="pagina.pagina === 0">Anterior</button>
+    <span id="pagina-actual">Pagina {{ pagina.pagina + 1 }} de {{ totalPaginas }} · {{ pagina.total }} anotaciones</span>
+    <button type="button" (click)="cargar(pagina.pagina + 1)" [disabled]="pagina.pagina + 1 >= totalPaginas">Siguiente</button>
+  </nav>
+</section>
