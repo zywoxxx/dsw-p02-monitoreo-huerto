@@ -1,0 +1,10 @@
+BEGIN
+ALTER TABLE
+NOTICE:  column "atendida_en" of relation "alerta" already exists, skipping
+ALTER TABLE
+NOTICE:  column "atendida_por" of relation "alerta" already exists, skipping
+DO
+COMMENT
+COMMENT
+COMMIT
+columnas de atencion en alerta (information_schema.columns): atendida_en,atendida_por

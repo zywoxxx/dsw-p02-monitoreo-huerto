@@ -1,0 +1,67 @@
+pruebas_api.py - 2026-10-21T09:58:40 - http://localhost:8081
+Casos: 64  VERIFICADO: 64  NO_VERIFICADO: 0
+
+01 | VERIFICADO    | Salud publica: 200, base UP
+02 | VERIFICADO    | Login correcto: 200 con token y rol OBSERVADOR
+03 | VERIFICADO    | Login incorrecto: 401 sin token
+04 | VERIFICADO    | Login incompleto: 400
+05 | VERIFICADO    | Recurso protegido sin token: 401
+06 | VERIFICADO    | Token con firma alterada: 401
+07 | VERIFICADO    | Catalogo de sensores: 200 con rango fisico y umbral
+08 | VERIFICADO    | Parametro de consulta no numerico: 400
+09 | VERIFICADO    | Historial paginado: 200 y total igual al de PostgreSQL
+10 | VERIFICADO    | Filtro por procedencia: solo lecturas simuladas
+11 | VERIFICADO    | Procedencia desconocida: 400
+12 | VERIFICADO    | Lectura valida: 201, Location, procedencia manual, sin alerta, +1 lectura
+13 | VERIFICADO    | La lectura creada se recupera por su identificador
+14 | VERIFICADO    | Lectura sobre el umbral: 201 con alerta ALTA, +1 lectura y +1 alerta
+15 | VERIFICADO    | Lectura bajo el umbral: 201 con alerta BAJA
+16 | VERIFICADO    | Limites inclusivos: 15 y 32 se guardan sin alerta
+17 | VERIFICADO    | Rechazo: valor no numerico "abc" -> 400 VALIDACION, la base no cambia
+18 | VERIFICADO    | Rechazo: valor con tres decimales 24.555 -> 400 VALIDACION, la base no cambia
+19 | VERIFICADO    | Rechazo: sin valor -> 400 VALIDACION, la base no cambia
+20 | VERIFICADO    | Rechazo: sin sensor -> 400 VALIDACION, la base no cambia
+21 | VERIFICADO    | Rechazo: JSON mal formado -> 400 VALIDACION, la base no cambia
+22 | VERIFICADO    | Rechazo: observacion de 201 caracteres -> 400 VALIDACION, la base no cambia
+23 | VERIFICADO    | Rechazo: valor 150, fuera del rango fisico -> 422 REGLA_DE_NEGOCIO, la base no cambia
+24 | VERIFICADO    | Rechazo: sensor 999, no existe -> 404 NO_ENCONTRADO, la base no cambia
+25 | VERIFICADO    | Sensor inactivo: 409 y la base no cambia
+26 | VERIFICADO    | Registrar sin token: 401 y la base no cambia
+27 | VERIFICADO    | Rol sin permiso de captura: 403 al registrar, 200 al consultar
+28 | VERIFICADO    | Lectura inexistente: 404
+29 | VERIFICADO    | CORS: solo se admite el origen del cliente Angular
+30 | VERIFICADO    | Catalogo de zonas sin token: 401
+31 | VERIFICADO    | Catalogo de zonas: 200 con las dos zonas ordenadas por nombre
+32 | VERIFICADO    | Alertas paginadas: 200 y total igual al de PostgreSQL
+33 | VERIFICADO    | Filtro por nivel: solo alertas ALTA
+34 | VERIFICADO    | Nivel desconocido: 400
+35 | VERIFICADO    | Filtro por estado: solo alertas pendientes
+36 | VERIFICADO    | Parametro booleano no valido: 400
+37 | VERIFICADO    | La alerta creada por la lectura 38 se recupera pendiente
+38 | VERIFICADO    | Alerta inexistente: 404
+39 | VERIFICADO    | OBSERVADOR no atiende alertas: 403 y la base no cambia
+40 | VERIFICADO    | COORDINACION no atiende alertas: 403 y la base no cambia
+41 | VERIFICADO    | RESPONSABLE atiende la alerta: 200, rol e instante los pone el servidor, PostgreSQL actualizado
+42 | VERIFICADO    | Repetir el mismo estado: 409 CONFLICTO y la base no cambia
+43 | VERIFICADO    | Sin el campo atendida: 400 VALIDACION senalando el campo, la base no cambia
+44 | VERIFICADO    | atendida no booleano: 400 y la base no cambia
+45 | VERIFICADO    | Atender una alerta inexistente: 404
+46 | VERIFICADO    | Cambiar el estado sin token: 401 y la base no cambia
+47 | VERIFICADO    | Reabrir la alerta: 200 sin atendidaEn ni atendidaPor; ambas columnas NULL en PostgreSQL
+48 | VERIFICADO    | Anotaciones paginadas: 200 y total igual al de PostgreSQL
+49 | VERIFICADO    | Parametro de consulta no numerico: 400
+50 | VERIFICADO    | Anotacion de zona: 201, Location, firmada con el rol del token, +1 anotacion
+51 | VERIFICADO    | Anotacion sobre una lectura de la zona: 201 con lecturaId y rol OBSERVADOR
+52 | VERIFICADO    | La anotacion creada se recupera por su identificador
+53 | VERIFICADO    | Anotacion inexistente: 404
+54 | VERIFICADO    | Rechazo: texto "ok" (2 caracteres) -> 400 VALIDACION, la base no cambia
+55 | VERIFICADO    | Rechazo: texto de 301 caracteres -> 400 VALIDACION, la base no cambia
+56 | VERIFICADO    | Rechazo: texto "   ab   " (recortado quedan 2) -> 400 VALIDACION, la base no cambia
+57 | VERIFICADO    | Rechazo: sin zonaId -> 400 VALIDACION, la base no cambia
+58 | VERIFICADO    | Rechazo: sin texto -> 400 VALIDACION, la base no cambia
+59 | VERIFICADO    | Rechazo: lecturaId -3 -> 400 VALIDACION, la base no cambia
+60 | VERIFICADO    | Rechazo: zonaId 999, no existe -> 404 NO_ENCONTRADO, la base no cambia
+61 | VERIFICADO    | Rechazo: lecturaId 999999, no existe -> 404 NO_ENCONTRADO, la base no cambia
+62 | VERIFICADO    | Rechazo: zonaId 2 con la lectura 108, que es de la zona 1 -> 422 REGLA_DE_NEGOCIO, la base no cambia
+63 | VERIFICADO    | Anotar sin token: 401 y la base no cambia
+64 | VERIFICADO    | Todo lo implementado esta en el contrato y no hay operaciones del contrato sin implementar

@@ -1,0 +1,18 @@
+verify-module.sh M05 - 2026-10-21T09:59:16-06:00 - commit 701016e
+VERIFICADO    | Java 11 disponible
+VERIFICADO    | Node 18 disponible
+VERIFICADO    | api-spring compila con Java 11 y sus pruebas pasan
+VERIFICADO    | El jar contiene controladores (lecturas/LecturaController zonas/ZonaController alertas/AlertaController anotaciones/AnotacionController), driver de PostgreSQL, Spring JDBC y springdoc
+VERIFICADO    | application.properties toma conexion y secreto de variables de entorno
+VERIFICADO    | frontend-angular compila y genera dist/frontend-angular
+VERIFICADO    | Las pruebas del cliente Angular pasan
+VERIFICADO    | openapi.yaml es OpenAPI 3.0 valido
+VERIFICADO    | PostgreSQL responde y el modelo de 7 tablas existe
+VERIFICADO    | La migracion de P05 se aplica sin error y alerta tiene atendida_en y atendida_por
+VERIFICADO    | La API arranca y /api/health responde 200
+VERIFICADO    | /api/health reporta db=UP
+VERIFICADO    | pruebas_api.py termino sin casos NO_VERIFICADO
+VERIFICADO    | recorrido_angular.py termino sin casos NO_VERIFICADO
+VERIFICADO    | Las lecturas y anotaciones creadas por la API existen en PostgreSQL
+VERIFICADO    | La API se detuvo y el puerto 8081 quedo libre
+Fallos: 0

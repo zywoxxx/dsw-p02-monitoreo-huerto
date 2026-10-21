@@ -6,7 +6,8 @@ umbral operativo y permite anotaciones por rol. Todos los datos son ficticios.
 
 | Incremento | Estado | Tecnologia | WAR / contexto |
 |---|---|---|---|
-| **P04 (actual)** - Web 3.0 | `verify-module.sh M04` -> VERIFICADO el 2026-09-29 y el 2026-10-09 (30 casos del contrato, 12 en navegador, 16 pruebas de la API, 5 del cliente) | Angular 16.2.12 + API REST Spring Boot 2.7.18 (Java 11) + PostgreSQL 16; contrato OpenAPI 3.0.3 | `frontend-angular/` en `http://localhost:4200`, `api-spring/` en `http://localhost:8081` |
+| **P05 (actual)** - integracion Web 3.0 | `verify-module.sh M05` -> VERIFICADO el 2026-10-21 (64 casos del contrato, 23 en navegador, 37 pruebas de la API, 9 del cliente) | Las 13 operaciones del contrato 0.5.0 implementadas: zonas, alertas con cambio de estado (`PATCH`), anotaciones; migracion `sql/04` | mismos puertos que P04; `./scripts/demo_p05.sh` levanta todo |
+| P04 - Web 3.0 | `verify-module.sh M04` -> VERIFICADO el 2026-09-29 y el 2026-10-09 (30 casos del contrato, 12 en navegador, 16 pruebas de la API, 5 del cliente) | Angular 16.2.12 + API REST Spring Boot 2.7.18 (Java 11) + PostgreSQL 16; contrato OpenAPI 3.0.3 | `frontend-angular/` en `http://localhost:4200`, `api-spring/` en `http://localhost:8081` |
 | P03 - Web 2.0 | `verify-module.sh M03` -> VERIFICADO el 2026-09-25 (26 casos en navegador, 21 pruebas unitarias) | JSF 2.3 (Mojarra 2.3.9) + PrimeFaces 12 + CDI (Weld 3.1.9) sobre Tomcat 9.0.115; JDBC a PostgreSQL 16 | `web2.war` -> `http://localhost:8080/web2/` |
 | P02 - Web 1.0 | VERIFICADO el 2026-09-11; evidencia conservada en `docs/evidencia/` y `docs/entrega/` | JSP/Servlet 4.0 sobre Tomcat 9; mismo modelo y misma base | `web1.war` (historial de git hasta `832f377`) |
 
@@ -279,7 +280,66 @@ Variables opcionales: `API_PORT`, `WEB_PORT`, `PSQL_CMD`, `CHROME_BIN`, `SKIP_FR
 Implementado: salud, acceso, sensores y lecturas. Definido en el contrato y pendiente de implementar: zonas, alertas
 y anotaciones.
 
-## 8. Equipo
+## 8. P05: integracion completa (zonas, alertas con cambio de estado, anotaciones)
+
+P05 completa lo que P04 dejo solo en el contrato. Las 13 operaciones de `docs/p04/openapi.yaml` (version 0.5.0)
+estan implementadas, el cliente Angular tiene las vistas de alertas y anotaciones, y la API ofrece un cambio de
+estado: el responsable del huerto marca una alerta como atendida o la reabre (`PATCH /api/alertas/{id}`).
+
+| Documento | Contenido |
+|---|---|
+| `docs/p05/arquitectura.md` | Que se agrego, el cambio de estado, decisiones D10 a D17 con alternativas, seguridad, despliegue |
+| `docs/p05/modelo-datos.md` | Columnas nuevas de `alerta`, migracion, estados, reglas |
+| `docs/p05/endpoints.md` | Catalogo completo de las 13 operaciones con ejemplos reales |
+| `docs/p05/trazabilidad-r05.md` | RF -> componente -> prueba -> evidencia -> criterio R05 |
+| `docs/p05/verificacion.md` | Estados VERIFICADO / NO_VERIFICADO / PENDIENTE, fallos encontrados y limitaciones |
+| `docs/p05/evidencia/INDICE.md` | Evidencia frente a cada criterio de R05 |
+
+### 8.1 Si ya tienes la base de P04: aplica la migracion
+
+```bash
+docker exec -i dsw-p02-huerto-db psql -U huerto_app -d huerto_db -v ON_ERROR_STOP=1 < sql/04_p05_atencion_alerta.sql
+```
+
+Agrega `atendida_en` y `atendida_por` a `alerta` sin tocar filas; se puede correr mas de una vez. Una base creada
+desde cero con `docker compose` ya las trae (`sql/01_schema.sql`). Nada se borra.
+
+### 8.2 Ejecutar
+
+Igual que en P04 (seccion 7.2 y 7.3): la API en el 8081 con las variables `DB_*` y el cliente con `npx ng serve` en
+el 4200. Rutas del cliente: `/lecturas`, `/alertas`, `/anotaciones`. Quien puede que:
+
+| Operacion | OBSERVADOR | RESPONSABLE | COORDINACION |
+|---|---|---|---|
+| Consultar zonas, sensores, lecturas, alertas y anotaciones | si | si | si |
+| Registrar lectura (`POST /api/lecturas`) | si | no (403) | no (403) |
+| Atender o reabrir una alerta (`PATCH /api/alertas/{id}`) | no (403) | si | no (403) |
+| Registrar anotacion (`POST /api/anotaciones`) | si | si | si |
+
+### 8.3 Probar el cambio de estado sin el cliente
+
+```bash
+TOKEN=$(curl -s -X POST http://localhost:8081/api/auth/login -H 'Content-Type: application/json'   -d '{"usuario":"responsable","contrasena":"Responsable#2026"}' | python -c "import sys,json; print(json.load(sys.stdin)['token'])")
+curl -s -H "Authorization: Bearer $TOKEN" "http://localhost:8081/api/alertas?atendida=false&tamano=3"
+curl -s -i -X PATCH http://localhost:8081/api/alertas/1 -H "Authorization: Bearer $TOKEN"   -H 'Content-Type: application/json' -d '{"atendida":true}'        # 200; repetirlo responde 409
+curl -s -i -X POST http://localhost:8081/api/anotaciones -H "Authorization: Bearer $TOKEN"   -H 'Content-Type: application/json' -d '{"zonaId":1,"texto":"[prueba] riego manual por la tarde"}'   # 201
+```
+
+### 8.4 Verificar y limpiar
+
+```bash
+./scripts/verify-module.sh M05        # con la API y el cliente detenidos: el script los arranca y los apaga
+./scripts/prueba_base_detenida.sh     # opcional: detiene y vuelve a arrancar el contenedor de la base
+./scripts/cleanup.sh                  # retira lecturas, alertas y anotaciones de prueba y carpetas generadas
+```
+
+`verify-module.sh M05` hace lo mismo que `M04` (compila la API y el cliente, corre sus pruebas, valida el contrato,
+arranca la API, ejecuta `pruebas_api.py`, sirve el cliente y hace el recorrido en navegador con
+`recorrido_angular.py`, consulta PostgreSQL y apaga todo) mas la migracion de `sql/04`, y deja la evidencia en
+`docs/p05/evidencia/`. La guia de P05 pide `verify-module.sh M04`; ese modulo sigue funcionando y deja su evidencia en
+`docs/p04/evidencia/`, pero la de P05 se genera con `M05` para no mezclar incrementos.
+
+## 9. Equipo
 
 | Responsabilidad | Integrante | GitHub |
 |---|---|---|

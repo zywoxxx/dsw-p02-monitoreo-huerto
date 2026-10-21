@@ -1,0 +1,78 @@
+                                                       version                                                        
+----------------------------------------------------------------------------------------------------------------------
+ PostgreSQL 16.15 (Debian 16.15-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+(1 row)
+
+   base    |  usuario   
+-----------+------------
+ huerto_db | huerto_app
+(1 row)
+
+ table_name 
+------------
+ alerta
+ anotacion
+ lectura
+ sensor
+ umbral
+ variable
+ zona
+(7 rows)
+
+  entidad  | registros 
+-----------+-----------
+ zona      |         2
+ variable  |         4
+ sensor    |         5
+ umbral    |         5
+ lectura   |        32
+ alerta    |        14
+ anotacion |        21
+(7 rows)
+
+ id  |    codigo     |       variable       |  zona  | valor | unidad | origen |             observacion             |         registrado_en         | alerta 
+-----+---------------+----------------------+--------+-------+--------+--------+-------------------------------------+-------------------------------+--------
+ 114 | SEN-A-TEMP-01 | Temperatura ambiente | Cama A | 38.00 | C      | manual | [prueba] P05 Angular alerta         | 2026-10-21 15:58:59.082943+00 | ALTA
+ 113 | SEN-A-TEMP-01 | Temperatura ambiente | Cama A | 25.50 | C      | manual | [prueba] P05 Angular lectura valida | 2026-10-21 15:58:58.421481+00 | 
+ 112 | SEN-A-TEMP-01 | Temperatura ambiente | Cama A | 32.00 | C      | manual | [prueba] P05 limite superior        | 2026-10-21 15:58:21.543094+00 | 
+ 111 | SEN-A-TEMP-01 | Temperatura ambiente | Cama A | 15.00 | C      | manual | [prueba] P05 limite inferior        | 2026-10-21 15:58:21.471423+00 | 
+ 110 | SEN-A-TEMP-01 | Temperatura ambiente | Cama A | 10.00 | C      | manual | [prueba] P05 alerta baja            | 2026-10-21 15:58:20.988347+00 | BAJA
+ 109 | SEN-A-TEMP-01 | Temperatura ambiente | Cama A | 38.00 | C      | manual | [prueba] P05 alerta alta            | 2026-10-21 15:58:19.95258+00  | ALTA
+ 108 | SEN-A-TEMP-01 | Temperatura ambiente | Cama A | 25.50 | C      | manual | [prueba] P05 lectura valida         | 2026-10-21 15:58:18.950475+00 | 
+ 107 | SEN-A-TEMP-01 | Temperatura ambiente | Cama A | 32.00 | C      | manual | [prueba] P05 limite superior        | 2026-10-21 15:52:09.921709+00 | 
+ 106 | SEN-A-TEMP-01 | Temperatura ambiente | Cama A | 15.00 | C      | manual | [prueba] P05 limite inferior        | 2026-10-21 15:52:09.891317+00 | 
+ 105 | SEN-A-TEMP-01 | Temperatura ambiente | Cama A | 38.00 | C      | manual | [prueba] P05 Angular alerta         | 2026-10-21 15:52:09.833149+00 | ALTA
+(10 rows)
+
+ id |    codigo     | nivel |                               mensaje                               | atendida | atendida_en | atendida_por |           creada_en           
+----+---------------+-------+---------------------------------------------------------------------+----------+-------------+--------------+-------------------------------
+ 50 | SEN-A-TEMP-01 | ALTA  | Temperatura ambiente en Cama A: 38 C por encima del maximo 32.00 C. | f        |             |              | 2026-10-21 15:58:59.082943+00
+ 49 | SEN-A-TEMP-01 | BAJA  | Temperatura ambiente en Cama A: 10 C por debajo del minimo 15.00 C. | f        |             |              | 2026-10-21 15:58:20.988347+00
+ 48 | SEN-A-TEMP-01 | ALTA  | Temperatura ambiente en Cama A: 38 C por encima del maximo 32.00 C. | f        |             |              | 2026-10-21 15:58:19.95258+00
+ 47 | SEN-A-TEMP-01 | ALTA  | Temperatura ambiente en Cama A: 38 C por encima del maximo 32.00 C. | f        |             |              | 2026-10-21 15:52:09.833149+00
+ 46 | SEN-A-TEMP-01 | BAJA  | Temperatura ambiente en Cama A: 10 C por debajo del minimo 15.00 C. | f        |             |              | 2026-10-21 15:52:09.45222+00
+ 45 | SEN-A-TEMP-01 | ALTA  | Temperatura ambiente en Cama A: 38 C por encima del maximo 32.00 C. | f        |             |              | 2026-10-21 15:52:08.446755+00
+ 44 | SEN-A-TEMP-01 | BAJA  | Temperatura ambiente en Cama A: 10 C por debajo del minimo 15.00 C. | f        |             |              | 2026-10-21 15:50:37.067089+00
+ 43 | SEN-A-TEMP-01 | ALTA  | Temperatura ambiente en Cama A: 38 C por encima del maximo 32.00 C. | f        |             |              | 2026-10-21 15:50:36.203651+00
+ 42 | SEN-A-TEMP-01 | ALTA  | Temperatura ambiente en Cama A: 38 C por encima del maximo 32.00 C. | f        |             |              | 2026-10-21 15:47:09.502746+00
+ 41 | SEN-A-TEMP-01 | ALTA  | Temperatura ambiente en Cama A: 38 C por encima del maximo 32.00 C. | f        |             |              | 2026-10-21 15:46:27.706773+00
+ 40 | SEN-A-TEMP-01 | BAJA  | Temperatura ambiente en Cama A: 10 C por debajo del minimo 15.00 C. | f        |             |              | 2026-10-21 15:44:16.279365+00
+ 39 | SEN-A-TEMP-01 | ALTA  | Temperatura ambiente en Cama A: 38 C por encima del maximo 32.00 C. | f        |             |              | 2026-10-21 15:44:15.36532+00
+ 38 | SEN-A-TEMP-01 | ALTA  | Temperatura ambiente en Cama A: 38 C por encima del maximo 32.00 C. | f        |             |              | 2026-10-21 15:41:28.595119+00
+ 37 | SEN-A-TEMP-01 | ALTA  | Temperatura ambiente en Cama A: 38 C por encima del maximo 32.00 C. | f        |             |              | 2026-10-21 15:40:40.246128+00
+(14 rows)
+
+ id |  zona  |  autor_rol   |                        texto                         | lectura_id |           creada_en           
+----+--------+--------------+------------------------------------------------------+------------+-------------------------------
+ 45 | Cama A | COORDINACION | [prueba] P05 anotacion de coordinacion desde Angular |            | 2026-10-21 15:59:05.416312+00
+ 44 | Cama A | RESPONSABLE  | [prueba] P05 anotacion desde Angular                 |            | 2026-10-21 15:59:04.069078+00
+ 43 | Cama A | OBSERVADOR   | [prueba] P05 anotacion sobre una lectura             |        108 | 2026-10-21 15:58:35.262316+00
+ 42 | Cama A | COORDINACION | [prueba] P05 anotacion de coordinacion               |            | 2026-10-21 15:58:34.792856+00
+ 41 | Cama A | OBSERVADOR   | [prueba] P05 anotacion sobre una lectura             |        101 | 2026-10-21 15:52:23.732758+00
+ 40 | Cama A | COORDINACION | [prueba] P05 anotacion de coordinacion               |            | 2026-10-21 15:52:23.325422+00
+ 39 | Cama A | COORDINACION | [prueba] P05 anotacion de coordinacion desde Angular |            | 2026-10-21 15:52:16.735245+00
+ 38 | Cama A | RESPONSABLE  | [prueba] P05 anotacion desde Angular                 |            | 2026-10-21 15:52:15.30492+00
+ 37 | Cama A | COORDINACION | [prueba] P05 anotacion de coordinacion desde Angular |            | 2026-10-21 15:47:15.785445+00
+ 36 | Cama A | RESPONSABLE  | [prueba] P05 anotacion desde Angular                 |            | 2026-10-21 15:47:14.362465+00
+(10 rows)
+

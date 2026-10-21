@@ -1,0 +1,47 @@
+recorrido_angular.py - 2026-10-21T09:58:53 - cliente http://localhost:4200 - API http://localhost:8081
+
+01 | VERIFICADO    | Sin sesion, /lecturas lleva a la pantalla de acceso
+     captura: docs/p05/evidencia/img/01_acceso.png
+02 | VERIFICADO    | Acceso con contrasena incorrecta: mensaje de error y sin sesion
+     captura: docs/p05/evidencia/img/02_acceso_rechazado.png
+03 | VERIFICADO    | Acceso del observador: formulario de captura e historial desde la API
+     captura: docs/p05/evidencia/img/03_lecturas_observador.png
+04 | VERIFICADO    | Lectura valida 25.5: 201, mensaje, fila nueva y +1 en PostgreSQL
+     captura: docs/p05/evidencia/img/04_lectura_valida.png
+05 | VERIFICADO    | Lectura 38 fuera del umbral: 201 con alerta ALTA visible y +1 alerta
+     captura: docs/p05/evidencia/img/05_lectura_con_alerta.png
+06 | VERIFICADO    | Valor no numerico: 400, mensaje por campo, se conserva lo escrito, la base no cambia
+     captura: docs/p05/evidencia/img/06_valor_no_numerico.png
+07 | VERIFICADO    | Valor 150 fuera del rango fisico: 422 y la base no cambia
+     captura: docs/p05/evidencia/img/07_fuera_de_rango_fisico.png
+08 | VERIFICADO    | Filtro por procedencia: el historial solo muestra lecturas simuladas
+     captura: docs/p05/evidencia/img/08_filtro_simulado.png
+09 | VERIFICADO    | Salir borra la sesion del navegador
+10 | VERIFICADO    | Rol COORDINACION: consulta el historial pero no ve el formulario de captura
+     captura: docs/p05/evidencia/img/09_lecturas_coordinacion.png
+11 | VERIFICADO    | Rol RESPONSABLE en /alertas: la alerta ALTA del recorrido aparece pendiente con boton de atender
+12 | VERIFICADO    | Marcar atendida: PATCH 200, mensaje, etiqueta con el rol y atendida = true en PostgreSQL
+     captura: docs/p05/evidencia/img/12_alerta_atendida.png
+13 | VERIFICADO    | Reabrir: PATCH 200 y la alerta vuelve a pendiente en pantalla y en PostgreSQL
+     captura: docs/p05/evidencia/img/13_alerta_reabierta.png
+14 | VERIFICADO    | Anotacion con texto "ok": 400 VALIDACION en pantalla, lo capturado se conserva, la base no cambia
+     captura: docs/p05/evidencia/img/14_anotacion_texto_corto.png
+15 | VERIFICADO    | Anotacion de 301 caracteres: el cliente no recorta (sin maxlength) y la API responde 400
+     captura: docs/p05/evidencia/img/15_anotacion_texto_largo.png
+16 | VERIFICADO    | Lectura relacionada 999999: 404 NO_ENCONTRADO en pantalla y lo capturado se conserva
+     captura: docs/p05/evidencia/img/16_anotacion_lectura_inexistente.png
+17 | VERIFICADO    | Anotacion valida sin lectura: 201, mensaje, fila nueva firmada por RESPONSABLE y +1 en PostgreSQL
+     captura: docs/p05/evidencia/img/17_anotacion_valida.png
+18 | VERIFICADO    | Filtro por zona Invernadero 1: la anotacion de Cama A no aparece
+     captura: docs/p05/evidencia/img/18_anotaciones_filtro_zona.png
+19 | VERIFICADO    | Rol COORDINACION en /alertas: consulta sin botones de atender y con el aviso del rol
+     captura: docs/p05/evidencia/img/19_alertas_coordinacion.png
+20 | VERIFICADO    | Rol COORDINACION anota: 201 y la fila queda firmada con COORDINACION
+     captura: docs/p05/evidencia/img/20_anotacion_coordinacion.png
+21 | VERIFICADO    | Rol OBSERVADOR en /alertas: consulta sin botones de atender
+22 | VERIFICADO    | Token alterado en el navegador: la API responde 401 y el cliente vuelve al acceso
+     captura: docs/p05/evidencia/img/21_token_invalido.png
+23 | VERIFICADO    | Documentacion generada por springdoc disponible en /swagger-ui.html
+     captura: docs/p05/evidencia/img/22_swagger_ui.png
+
+RESUMEN: 23/23 casos VERIFICADO

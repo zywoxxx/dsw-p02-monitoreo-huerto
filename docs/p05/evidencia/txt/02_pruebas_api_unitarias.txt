@@ -1,0 +1,28 @@
+-------------------------------------------------------------------------------
+Test set: mx.uv.dsw.huerto.api.alertas.AlertaControllerTest
+-------------------------------------------------------------------------------
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.976 s - in mx.uv.dsw.huerto.api.alertas.AlertaControllerTest
+-------------------------------------------------------------------------------
+Test set: mx.uv.dsw.huerto.api.anotaciones.AnotacionControllerTest
+-------------------------------------------------------------------------------
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.684 s - in mx.uv.dsw.huerto.api.anotaciones.AnotacionControllerTest
+-------------------------------------------------------------------------------
+Test set: mx.uv.dsw.huerto.api.anotaciones.ReglasAnotacionTest
+-------------------------------------------------------------------------------
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s - in mx.uv.dsw.huerto.api.anotaciones.ReglasAnotacionTest
+-------------------------------------------------------------------------------
+Test set: mx.uv.dsw.huerto.api.lecturas.LecturaControllerTest
+-------------------------------------------------------------------------------
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.683 s - in mx.uv.dsw.huerto.api.lecturas.LecturaControllerTest
+-------------------------------------------------------------------------------
+Test set: mx.uv.dsw.huerto.api.lecturas.ReglasLecturaTest
+-------------------------------------------------------------------------------
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 s - in mx.uv.dsw.huerto.api.lecturas.ReglasLecturaTest
+-------------------------------------------------------------------------------
+Test set: mx.uv.dsw.huerto.api.seguridad.TokenServiceTest
+-------------------------------------------------------------------------------
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.011 s - in mx.uv.dsw.huerto.api.seguridad.TokenServiceTest
+-------------------------------------------------------------------------------
+Test set: mx.uv.dsw.huerto.api.zonas.ZonaControllerTest
+-------------------------------------------------------------------------------
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.538 s - in mx.uv.dsw.huerto.api.zonas.ZonaControllerTest

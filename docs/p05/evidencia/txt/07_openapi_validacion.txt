@@ -1,0 +1,16 @@
+docs/p04/openapi.yaml es un documento OpenAPI 3.0.3 valido
+version del contrato: 0.5.0
+  GET   /api/health            salud                respuestas: 200, 503
+  POST  /api/auth/login        login                respuestas: 200, 400, 401
+  GET   /api/zonas             listarZonas          respuestas: 200, 401
+  GET   /api/sensores          listarSensores       respuestas: 200, 400, 401
+  GET   /api/lecturas          listarLecturas       respuestas: 200, 400, 401
+  POST  /api/lecturas          registrarLectura     respuestas: 201, 400, 401, 403, 404, 409, 422, 503
+  GET   /api/lecturas/{id}     lecturaPorId         respuestas: 200, 401, 404
+  GET   /api/alertas           listarAlertas        respuestas: 200, 400, 401
+  GET   /api/alertas/{id}      alertaPorId          respuestas: 200, 401, 404
+  PATCH /api/alertas/{id}      cambiarAtencionAlerta respuestas: 200, 400, 401, 403, 404, 409, 503
+  GET   /api/anotaciones       listarAnotaciones    respuestas: 200, 400, 401
+  POST  /api/anotaciones       registrarAnotacion   respuestas: 201, 400, 401, 404, 422, 503
+  GET   /api/anotaciones/{id}  anotacionPorId       respuestas: 200, 401, 404
+esquemas: Salud, Credenciales, Sesion, Rol, Zona, Sensor, NuevaLectura, AlertaResumen, Lectura, PaginaLecturas, Alerta, PaginaAlertas, CambioAtencion, NuevaAnotacion, Anotacion, PaginaAnotaciones, ErrorCampo, Error

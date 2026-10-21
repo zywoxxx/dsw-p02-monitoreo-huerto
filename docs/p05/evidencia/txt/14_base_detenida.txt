@@ -1,0 +1,61 @@
+prueba_base_detenida.sh - 2026-10-21T10:01:06-06:00
+
+== 1. Base en marcha ==
+--- GET /api/health
+{"app":"huerto-api PR09 (P04 Spring Boot)","status":"UP","db":"UP","postgres":"PostgreSQL 16.15","lecturas":32}
+[estado 200, 0.008036 s]
+
+token obtenido para observador (no se imprime)
+token obtenido para responsable (no se imprime)
+
+== 2. GET /api/zonas, /api/alertas, /api/anotaciones con token -> 200 (sin token -> 401) ==
+GET /api/zonas con token -> 200   sin token -> 401
+GET /api/alertas con token -> 200   sin token -> 401
+GET /api/anotaciones con token -> 200   sin token -> 401
+
+== 3. Usuario desconocido y contrasena incorrecta dan el mismo mensaje ==
+--- login de un usuario que no existe
+{"codigo":"NO_AUTENTICADO","mensaje":"Usuario o contrasena incorrectos.","instante":"2026-10-21T10:01:07.1451869-06:00"}
+[estado 401, 0.055645 s]
+
+--- login de observador con contrasena incorrecta
+{"codigo":"NO_AUTENTICADO","mensaje":"Usuario o contrasena incorrectos.","instante":"2026-10-21T10:01:07.2412134-06:00"}
+[estado 401, 0.046275 s]
+
+== 4. docker stop dsw-p02-huerto-db ==
+contenedor detenido (los datos quedan en su volumen)
+
+--- GET /api/health
+{"app":"huerto-api PR09 (P04 Spring Boot)","status":"DOWN","db":"DOWN","error":"PostgreSQL no responde"}
+[estado 503, 5.019948 s]
+
+--- GET /api/sensores con token
+{"codigo":"BASE_NO_DISPONIBLE","mensaje":"No fue posible completar la operacion en PostgreSQL; no se guardo nada.","instante":"2026-10-21T10:01:18.0863587-06:00"}
+[estado 503, 5.030393 s]
+
+--- POST /api/lecturas con token
+{"codigo":"BASE_NO_DISPONIBLE","mensaje":"No fue posible completar la operacion en PostgreSQL; no se guardo nada.","instante":"2026-10-21T10:01:23.1709505-06:00"}
+[estado 503, 5.016539 s]
+
+--- PATCH /api/alertas/1 con token de responsable
+{"codigo":"BASE_NO_DISPONIBLE","mensaje":"No fue posible completar la operacion en PostgreSQL; no se guardo nada.","instante":"2026-10-21T10:01:28.2541644-06:00"}
+[estado 503, 5.022551 s]
+
+--- POST /api/anotaciones con token
+{"codigo":"BASE_NO_DISPONIBLE","mensaje":"No fue posible completar la operacion en PostgreSQL; no se guardo nada.","instante":"2026-10-21T10:01:33.3340535-06:00"}
+[estado 503, 5.023206 s]
+
+--- POST /api/auth/login (no usa la base)
+
+[estado 200, 0.045458 s]
+
+== 5. docker start dsw-p02-huerto-db ==
+contenedor en marcha
+
+--- GET /api/health (la API se recupera sin reiniciarla)
+{"app":"huerto-api PR09 (P04 Spring Boot)","status":"UP","db":"UP","postgres":"PostgreSQL 16.15","lecturas":32}
+[estado 200, 0.006629 s]
+
+lecturas con la observacion de esta prueba en PostgreSQL (debe ser 0): 0
+anotaciones con el texto de esta prueba en PostgreSQL (debe ser 0): 0
+alerta 1 en PostgreSQL (atendida, atendida_por; sin cambio por esta prueba): 
