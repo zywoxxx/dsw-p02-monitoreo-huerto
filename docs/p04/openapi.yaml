@@ -1,14 +1,19 @@
 openapi: 3.0.3
 info:
   title: PR09 Monitoreo de huerto o ambiente - API REST
-  version: 0.4.0
+  version: 0.5.0
   description: |
-    Contrato de la API del incremento Web 3.0 (P04) del equipo DSW-E01.
-    Cliente: Angular 16. Servidor: Spring Boot 2.7 con Java 11. Base: PostgreSQL 16 (mismo modelo de P02/P03).
+    Contrato de la API Web 3.0 del equipo DSW-E01 (PR09). Se escribio a mano antes que el codigo (P04) y
+    se completo en P05. Cliente: Angular 16. Servidor: Spring Boot 2.7 con Java 11. Base: PostgreSQL 16
+    (mismo modelo de P02/P03, mas dos columnas de atencion en alerta desde P05).
 
-    Estado de implementacion en el esqueleto de P04:
-    - IMPLEMENTADO: /api/health, /api/auth/login, /api/sensores, /api/lecturas (GET, POST), /api/lecturas/{id}.
-    - SOLO CONTRATO (se implementa en el siguiente incremento): /api/zonas, /api/alertas, /api/anotaciones.
+    Cambios de 0.4.0 a 0.5.0 (P05):
+    - Se implementan /api/zonas, /api/alertas y /api/anotaciones, que en 0.4.0 estaban solo en el contrato.
+    - Cambio de estado: PATCH /api/alertas/{id} marca una alerta como atendida o la reabre (solo RESPONSABLE).
+    - Alerta lleva variable, atendidaEn y atendidaPor.
+    - GET /api/anotaciones ahora es paginado (PaginaAnotaciones), igual que lecturas y alertas; en 0.4.0 era una lista.
+    - POST /api/anotaciones responde Location y valida que la lectura referida pertenezca a la zona (422).
+    - Se agregan GET /api/alertas/{id} y GET /api/anotaciones/{id}.
 
     Todos los datos son ficticios.
 servers:
@@ -71,7 +76,7 @@ paths:
   /api/zonas:
     get:
       tags: [catalogos]
-      summary: Zonas del huerto (RF01)
+      summary: Zonas del huerto ordenadas por nombre (RF01)
       operationId: listarZonas
       responses:
         '200':
@@ -81,6 +86,9 @@ paths:
               schema:
                 type: array
                 items: { $ref: '#/components/schemas/Zona' }
+              example:
+                - { id: 1, nombre: "Cama A", cultivo: "Jitomate", ubicacion: "Huerto escolar demo - patio norte (ficticio)" }
+                - { id: 2, nombre: "Invernadero 1", cultivo: "Lechuga", ubicacion: "Huerto escolar demo - invernadero (ficticio)" }
         '401': { $ref: '#/components/responses/NoAutenticado' }
 
   /api/sensores:
@@ -190,10 +198,12 @@ paths:
   /api/alertas:
     get:
       tags: [alertas]
-      summary: Alertas generadas por lecturas fuera de umbral (RF06). Solo contrato en P04.
+      summary: Alertas generadas por lecturas fuera de umbral, de la mas reciente a la mas antigua (RF06)
       operationId: listarAlertas
       parameters:
         - { name: nivel, in: query, required: false, schema: { type: string, enum: [BAJA, ALTA] } }
+        - { name: atendida, in: query, required: false, schema: { type: boolean }, description: "true: solo atendidas; false: solo pendientes" }
+        - { name: zonaId, in: query, required: false, schema: { type: integer, format: int64, minimum: 1 } }
         - { name: pagina, in: query, required: false, schema: { type: integer, minimum: 0, default: 0 } }
         - { name: tamano, in: query, required: false, schema: { type: integer, minimum: 1, maximum: 100, default: 10 } }
       responses:
@@ -205,35 +215,105 @@ paths:
         '400': { $ref: '#/components/responses/Validacion' }
         '401': { $ref: '#/components/responses/NoAutenticado' }
 
+  /api/alertas/{id}:
+    get:
+      tags: [alertas]
+      summary: Una alerta por su identificador
+      operationId: alertaPorId
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer, format: int64, minimum: 1 } }
+      responses:
+        '200':
+          description: Alerta
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Alerta' }
+        '401': { $ref: '#/components/responses/NoAutenticado' }
+        '404':
+          description: No existe
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+              example: { codigo: NO_ENCONTRADO, mensaje: "La alerta 999 no existe." }
+    patch:
+      tags: [alertas]
+      summary: Cambio de estado de la alerta. atendida=true la marca como atendida; atendida=false la reabre (RF06)
+      description: |
+        Solo el rol RESPONSABLE (en el acta es quien "anota decisiones" sobre el huerto). El servidor registra
+        el instante y el rol que atendio; ninguno de los dos viaja en el cuerpo. Repetir el mismo estado responde 409.
+      operationId: cambiarAtencionAlerta
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer, format: int64, minimum: 1 } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CambioAtencion' }
+            examples:
+              atender: { summary: Marcar como atendida, value: { atendida: true } }
+              reabrir: { summary: Volver a pendiente, value: { atendida: false } }
+      responses:
+        '200':
+          description: La alerta con su nuevo estado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Alerta' }
+        '400': { $ref: '#/components/responses/Validacion' }
+        '401': { $ref: '#/components/responses/NoAutenticado' }
+        '403': { $ref: '#/components/responses/RolSinPermiso' }
+        '404':
+          description: La alerta no existe
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: La alerta ya estaba en el estado pedido; no se cambio nada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+              example: { codigo: CONFLICTO, mensaje: "La alerta 7 ya estaba atendida." }
+        '503': { $ref: '#/components/responses/BaseNoDisponible' }
+
   /api/anotaciones:
     get:
       tags: [anotaciones]
-      summary: Anotaciones recientes, opcionalmente por zona (RF06). Solo contrato en P04.
+      summary: Anotaciones de la mas reciente a la mas antigua, opcionalmente por zona (RF06)
       operationId: listarAnotaciones
       parameters:
         - { name: zonaId, in: query, required: false, schema: { type: integer, format: int64, minimum: 1 } }
+        - { name: pagina, in: query, required: false, schema: { type: integer, minimum: 0, default: 0 } }
+        - { name: tamano, in: query, required: false, schema: { type: integer, minimum: 1, maximum: 100, default: 10 } }
       responses:
         '200':
-          description: Lista de anotaciones
+          description: Pagina de anotaciones
           content:
             application/json:
-              schema:
-                type: array
-                items: { $ref: '#/components/schemas/Anotacion' }
+              schema: { $ref: '#/components/schemas/PaginaAnotaciones' }
+        '400': { $ref: '#/components/responses/Validacion' }
         '401': { $ref: '#/components/responses/NoAutenticado' }
     post:
       tags: [anotaciones]
-      summary: Registra una anotacion firmada con el rol del token (RF06). Solo contrato en P04.
-      description: Los tres roles pueden anotar. El rol no se envia en el cuerpo; se toma del token.
+      summary: Registra una anotacion firmada con el rol del token (RF06)
+      description: |
+        Los tres roles pueden anotar. El rol no se envia en el cuerpo; se toma del token. El texto se recorta
+        (trim) antes de validar su largo: de 3 a 300 caracteres. Si se indica lecturaId, la lectura debe existir
+        y pertenecer a un sensor de la zona indicada.
       operationId: registrarAnotacion
       requestBody:
         required: true
         content:
           application/json:
             schema: { $ref: '#/components/schemas/NuevaAnotacion' }
+            examples:
+              deZona: { summary: Solo zona, value: { zonaId: 1, texto: "Riego manual por la tarde; suelo seco en la orilla norte." } }
+              sobreLectura: { summary: Sobre una lectura, value: { zonaId: 1, lecturaId: 12, texto: "Se revisa el sensor; la lectura alta coincide con sol directo." } }
       responses:
         '201':
           description: Anotacion creada
+          headers:
+            Location:
+              description: Ruta del recurso creado
+              schema: { type: string, example: /api/anotaciones/5 }
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Anotacion' }
@@ -241,6 +321,34 @@ paths:
         '401': { $ref: '#/components/responses/NoAutenticado' }
         '404':
           description: La zona o la lectura referida no existe
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+              example: { codigo: NO_ENCONTRADO, mensaje: "La zona 999 no existe." }
+        '422':
+          description: La lectura existe pero no pertenece a la zona indicada; no se guarda nada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+              example: { codigo: REGLA_DE_NEGOCIO, mensaje: "La lectura 12 pertenece a Cama A, no a Invernadero 1." }
+        '503': { $ref: '#/components/responses/BaseNoDisponible' }
+
+  /api/anotaciones/{id}:
+    get:
+      tags: [anotaciones]
+      summary: Una anotacion por su identificador
+      operationId: anotacionPorId
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer, format: int64, minimum: 1 } }
+      responses:
+        '200':
+          description: Anotacion
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Anotacion' }
+        '401': { $ref: '#/components/responses/NoAutenticado' }
+        '404':
+          description: No existe
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Error' }
@@ -258,7 +366,7 @@ components:
 
   responses:
     Validacion:
-      description: La peticion tiene datos invalidos (faltantes, tipo incorrecto, mas de dos decimales, texto demasiado largo)
+      description: La peticion tiene datos invalidos (faltantes, tipo incorrecto, mas de dos decimales, texto demasiado corto o largo)
       content:
         application/json:
           schema: { $ref: '#/components/schemas/Error' }
@@ -391,17 +499,23 @@ components:
 
     Alerta:
       type: object
-      required: [id, lecturaId, sensorCodigo, zona, valor, unidad, nivel, mensaje, atendida, creadaEn]
+      required: [id, lecturaId, sensorCodigo, variable, zona, zonaId, valor, unidad, nivel, mensaje, atendida, creadaEn]
       properties:
         id: { type: integer, format: int64 }
         lecturaId: { type: integer, format: int64 }
         sensorCodigo: { type: string }
+        variable: { type: string }
+        zonaId: { type: integer, format: int64 }
         zona: { type: string }
-        valor: { type: number }
+        valor: { type: number, description: Valor de la lectura que genero la alerta }
         unidad: { type: string }
         nivel: { type: string, enum: [BAJA, ALTA] }
         mensaje: { type: string }
         atendida: { type: boolean }
+        atendidaEn: { type: string, format: date-time, description: Presente solo si atendida es true }
+        atendidaPor:
+          allOf: [ { $ref: '#/components/schemas/Rol' } ]
+          description: Rol que la atendio; presente solo si atendida es true
         creadaEn: { type: string, format: date-time }
 
     PaginaAlertas:
@@ -415,13 +529,19 @@ components:
         tamano: { type: integer, minimum: 1 }
         total: { type: integer, format: int64, minimum: 0 }
 
+    CambioAtencion:
+      type: object
+      required: [atendida]
+      properties:
+        atendida: { type: boolean, description: "true: marcar como atendida; false: reabrir" }
+
     NuevaAnotacion:
       type: object
       required: [zonaId, texto]
       properties:
         zonaId: { type: integer, format: int64, minimum: 1 }
-        lecturaId: { type: integer, format: int64, minimum: 1 }
-        texto: { type: string, minLength: 3, maxLength: 300 }
+        lecturaId: { type: integer, format: int64, minimum: 1, description: Opcional; debe pertenecer a la zona }
+        texto: { type: string, minLength: 3, maxLength: 300, description: Se recorta antes de validar el largo }
 
     Anotacion:
       type: object
@@ -430,10 +550,21 @@ components:
         id: { type: integer, format: int64 }
         zonaId: { type: integer, format: int64 }
         zona: { type: string }
-        lecturaId: { type: integer, format: int64 }
+        lecturaId: { type: integer, format: int64, description: Presente solo si la anotacion refiere a una lectura }
         autorRol: { $ref: '#/components/schemas/Rol' }
-        texto: { type: string }
+        texto: { type: string, maxLength: 300 }
         creadaEn: { type: string, format: date-time }
+
+    PaginaAnotaciones:
+      type: object
+      required: [contenido, pagina, tamano, total]
+      properties:
+        contenido:
+          type: array
+          items: { $ref: '#/components/schemas/Anotacion' }
+        pagina: { type: integer, minimum: 0 }
+        tamano: { type: integer, minimum: 1 }
+        total: { type: integer, format: int64, minimum: 0 }
 
     ErrorCampo:
       type: object
