@@ -1,8 +1,14 @@
-# PostgreSQL 16 local para el incremento P02 (laboratorio, datos ficticios).
-#   docker compose -f docker/docker-compose.yml up -d
-# Los scripts de sql/ se ejecutan en orden la PRIMERA vez que se crea el volumen.
-# Las credenciales son de laboratorio; se pueden sobreescribir con docker/.env
-# (ver .env.example) y NUNCA deben ser credenciales reales.
+# PR09 Monitoreo de huerto - contenedores del proyecto (laboratorio, datos ficticios).
+#
+#   docker compose -f docker/docker-compose.yml up -d                    solo PostgreSQL (como en P02 a P05)
+#   docker compose -f docker/docker-compose.yml --profile app up -d --build   todo: PostgreSQL + API + nginx con Angular
+#   docker compose -f docker/docker-compose.yml --profile app down          detiene todo; el volumen de datos se conserva
+#
+# Los tres servicios comparten la red "huerto". Solo nginx expone un puerto al equipo (WEB_PORT, 80 por
+# omision): sirve el cliente Angular y reenvia /api a la API. La API y la base no se exponen fuera de la red
+# (la base conserva el puerto 5436 solo para psql y los scripts de verificacion).
+# Los scripts de sql/ se ejecutan en orden la PRIMERA vez que se crea el volumen. Las credenciales son de
+# laboratorio; se pueden sobreescribir con docker/.env (ver .env.example) y NUNCA deben ser credenciales reales.
 name: dsw-p02-huerto
 
 services:
@@ -20,11 +26,53 @@ services:
       - pgdata:/var/lib/postgresql/data
       - ../sql/01_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
       - ../sql/02_seed.sql:/docker-entrypoint-initdb.d/02_seed.sql:ro
+    networks: [huerto]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-huerto_app} -d ${POSTGRES_DB:-huerto_db}"]
       interval: 5s
       timeout: 5s
       retries: 10
+
+  api:
+    profiles: [app]
+    build:
+      context: ..
+      dockerfile: api-spring/Dockerfile
+    image: huerto-api:0.5.0
+    container_name: dsw-p02-huerto-api
+    restart: unless-stopped
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-huerto_db}
+      DB_USER: ${POSTGRES_USER:-huerto_app}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-huerto_dev}
+      JWT_SECRET: ${JWT_SECRET:-}
+      # Detras de nginx cliente y API comparten origen; este valor solo importa si se llama a la API desde otro origen
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost}
+      PORT: "8081"
+    expose: ["8081"]
+    networks: [huerto]
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    profiles: [app]
+    build:
+      context: ..
+      dockerfile: frontend-angular/Dockerfile
+    image: huerto-web:0.5.0
+    container_name: dsw-p02-huerto-web
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-80}:80"
+    networks: [huerto]
+    depends_on:
+      api:
+        condition: service_healthy
+
+networks:
+  huerto:
+    name: huerto
 
 volumes:
   pgdata:

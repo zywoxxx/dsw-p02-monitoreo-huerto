@@ -50,6 +50,25 @@ con el contrato: todo lo implementado esta en el contrato y ya no queda ninguna 
 | La migracion se puede correr dos veces sin error | VERIFICADO (la base de pruebas ya venia migrada y el paso 9 volvio a aplicarla) | `txt/08b_migracion_p05.txt` |
 | Demostracion en localhost con `scripts/demo_p05.sh` (API, cliente y navegador) | VERIFICADO a mano el 2026-10-21 | sin archivo de evidencia |
 
+## 2b. La pila completa en Docker detras de nginx (2026-10-28)
+
+Ademas de la ejecucion local (`ng serve` + jar), los tres componentes corren cada uno en su contenedor sobre la red
+Docker `huerto`, con nginx como unica entrada (`docker compose -f docker/docker-compose.yml --profile app up -d --build`;
+detalle en `arquitectura.md`, seccion 5, y README, seccion 9).
+
+| Caso | Resultado | Evidencia |
+|---|---|---|
+| Las dos imagenes se construyen en dos etapas: `huerto-api:0.5.0` (289 MB, JRE 11 alpine, usuario sin privilegios) y `huerto-web:0.5.0` (74 MB, nginx alpine con el `ng build`) | VERIFICADO | `docker images` |
+| Arranque ordenado por salud: `db` (pg_isready) -> `api` (`/api/health`) -> `web` (nginx) ; los tres `healthy` | VERIFICADO | `docker compose ps` |
+| Por nginx: `/` sirve el cliente, las rutas del SPA (`/alertas`) devuelven `index.html`, `/api/health` 200, `/swagger-ui.html` y `/v3/api-docs` llegan a la API, `/api/zonas` sin token 401 | VERIFICADO | `evidencia/docker/pruebas_api.txt` |
+| Los 64 casos del contrato contra `http://localhost` (nginx -> api -> db): 63 VERIFICADO | VERIFICADO con una excepcion esperada | `evidencia/docker/pruebas_api_resultados.txt` |
+| Caso 29 (CORS) a traves de nginx | NO APLICA | nginx deja cliente y API en el mismo origen (`http://localhost`); Spring detecta la peticion como del mismo origen y no emite cabeceras CORS, que es lo correcto: el navegador tampoco hace *preflight*. La prueba esta pensada para `ng serve` en el 4200 contra la API en el 8081 |
+| La API y la base no publican puertos al equipo; solo nginx (`WEB_PORT`) y el 5436 de la base para `psql` | VERIFICADO | `docker compose ps` |
+
+Fallo encontrado en este despliegue: el contenedor `web` quedaba `unhealthy` aunque servia bien. El `HEALTHCHECK` usaba
+`wget http://localhost/` y en alpine `localhost` resuelve primero a `::1`, donde nginx no escuchaba. Se agrego
+`listen [::]:80` en `nginx.conf` y el chequeo apunta a `127.0.0.1`.
+
 ## 3. Fallos que encontramos al probar
 
 | Fallo | Como aparecio | Correccion |

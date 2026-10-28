@@ -63,6 +63,13 @@ Evidencias minimas de la guia: **Codigo** (repositorio), **Pruebas API** (R05.1,
 | Bitacora del incremento | `../../bitacora.md`, entradas de P05 | VERIFICADO |
 | Historial de commits | `git log --oneline 9f398d6..HEAD` | VERIFICADO |
 
+## Despliegue en Docker detras de nginx (complemento a R05.1 y R05.3)
+
+| Evidencia | Que demuestra | Archivo | Estado |
+|---|---|---|---|
+| Los 64 casos del contrato contra `http://localhost` (nginx -> api -> db, cada uno en su contenedor) | la pila en Docker cumple el mismo contrato; 63 VERIFICADO y el caso 29 (CORS) no aplica por ser el mismo origen | `docker/pruebas_api.txt`, `docker/pruebas_api_resultados.txt` | VERIFICADO |
+| Definicion de los contenedores y la red | `docker/docker-compose.yml` (perfil `app`), `api-spring/Dockerfile`, `frontend-angular/Dockerfile`, `frontend-angular/nginx.conf`, `../diagramas/05_docker_nginx.png` | repositorio | VERIFICADO |
+
 ## Capturas
 
 | Archivo | Contenido |

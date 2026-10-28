@@ -339,7 +339,36 @@ arranca la API, ejecuta `pruebas_api.py`, sirve el cliente y hace el recorrido e
 `docs/p05/evidencia/`. La guia de P05 pide `verify-module.sh M04`; ese modulo sigue funcionando y deja su evidencia en
 `docs/p04/evidencia/`, pero la de P05 se genera con `M05` para no mezclar incrementos.
 
-## 9. Equipo
+## 9. Todo en Docker: PostgreSQL, API y cliente detras de nginx
+
+Cada pieza corre en su contenedor sobre la red Docker `huerto`, y nginx es la unica entrada: sirve el cliente
+Angular ya compilado y reenvia `/api` (y la documentacion de springdoc) al contenedor de la API. La API y la base
+no exponen puertos al equipo (la base conserva el 5436 solo para `psql` y los scripts de verificacion).
+
+| Contenedor | Imagen | Que hace | Puerto en el equipo |
+|---|---|---|---|
+| `dsw-p02-huerto-db` | `postgres:16` | la misma base de P02 a P05, mismo volumen `pgdata` | 5436 (solo herramientas) |
+| `dsw-p02-huerto-api` | `huerto-api:0.5.0` (`api-spring/Dockerfile`: Maven -> JRE 11 alpine, usuario sin privilegios) | Spring Boot en el 8081, solo dentro de la red | ninguno |
+| `dsw-p02-huerto-web` | `huerto-web:0.5.0` (`frontend-angular/Dockerfile`: Node 18 compila -> `nginx:1.27-alpine`) | nginx con `frontend-angular/nginx.conf`: `/` estaticos, `/api/` -> `api:8081` | `WEB_PORT` (80) |
+
+```bash
+docker compose -f docker/docker-compose.yml --profile app up -d --build   # construye las dos imagenes y levanta los tres
+docker compose -f docker/docker-compose.yml --profile app ps              # estado y salud de cada contenedor
+docker compose -f docker/docker-compose.yml --profile app logs -f api     # registro de la API
+docker compose -f docker/docker-compose.yml --profile app down            # detiene todo; el volumen de datos se conserva
+```
+
+Entrar en `http://localhost` (o `http://localhost:WEB_PORT` si se cambio en `docker/.env`); Swagger en
+`http://localhost/swagger-ui.html`. Como el navegador solo habla con nginx, cliente y API comparten origen y no hay
+peticiones entre origenes. El secreto del token se fija con `JWT_SECRET` en `docker/.env`; si se deja vacio la API
+genera uno al arrancar. Los arranques dependen de la salud: la API espera a que PostgreSQL acepte conexiones y nginx
+espera a que `/api/health` responda 200.
+
+Sin `--profile app`, `docker compose up -d` levanta solo la base, como en los incrementos anteriores, asi que
+`verify-module.sh`, `demo_p05.sh` y los scripts siguen funcionando igual. Para probar el contrato contra la pila en
+Docker: `API_URL=http://localhost ORIGEN_WEB=http://localhost python scripts/pruebas_api.py`.
+
+## 10. Equipo
 
 | Responsabilidad | Integrante | GitHub |
 |---|---|---|

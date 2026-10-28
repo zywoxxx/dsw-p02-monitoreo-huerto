@@ -1,0 +1,826 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "PR09 Monitoreo de huerto - API REST",
+    "description": "Generado desde el codigo. El contrato de referencia es docs/p04/openapi.yaml.",
+    "version": "0.5.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost",
+      "description": "Generated server url"
+    }
+  ],
+  "paths": {
+    "/api/lecturas": {
+      "get": {
+        "tags": [
+          "lectura-controller"
+        ],
+        "operationId": "listar_2",
+        "parameters": [
+          {
+            "name": "sensorId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "zonaId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "origen",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pagina",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "tamano",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginaLectura"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "lectura-controller"
+        ],
+        "operationId": "registrar",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LecturaRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Lectura"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": [
+          "auth-controller"
+        ],
+        "operationId": "login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Credenciales"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/anotaciones": {
+      "get": {
+        "tags": [
+          "anotacion-controller"
+        ],
+        "operationId": "listar_3",
+        "parameters": [
+          {
+            "name": "zonaId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "pagina",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "tamano",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginaAnotacion"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "anotacion-controller"
+        ],
+        "operationId": "registrar_1",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnotacionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Anotacion"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/alertas/{id}": {
+      "get": {
+        "tags": [
+          "alerta-controller"
+        ],
+        "operationId": "porId_2",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Alerta"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "alerta-controller"
+        ],
+        "operationId": "cambiarAtencion",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CambioAtencionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Alerta"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/zonas": {
+      "get": {
+        "tags": [
+          "zona-controller"
+        ],
+        "operationId": "listar",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Zona"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sensores": {
+      "get": {
+        "tags": [
+          "sensor-controller"
+        ],
+        "operationId": "listar_1",
+        "parameters": [
+          {
+            "name": "zonaId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "activo",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Sensor"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/lecturas/{id}": {
+      "get": {
+        "tags": [
+          "lectura-controller"
+        ],
+        "operationId": "porId",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Lectura"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/health": {
+      "get": {
+        "tags": [
+          "health-controller"
+        ],
+        "operationId": "salud",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/anotaciones/{id}": {
+      "get": {
+        "tags": [
+          "anotacion-controller"
+        ],
+        "operationId": "porId_1",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Anotacion"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/alertas": {
+      "get": {
+        "tags": [
+          "alerta-controller"
+        ],
+        "operationId": "listar_4",
+        "parameters": [
+          {
+            "name": "nivel",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "atendida",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "zonaId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "pagina",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "tamano",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginaAlerta"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "LecturaRequest": {
+        "type": "object",
+        "properties": {
+          "sensorId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "valor": {
+            "type": "number"
+          },
+          "observacion": {
+            "type": "string"
+          }
+        }
+      },
+      "AlertaResumen": {
+        "type": "object",
+        "properties": {
+          "nivel": {
+            "type": "string"
+          },
+          "mensaje": {
+            "type": "string"
+          }
+        }
+      },
+      "Lectura": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "sensorId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "sensorCodigo": {
+            "type": "string"
+          },
+          "variable": {
+            "type": "string"
+          },
+          "zona": {
+            "type": "string"
+          },
+          "valor": {
+            "type": "number"
+          },
+          "unidad": {
+            "type": "string"
+          },
+          "origen": {
+            "type": "string"
+          },
+          "observacion": {
+            "type": "string"
+          },
+          "registradoEn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "alerta": {
+            "$ref": "#/components/schemas/AlertaResumen"
+          }
+        }
+      },
+      "Credenciales": {
+        "type": "object",
+        "properties": {
+          "usuario": {
+            "type": "string"
+          },
+          "contrasena": {
+            "type": "string"
+          }
+        }
+      },
+      "AnotacionRequest": {
+        "type": "object",
+        "properties": {
+          "zonaId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "lecturaId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "texto": {
+            "type": "string"
+          }
+        }
+      },
+      "Anotacion": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "zonaId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "zona": {
+            "type": "string"
+          },
+          "lecturaId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "autorRol": {
+            "type": "string"
+          },
+          "texto": {
+            "type": "string"
+          },
+          "creadaEn": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CambioAtencionRequest": {
+        "type": "object",
+        "properties": {
+          "atendida": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Alerta": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "lecturaId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "sensorCodigo": {
+            "type": "string"
+          },
+          "variable": {
+            "type": "string"
+          },
+          "zonaId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "zona": {
+            "type": "string"
+          },
+          "valor": {
+            "type": "number"
+          },
+          "unidad": {
+            "type": "string"
+          },
+          "nivel": {
+            "type": "string"
+          },
+          "mensaje": {
+            "type": "string"
+          },
+          "atendida": {
+            "type": "boolean"
+          },
+          "atendidaEn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "atendidaPor": {
+            "type": "string"
+          },
+          "creadaEn": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Zona": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "nombre": {
+            "type": "string"
+          },
+          "cultivo": {
+            "type": "string"
+          },
+          "ubicacion": {
+            "type": "string"
+          }
+        }
+      },
+      "Sensor": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "codigo": {
+            "type": "string"
+          },
+          "activo": {
+            "type": "boolean"
+          },
+          "zonaId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "zona": {
+            "type": "string"
+          },
+          "variable": {
+            "type": "string"
+          },
+          "unidad": {
+            "type": "string"
+          },
+          "rangoFisicoMinimo": {
+            "type": "number"
+          },
+          "rangoFisicoMaximo": {
+            "type": "number"
+          },
+          "umbralMinimo": {
+            "type": "number"
+          },
+          "umbralMaximo": {
+            "type": "number"
+          }
+        }
+      },
+      "PaginaLectura": {
+        "type": "object",
+        "properties": {
+          "contenido": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Lectura"
+            }
+          },
+          "pagina": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tamano": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "PaginaAnotacion": {
+        "type": "object",
+        "properties": {
+          "contenido": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Anotacion"
+            }
+          },
+          "pagina": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tamano": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "PaginaAlerta": {
+        "type": "object",
+        "properties": {
+          "contenido": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Alerta"
+            }
+          },
+          "pagina": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tamano": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      }
+    }
+  }
+}

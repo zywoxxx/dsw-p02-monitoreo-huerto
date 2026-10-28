@@ -103,6 +103,31 @@ docker exec -i dsw-p02-huerto-db psql -U huerto_app -d huerto_db -v ON_ERROR_STO
 `verify-module.sh M05` la aplica antes de arrancar la API. Una base creada desde cero con `docker compose` ya trae las
 columnas porque `01_schema.sql` esta actualizado. Los comandos completos estan en el README, seccion P05.
 
+### 5.1 Todo en contenedores, detras de nginx
+
+![Docker y nginx](diagramas/05_docker_nginx.png)
+
+La segunda forma de correrlo es con los tres componentes en Docker, cada uno en su contenedor sobre la red `huerto`
+(`docker compose -f docker/docker-compose.yml --profile app up -d --build`):
+
+| Contenedor | Imagen (dos etapas) | Puerto |
+|---|---|---|
+| `db` | `postgres:16`, el mismo volumen `pgdata` de siempre | 5432 en la red; 5436 al equipo solo para `psql` y scripts |
+| `api` | `api-spring/Dockerfile`: Maven compila -> `eclipse-temurin:11-jre-alpine` con el jar, usuario sin privilegios, `HEALTHCHECK` a `/api/health` | 8081 solo en la red |
+| `web` | `frontend-angular/Dockerfile`: Node 18 hace `ng build` -> `nginx:1.27-alpine` con los estaticos y `nginx.conf` | `WEB_PORT` (80) al equipo |
+
+nginx es la unica entrada: `/` sirve el cliente (las rutas del SPA caen en `index.html`), `/api/` se reenvia a
+`http://api:8081/api/` y `/swagger-ui*` y `/v3/api-docs` a la API. Como el navegador solo habla con nginx, cliente y
+API comparten origen: no hay peticiones entre origenes y CORS deja de intervenir. El cliente no cambia entre
+`ng serve` y nginx porque siempre uso rutas relativas (`/api`). La API lee la base por el nombre de servicio
+(`jdbc:postgresql://db:5432/huerto_db`); `compose` arranca cada contenedor cuando el anterior esta sano.
+
+Por que asi y no de otra forma: una sola imagen con todo (jar que sirve los estaticos) es mas simple de desplegar,
+pero esconde la separacion cliente-API que el curso pide mostrar; nginx como contenedor aparte del cliente obligaria a
+un cuarto servicio sin ganancia, porque un `ng build` es solo archivos estaticos y nginx es la forma normal de
+servirlos. Sin el perfil `app`, `docker compose up -d` sigue levantando solo la base, como en los incrementos
+anteriores, asi que los scripts de verificacion no cambian.
+
 ## 6. Que queda fuera
 
 Alta y edicion de zonas, sensores y umbrales desde la interfaz; graficas; simulador IoT (Web 4.0); usuarios en tabla.
